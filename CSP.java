@@ -33,9 +33,7 @@ public class CSP {
 		try {
 			ArrayList<String> l = (ArrayList<String>) Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
 			Iterator<String> it = l.iterator();
-			//			for (String s : l) {
-//				System.out.println(s);
-//			}
+
 			//ajout des variables + domaine
 			int nbVariables = Integer.parseInt(it.next());
 			System.out.println("nbvar : " + nbVariables);
