@@ -8,12 +8,12 @@ public class TP {
 
 	public static void main(String args[]) {
 		//Lire un CSP depuis un fichier
-		String fileName = "example.txt";
+		String fileName = "triangleInt.txt";
 		CSP myProblem;
 		try {    
 			fileName = new java.io.File( "." ).getCanonicalPath()+"/"+fileName;
 			System.out.println("Chargement du fichier : "+fileName);
-			myProblem = new CSP(fileName);
+			myProblem = Parser.parse(fileName);
 		}catch(Exception e) {
 	     System.err.println("Erreur lors du chargement du fichier " + fileName);
 			System.err.println(e);

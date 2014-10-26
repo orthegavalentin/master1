@@ -11,15 +11,18 @@ import org.omg.CORBA.OBJ_ADAPTER;
 public class Solver {
 
 	public CSP problem; // l'instance de CSP                 
-	private HashMap<String,Object> assignation, assignTemp; // codage d'une solution partielle ou totale
+	private HashMap<String,Object> assignation; // codage d'une solution partielle ou totale
+	private HashSet<HashMap<String,Object>> allSolutions;
 
 	public Solver(CSP p) {
 		problem = p;
 		assignation = new HashMap<String,Object>(); 
+		allSolutions = new HashSet<HashMap<String,Object>>();
 	}
 
 	// retourne une solution s'il en existe une, null sinon           
 	public HashMap<String,Object> searchSolution() { 
+//		System.out.println("all solutions : " + searchAllSolutions());
 		return backtrack();
 	}
 
@@ -71,20 +74,21 @@ public class Solver {
 			assignation.put(s, val);
 			if(areAllConstraintsValid(assignation))
 			{
-				System.out.println("sélectionné : " + s + "=" + val);
-				return backtrack();
+				HashMap<String,Object> temp = backtrack();
+				if(temp != null && temp.size() == problem.getVarNumber())
+				{
+					System.out.println("sélectionné : " + s + "=" + val);
+					return temp;
+				}
 			}
 			else
 			{
-				
 				System.out.println("impossible avec : " + s + "=" + val);
 				assignation.remove(s);
 			}
 		}
 		return null;
 	}
-
-
 
 	// choix d'une variable
 	private String chooseVar(Set<String> allVar, Set<String> assignedVar) {
@@ -105,8 +109,7 @@ public class Solver {
 
 	// retourne l'ensemble des solutions
 	public HashSet<HashMap<String,Object>> searchAllSolutions() {
-		// TO DO              
-		return null;
+		return allSolutions;
 	}
 }
 

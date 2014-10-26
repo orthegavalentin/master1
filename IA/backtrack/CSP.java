@@ -28,41 +28,42 @@ public class CSP {
 	}
 
 	// initialise un CSP � partir d'un fichier texte
-	public CSP(String fileName) {
-		this();
-		try {
-			ArrayList<String> l = (ArrayList<String>) Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
-			Iterator<String> it = l.iterator();
-			//			for (String s : l) {
-//				System.out.println(s);
+//	public CSP(String fileName) {
+//		this();
+//		try {
+//			ArrayList<String> l = (ArrayList<String>) Files.readAllLines(Paths.get(fileName), StandardCharsets.UTF_8);
+//			Iterator<String> it = l.iterator();
+//			System.out.println(it.next());
+//			//			for (String s : l) {
+////				System.out.println(s);
+////			}
+//			//ajout des variables + domaine
+//			int nbVariables = Integer.parseInt(it.next());
+//			System.out.println("nbvar : " + nbVariables);
+//			for (int i = 1; i < nbVariables + 1; i++) {
+//				String [] variables = it.next().split(";");
+//				addVariable(variables[0]);
+//				for (int j = 1; j < variables.length; j++) {
+//					addValue(variables[0], variables[j]);
+//				}
 //			}
-			//ajout des variables + domaine
-			int nbVariables = Integer.parseInt(it.next());
-			System.out.println("nbvar : " + nbVariables);
-			for (int i = 1; i < nbVariables + 1; i++) {
-				String [] variables = it.next().split(";");
-				addVariable(variables[0]);
-				for (int j = 1; j < variables.length; j++) {
-					addValue(variables[0], variables[j]);
-				}
-			}
-			
-			//ajout des contraintes
-			int nbContraintes = Integer.parseInt(it.next());
-			for (int i = nbVariables + 1; i < nbVariables + 1 + nbContraintes; i++) {
-				Constraint c = new Constraint(new ArrayList<String>(Arrays.asList(it.next().split(";"))));
-				int nbTuple = Integer.parseInt(it.next());
-				for (int j = 0; j < nbTuple; j++) {
-					c.addTuple(new ArrayList<Object>(Arrays.asList(it.next().split(";"))));
-				}
-				addConstraint(c);
-			}
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//			
+//			//ajout des contraintes
+//			int nbContraintes = Integer.parseInt(it.next());
+//			for (int i = nbVariables + 1; i < nbVariables + 1 + nbContraintes; i++) {
+//				Constraint c = new Constraint(new ArrayList<String>(Arrays.asList(it.next().split(";"))));
+//				int nbTuple = Integer.parseInt(it.next());
+//				for (int j = 0; j < nbTuple; j++) {
+//					c.addTuple(new ArrayList<Object>(Arrays.asList(it.next().split(";"))));
+//				}
+//				addConstraint(c);
+//			}
+//			
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	
 	// ajoute une variable
 	public void addVariable(String var) {
