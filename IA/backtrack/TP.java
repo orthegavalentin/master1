@@ -8,7 +8,7 @@ public class TP {
 
 	public static void main(String args[]) {
 		//Lire un CSP depuis un fichier
-		String fileName = "triangleInt.txt";
+		String fileName = "example.txt";
 		CSP myProblem;
 		try {    
 			fileName = new java.io.File( "." ).getCanonicalPath()+"/"+fileName;

@@ -73,7 +73,7 @@ public class Parser {
 
 		//ajout des contraintes
 		int nbContraintes = Integer.parseInt(it.next());
-		for (int i = nbVariables + 1; i < nbVariables + 1 + nbContraintes; i++) {
+		for (int i = 0; i < nbContraintes; i++) {
 			String [] vars = it.next().split(";");
 			String type = it.next();
 			boolean isEqual = false;
@@ -87,37 +87,69 @@ public class Parser {
 				isEqual = false;
 			}
 
-			Constraint c = new Constraint(new ArrayList<String>(Arrays.asList(vars)));
-			
-			for (Object val1 : p.getDom(vars[0])) {
-				for (Object val2 : p.getDom(vars[1])) {
-					if(isEqual)
+
+			for (String s1 : vars) {
+				for (String s2 : vars) {
+					if(!s1.equals(s2))
 					{
-						if(val1.equals(val2))
-						{
-							c.addTuple(createTuple(val1, val2));
+						ArrayList<String> a = new ArrayList<String>();
+						a.add(s1);
+						a.add(s2);
+						Constraint c = new Constraint(a);
+						for (Object val1 : p.getDom(s1)) {
+							for (Object val2 : p.getDom(s2)) {
+								if(isEqual)
+								{
+									if(val1.equals(val2))
+									{
+										c.addTuple(createTuple(val1, val2));
+									}
+								}
+								else
+								{
+									if(!val1.equals(val2))
+									{
+										c.addTuple(createTuple(val1, val2));
+									}
+								}
+							}
 						}
-					}
-					else
-					{
-						if(!val1.equals(val2))
-						{
-							c.addTuple(createTuple(val1, val2));
-						}
+						p.addConstraint(c);
 					}
 				}
 			}
-			p.addConstraint(c);
 		}
+
+		//			for (Object val1 : p.getDom(vars[0])) {
+		//				for (Object val2 : p.getDom(vars[1])) {
+		//					if(isEqual)
+		//					{
+		//						if(val1.equals(val2))
+		//						{
+		//							c.addTuple(createTuple(val1, val2));
+		//						}
+		//					}
+		//					else
+		//					{
+		//						if(!val1.equals(val2))
+		//						{
+		//							c.addTuple(createTuple(val1, val2));
+		//						}
+		//					}
+		//				}
+		//			}
+		//			p.addConstraint(c);
+		//		}
 
 		return p;
 	}
-	
+
 	private static ArrayList<Object> createTuple(Object val1, Object val2)
 	{
 		ArrayList<Object> tuple = new ArrayList<Object>();
 		tuple.add(val1);
 		tuple.add(val2);
+		System.out.println(tuple);
 		return tuple;
 	}
 }
