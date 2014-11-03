@@ -40,7 +40,8 @@ public class Solver {
 			while(ok)
 			{
 				for (String string : vars) {
-					if(!tuple.get(c.getVariables().indexOf(string)).equals(a.get(string)))
+//					System.out.println("trying : " + tuple.get(c.getVariables().indexOf(string)).toString() + " with : " + a.get(string).toString() + " : " + tuple.get(c.getVariables().indexOf(string)).toString().equals(a.get(string).toString()));
+					if(!tuple.get(c.getVariables().indexOf(string)).toString().equals(a.get(string).toString()))
 					{
 						ok = false;
 						break;
@@ -77,13 +78,13 @@ public class Solver {
 				HashMap<String,Object> temp = backtrack();
 				if(temp != null && temp.size() == problem.getVarNumber())
 				{
-					System.out.println("sélectionné : " + s + "=" + val);
+//					System.out.println("sélectionné : " + s + "=" + val);
 					return temp;
 				}
 			}
 			else
 			{
-				System.out.println("impossible avec : " + s + "=" + val);
+//				System.out.println("impossible avec : " + s + "=" + val);
 				assignation.remove(s);
 			}
 		}

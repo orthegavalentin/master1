@@ -49,7 +49,10 @@ public class Constraint {
 	public String toString() {
 		return "\n\t"+ name + " = " + varTuple + " : " + valTuples; 
 	}
-
-
+	
+	public boolean isOnSameVars(ArrayList<String> vars)
+	{
+		return vars.equals(varTuple);
+	}
 }
 

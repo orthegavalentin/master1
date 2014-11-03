@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 
 
@@ -60,7 +61,8 @@ public class Parser {
 
 	private static CSP parseFromInt(Iterator<String> it) {
 		CSP p = new CSP();
-
+		boolean onlyNumerics = true;
+		
 		int nbVariables = Integer.parseInt(it.next());
 		System.out.println("nbvar : " + nbVariables);
 		for (int i = 1; i < nbVariables + 1; i++) {
@@ -68,6 +70,8 @@ public class Parser {
 			p.addVariable(variables[0]);
 			for (int j = 1; j < variables.length; j++) {
 				p.addValue(variables[0], variables[j]);
+				if(!isNumeric(variables[j]))
+					onlyNumerics = false;
 			}
 		}
 
@@ -75,6 +79,7 @@ public class Parser {
 		int nbContraintes = Integer.parseInt(it.next());
 		for (int i = 0; i < nbContraintes; i++) {
 			String [] vars = it.next().split(";");
+			System.out.println(Arrays.toString(vars));
 			String type = it.next();
 			boolean isEqual = false;
 
@@ -87,29 +92,75 @@ public class Parser {
 				isEqual = false;
 			}
 
-
+			boolean first = true;
+			ArrayList<ArrayList<Object>> tuples = new ArrayList<ArrayList<Object>>();
 			for (String s1 : vars) {
 				for (String s2 : vars) {
+					//on enlève les plus et moins de la string
+					//on les mémorise pour pouvoir ajouter les valeurs
+					int modifier1 = 0, modifier2 = 0;
+
+					if(onlyNumerics)
+					{
+						int sign = Math.max(s1.indexOf("+"), s1.indexOf("-"));
+						if(sign >= 0)
+						{
+							modifier1 = Integer.valueOf(s1.substring(sign, s1.length()));
+							s1 = s1.substring(0, sign);
+						}
+						sign = Math.max(s2.indexOf("+"), s2.indexOf("-"));
+						if(sign >= 0)
+						{
+							modifier2 = Integer.valueOf(s2.substring(sign, s2.length()));
+							s2 = s2.substring(0, sign);
+						}
+
+					}
+
 					if(!s1.equals(s2))
 					{
 						ArrayList<String> a = new ArrayList<String>();
 						a.add(s1);
 						a.add(s2);
 						Constraint c = new Constraint(a);
+
 						for (Object val1 : p.getDom(s1)) {
 							for (Object val2 : p.getDom(s2)) {
-								if(isEqual)
+								if(onlyNumerics)
 								{
-									if(val1.equals(val2))
+									int n1 = Integer.valueOf(val1.toString());
+									int n2 = Integer.valueOf(val2.toString());
+									if(isEqual)
 									{
-										c.addTuple(createTuple(val1, val2));
+										if(n1 - n2 == modifier1 - modifier2)
+										{
+											tuples.add(createTuple(val1, val2));
+											//c.addTuple(createTuple(val1, val2));
+										}
+									}
+									if(!isEqual)
+									{
+										if(n1 - n2 != modifier1 - modifier2)
+										{
+											c.addTuple(createTuple(val1, val2));
+										}
 									}
 								}
 								else
 								{
-									if(!val1.equals(val2))
+									if(isEqual)
 									{
-										c.addTuple(createTuple(val1, val2));
+										if(val1.equals(val2))
+										{
+											c.addTuple(createTuple(val1, val2));
+										}
+									}
+									else
+									{
+										if(!val1.equals(val2))
+										{
+											c.addTuple(createTuple(val1, val2));
+										}
 									}
 								}
 							}
@@ -120,27 +171,6 @@ public class Parser {
 			}
 		}
 
-		//			for (Object val1 : p.getDom(vars[0])) {
-		//				for (Object val2 : p.getDom(vars[1])) {
-		//					if(isEqual)
-		//					{
-		//						if(val1.equals(val2))
-		//						{
-		//							c.addTuple(createTuple(val1, val2));
-		//						}
-		//					}
-		//					else
-		//					{
-		//						if(!val1.equals(val2))
-		//						{
-		//							c.addTuple(createTuple(val1, val2));
-		//						}
-		//					}
-		//				}
-		//			}
-		//			p.addConstraint(c);
-		//		}
-
 		return p;
 	}
 
@@ -149,7 +179,12 @@ public class Parser {
 		ArrayList<Object> tuple = new ArrayList<Object>();
 		tuple.add(val1);
 		tuple.add(val2);
-		System.out.println(tuple);
+		//		System.out.println(tuple);
 		return tuple;
+	}
+
+	private static boolean isNumeric(String s)
+	{
+		return s.matches("[-+]?\\d*\\.?\\d+");  	
 	}
 }
