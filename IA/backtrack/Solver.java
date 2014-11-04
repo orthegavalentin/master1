@@ -5,25 +5,26 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.omg.CORBA.OBJ_ADAPTER;
-
 
 public class Solver {
 
 	public CSP problem; // l'instance de CSP                 
 	private HashMap<String,Object> assignation; // codage d'une solution partielle ou totale
-	private HashSet<HashMap<String,Object>> allSolutions;
+	private HashSet<HashMap<String,Object>> solutions;
 
 	public Solver(CSP p) {
 		problem = p;
 		assignation = new HashMap<String,Object>(); 
-		allSolutions = new HashSet<HashMap<String,Object>>();
+		solutions = new HashSet<HashMap<String,Object>>();
 	}
 
 	// retourne une solution s'il en existe une, null sinon           
 	public HashMap<String,Object> searchSolution() { 
-//		System.out.println("all solutions : " + searchAllSolutions());
-		return backtrack();
+		searchAllSolutions();
+		System.out.println(solutions);
+		System.out.println(solutions.size());
+		//		return backtrack();
+		return null;
 	}
 
 	private boolean isConstraintValid(Constraint c, HashMap<String,Object> a) {
@@ -71,20 +72,20 @@ public class Solver {
 			return assignation;
 		}
 		String s = this.chooseVar(problem.getVars(), assignation.keySet());
-		for (Object val : problem.getDom(s)) {
+		for (Object val : tri(problem.getDom(s))) {
 			assignation.put(s, val);
 			if(areAllConstraintsValid(assignation))
 			{
 				HashMap<String,Object> temp = backtrack();
 				if(temp != null && temp.size() == problem.getVarNumber())
 				{
-//					System.out.println("sélectionné : " + s + "=" + val);
+					System.out.println("sélectionné : " + s + "=" + val);
 					return temp;
 				}
 			}
 			else
 			{
-//				System.out.println("impossible avec : " + s + "=" + val);
+				System.out.println("impossible avec : " + s + "=" + val);
 				assignation.remove(s);
 			}
 		}
@@ -95,7 +96,6 @@ public class Solver {
 	private String chooseVar(Set<String> allVar, Set<String> assignedVar) {
 		for (String string : allVar) {
 			if(!assignedVar.contains(string)) {
-				System.out.println("chose : " + string);
 				return string;
 			}
 		}
@@ -109,8 +109,24 @@ public class Solver {
 
 
 	// retourne l'ensemble des solutions
-	public HashSet<HashMap<String,Object>> searchAllSolutions() {
-		return allSolutions;
+	public HashSet<HashMap<String, Object>> searchAllSolutions() {
+
+		if (this.assignation.size() == this.problem.getVarNumber()) {
+			this.solutions.add((HashMap<String, Object>) this.assignation.clone());
+			return this.solutions;
+		}
+		
+		String s = this.chooseVar(this.problem.getVars(), this.assignation.keySet());
+		
+		for (Object val : tri(problem.getDom(s))) {
+			this.assignation.put(s, val);
+			if(areAllConstraintsValid(assignation)) { // Si contrainte validée
+				this.searchAllSolutions();
+			}
+			this.assignation.remove(s);
+		}
+		
+		return this.solutions;
 	}
 }
 
