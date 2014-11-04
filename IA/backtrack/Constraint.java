@@ -41,8 +41,8 @@ public class Constraint {
 	}
 	
 	public void addTuple(ArrayList<Object> valTuple) {
-		if(valTuple.size() != varTuple.size());// System.err.println("Le tuple " + valTuple + " n'a pas l'arite " + varTuple.size() + " de la contrainte " + name);
-		else if(!valTuples.add(valTuple));// System.err.println("Le tuple " + valTuple + " est deja present dans la contrainte "+ name);
+		if(valTuple.size() != varTuple.size()) System.err.println("Le tuple " + valTuple + " n'a pas l'arite " + varTuple.size() + " de la contrainte " + name);
+		else if(!valTuples.add(valTuple)) System.err.println("Le tuple " + valTuple + " est deja present dans la contrainte "+ name);
 	}
 	
 	
