@@ -18,7 +18,7 @@ public class Decompressor {
 	{
 		Utils.initDico(dico);
 		String result = "";
-		char prevcode, currcode, ch;
+		int prevcode, currcode, ch;
 		String e = "";
 		byte [] l = Files.readAllBytes(Paths.get(inputFile));
 		ENCODING_LENGHT = l[0] + 127;
@@ -26,10 +26,10 @@ public class Decompressor {
 		int [] chars = decode(l);
 
 
-		prevcode = (char) chars[0];
+		prevcode = chars[0];
 		//		String result = "" + prevcode;
 		for(int i = 1; i < chars.length; i++) {
-			currcode = (char) chars[i];
+			currcode = chars[i];
 			if(currcode >= dico.size())
 			{
 				e ="" +  e.charAt(0);
@@ -43,7 +43,7 @@ public class Decompressor {
 			result += e;
 			//			result = result.concat("e");
 			ch = e.charAt(0);
-			dico.add(dico.get((int) prevcode) + ch);
+			dico.add(dico.get((int) prevcode) + (char) ch);
 			prevcode = currcode;
 		}
 

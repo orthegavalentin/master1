@@ -23,14 +23,14 @@ public class Main {
 //			e1.printStackTrace();
 //		}
 		try {
-			Compressor.compress("/home/noe/Téléchargements/test.txt", "/home/noe/Téléchargements/comp");
+			Compressor.compress("/home/noe/Téléchargements/test.txt", "/home/noe/Téléchargements/compjava");
 			System.out.println("compressed!");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		try {
-			Decompressor.decompress("/home/noe/Téléchargements/comp", "/home/noe/Téléchargements/out.txt");
+			Decompressor.decompress("/home/noe/Téléchargements/compjava", "/home/noe/Téléchargements/outjava.txt");
 			System.out.println("decompressed!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

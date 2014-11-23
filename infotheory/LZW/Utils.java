@@ -12,16 +12,22 @@ public class Utils {
 		}
 	}
 	
-	public static void initDicoBis(HashMap<Long, Long> dico)
+	public static void initDicoBis(HashMap<String, Long> dico)
 	{
 		for (long i = 0; i < 256; i++) {
-			dico.put(i, i);
+			dico.put(""+i, i);
 		}
+		System.out.println(dico);
 	}
 	
-	public static long pair(long x, long y)
+//	public static long pair(long x, long y)
+//	{
+//		return ((x + y) * (x + y + 1)) / 2 + y;
+//	}
+//	
+	public static String pair(long x, long y)
 	{
-		return ((x + y) * (x + y + 1)) / 2 + y;
+		return ""+((x + y) * (x + y + 1)) / 2 + y;
 	}
 	
 	public static String complete(int encodingLength, String binaryCode)

@@ -1,21 +1,16 @@
 package lzw;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class Compressor {
-	private static long w;
+	private static String w;
 	//	private static ArrayList<Long> dico = new ArrayList<Long>();
-	private static HashMap<Long, Long> dico = new HashMap<Long, Long>();
+	private static HashMap<String, Long> dico = new HashMap<String, Long>();
 	private static String result;
 	private static final int ENCODING_LENGTH = 15;
 	private static long index = 256;
@@ -39,9 +34,9 @@ public class Compressor {
 		
 		System.out.println(in.getEncoding());
 		Utils.initDicoBis(dico);
-		w = 0;
+		w = "";
 		result = "";
-		long temp = 0;
+		String temp = "";
 		int c;
 		boolean bool = true;
 		try {
@@ -52,7 +47,9 @@ public class Compressor {
 					bool = false;
 				}
 				System.out.println(c);
-				temp = Utils.pair(w, c);
+//				System.out.println(c);
+				//temp = Utils.pair(w, c);
+				temp = w + ""+c;
 				if(dico.containsKey(temp))
 				{
 					w = temp;
@@ -62,7 +59,7 @@ public class Compressor {
 					dico.put(temp, index);
 					index++;
 					result += Utils.complete(ENCODING_LENGTH, Long.toBinaryString(dico.get(w)));
-					w = c;
+					w = ""+c;
 				}
 			}
 		} catch (IOException e) {
