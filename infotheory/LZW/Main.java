@@ -32,9 +32,6 @@ public class Main {
 		try {
 			Decompressor.decompress("/home/noe/Téléchargements/compjava", "/home/noe/Téléchargements/outjava.txt");
 			System.out.println("decompressed!");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

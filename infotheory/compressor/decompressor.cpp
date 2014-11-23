@@ -13,32 +13,29 @@ void Decompressor::decompress(string in, string out)
     string e = "";
     vector<int> chars = decode(in);
     //cout << chars.size() << endl;
-    prevcode = chars[0];
-    myFile << (char) prevcode;
-    for (long var = 1; var < chars.size(); ++var) {
-        //cout << var << endl;
+    w = (char)chars[0];
+    myFile << w;
+    string entry;
+    for (long var = 1; var < chars.size() - 1; ++var) {
         if(m.size() >= pow(2, ENCODING_LENGTH)) {
-            cout << "to big clearing dico" << endl;
             m.clear();
             initDico();
         }
-        currcode = chars[var];
-        if(currcode >= m.size()) {
-            e = e.substr(0, 1);
+        k = chars[var];
+        if(k < m.size()) {
+            entry = m.at(k);
+            myFile << entry;
+            m.push_back(w + entry.at(0));
+            w = entry;
         } else {
-            e = m.at((int)currcode);
+            entry = w + w.at(0);
+            cout << entry;
+            myFile << entry;
+
+            m.push_back(entry);
+            w = entry;
         }
-        myFile << e;
-        //cout << e;
-        result += e;
-        ch = e.at(0);
-        //cout << e.at(0);
-        //cout << m[(int) prevcode] + ch << endl;
-        string s = m.at((int) prevcode) + (char)ch;
-        m.push_back(s);
-        prevcode = currcode;
     }
-    cout << "r : " << result << endl;
     myFile.close();
 }
 
@@ -50,20 +47,19 @@ vector<int> Decompressor::decode(string in)
     infile.open(in, ios::binary | ios::in);
     vector<int> chars;
     infile.read(&c, 1);
-    ENCODING_LENGTH = c + 127;
+    ENCODING_LENGTH = c ;
+    cout << ENCODING_LENGTH << endl;
 
     string s = "", temp = "";
     int n = 0;
     while(!infile.eof()) {
         infile.read(&c, 1);
-        s += bitset<8>(c + 127).to_string();
+        s += bitset<8>(c + 0).to_string();
         //cout << "l : " << bitset<8>(c + 127).to_string() << endl;
         if(s.size() > ENCODING_LENGTH) {
             temp = s.substr(ENCODING_LENGTH, s.size() - ENCODING_LENGTH);
             s = s.substr(0, ENCODING_LENGTH);
-
             chars.push_back(bitset<512>(s).to_ulong());
-            //cout << chars[chars.size() - 1] << endl;
             s = temp;
         }
     }
@@ -81,5 +77,13 @@ void Decompressor::initDico()
         ss << c;
         m.push_back(ss.str());
     }
+}
+
+string Decompressor::pair(string x, char y)
+{
+    stringstream ss;
+    string s;
+    ss << y;
+    return x + y;
 }
 

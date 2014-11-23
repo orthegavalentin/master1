@@ -13,6 +13,8 @@ int main()
     cout << "decompressing" << endl;
     d.decompress("/home/noe/Téléchargements/compc", "/home/noe/Téléchargements/outc.png");
     cout << "done" << endl;
+    char u = -13 + 127;
+    cout << "c : " << u << endl;
     return 0;
 }
 

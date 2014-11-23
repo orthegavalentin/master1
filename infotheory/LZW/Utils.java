@@ -15,9 +15,9 @@ public class Utils {
 	public static void initDicoBis(HashMap<String, Long> dico)
 	{
 		for (long i = 0; i < 256; i++) {
-			dico.put(""+i, i);
+			dico.put(Character.toString((char) i), i);
 		}
-		System.out.println(dico);
+		//System.out.println(dico);
 	}
 	
 //	public static long pair(long x, long y)

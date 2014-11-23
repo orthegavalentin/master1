@@ -21,11 +21,12 @@ public:
 
 private:
     vector<string> m;
-    int index;
+    int k;
     string result;
-    int prevcode, currcode, ch;
+    string w;
     int ENCODING_LENGTH;
 
+    string pair(string x, char y);
     void writeResult(string out);
     vector<int> decode(string in);
     void initDico();

@@ -46,10 +46,14 @@ public class Compressor {
 					c = '#';
 					bool = false;
 				}
-				System.out.println(c);
+				//System.out.println(c);
 //				System.out.println(c);
 				//temp = Utils.pair(w, c);
-				temp = w + ""+c;
+				if(index >= Math.pow(2, ENCODING_LENGTH)) {
+					dico.clear();
+					Utils.initDicoBis(dico);
+				}
+				temp = w + Character.toString((char) c);
 				if(dico.containsKey(temp))
 				{
 					w = temp;
@@ -58,8 +62,9 @@ public class Compressor {
 				{
 					dico.put(temp, index);
 					index++;
+					System.out.println(w);
 					result += Utils.complete(ENCODING_LENGTH, Long.toBinaryString(dico.get(w)));
-					w = ""+c;
+					w = Character.toString((char) c);
 				}
 			}
 		} catch (IOException e) {

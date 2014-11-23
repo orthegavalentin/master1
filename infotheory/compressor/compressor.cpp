@@ -46,8 +46,13 @@ void Compressor::writeResult(string out)
     int n = result.size() % 8;
     char c[1];
 
-    for (long var = 0; var < result.size() / 8 - n; ++var) {
-        int temp = std::bitset<8>(result.substr(var * 8, 8)).to_ulong() - 127;
+    for (int var = 0; var < n; ++var) {
+        result += "0";
+    }
+
+    for (long var = 0; var < result.size() / 8; ++var) {
+        int temp = std::bitset<8>(result.substr(var * 8, 8)).to_ulong();
+        //cout << "temp : " << temp << endl;
         c[0] = temp;
         myFile.write(c, 1);
     }
