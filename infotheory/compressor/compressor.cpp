@@ -7,16 +7,27 @@ Compressor::Compressor()
     w = "";
     result = "";
     index = 256;
+    charCpt = 0;
+    nbBar = 0;
 }
 
 void Compressor::compress(string in, string out)
 {
+    size = Utils::getFileSize(in);
+    //cout << "size : " << size << endl;
     char c;
     string temp = "";
     ifstream infile;
     infile.open(in, ios::binary | ios::in);
     while(!infile.eof()) {
         infile.read(&c, 1);
+        charCpt++;
+
+        float f = (float)charCpt / (float)size;
+        if(f * 10 > nbBar) {
+            nbBar++;
+            Utils::drawProgressBar("compressing : ", nbBar);
+        }
 
         if(index >= pow(2, ENCODING_LENGTH)) {
             m->clear();
@@ -56,7 +67,7 @@ void Compressor::writeResult(string out)
         c[0] = temp;
         myFile.write(c, 1);
     }
-    cout << "size : " << result.size() / 8 << endl;
+    //cout << "size : " << result.size() / 8 << endl;
     myFile.close();
 }
 

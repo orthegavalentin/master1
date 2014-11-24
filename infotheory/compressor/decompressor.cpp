@@ -4,19 +4,27 @@ Decompressor::Decompressor()
 {
     result = "";
     initDico();
+    nbBar = 0;
 }
 
 void Decompressor::decompress(string in, string out)
 {
+    size = Utils::getFileSize(in);
     ofstream myFile;
     myFile.open(out, ios::out | ios::binary);
-    string e = "";
     vector<int> chars = decode(in);
     //cout << chars.size() << endl;
     w = (char)chars[0];
+    size = chars.size();
     myFile << w;
     string entry;
+    nbBar = 0;
     for (long var = 1; var < chars.size() - 1; ++var) {
+        float f = (float)var / (float)size;
+        if(f * 10 > nbBar) {
+            nbBar++;
+            Utils::drawProgressBar("decompressing : ", nbBar);
+        }
         if(m.size() >= pow(2, ENCODING_LENGTH)) {
             m.clear();
             initDico();
@@ -29,7 +37,6 @@ void Decompressor::decompress(string in, string out)
             w = entry;
         } else {
             entry = w + w.at(0);
-            cout << entry;
             myFile << entry;
 
             m.push_back(entry);
@@ -48,12 +55,18 @@ vector<int> Decompressor::decode(string in)
     vector<int> chars;
     infile.read(&c, 1);
     ENCODING_LENGTH = c ;
-    cout << ENCODING_LENGTH << endl;
+    long charCpt = 0;
 
     string s = "", temp = "";
     int n = 0;
     while(!infile.eof()) {
         infile.read(&c, 1);
+        charCpt++;
+        float f = (float)charCpt / (float)size;
+        if(f * 10 > nbBar) {
+            nbBar++;
+            Utils::drawProgressBar("decompressing : ", nbBar);
+        }
         s += bitset<8>(c + 0).to_string();
         //cout << "l : " << bitset<8>(c + 127).to_string() << endl;
         if(s.size() > ENCODING_LENGTH) {

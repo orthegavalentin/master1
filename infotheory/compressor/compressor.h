@@ -8,7 +8,7 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
+#include <utils.h>
 
 using namespace std;
 
@@ -27,6 +27,8 @@ private:
     void writeResult(string out);
     void initDico();
     string pair(string x, char y);
+    long charCpt, size;
+    int nbBar;
 };
 
 #endif // COMPRESSOR_H

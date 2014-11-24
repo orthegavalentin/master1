@@ -6,9 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <boost/dynamic_bitset.hpp>
 #include <bitset>
 #include <sstream>
+#include <math.h>
 #include "utils.h"
 
 using namespace std;
@@ -30,6 +30,8 @@ private:
     void writeResult(string out);
     vector<int> decode(string in);
     void initDico();
+    long size;
+    int nbBar;
 };
 
 #endif // DECOMPRESSOR_H
