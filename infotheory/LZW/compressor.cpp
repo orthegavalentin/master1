@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+<<<<<<< HEAD
 
 using namespace std;
 
@@ -22,4 +23,16 @@ int main(int argc, char* argv[]) {
   }
   else cout << "Unable to open file";
   return 0;
+=======
+using namespace std;
+
+int compress (string file) {
+  char buffer;
+  ifstream infile;
+  infile.open(file, ios::binary | ios::in);
+  while(!infile.eof()) {
+    infile.read(&buffer, 1);
+    cout << buffer << endl;
+  }
+>>>>>>> 92f8eb89be046030a6032f59fd5449c76aa73f77
 }
