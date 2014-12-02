@@ -3,6 +3,7 @@
 Compressor::Compressor()
 {
     m = new map<string, long>;
+    oufman = new map<long, int>;
     initDico();
     w = "";
     result = "";
@@ -40,7 +41,9 @@ void Compressor::compress(string in, string out)
         } else {
             m->insert(std::pair<string, long>(temp, (long)index));
             index++;
-            result += std::bitset<ENCODING_LENGTH>(m->at(w)).to_string();
+            long n = m->at(w);
+            result += std::bitset<ENCODING_LENGTH>(n).to_string();;
+            computeOufman(n);
             w = pair("", c);
         }
     }
@@ -48,6 +51,8 @@ void Compressor::compress(string in, string out)
     string encodingLength = std::bitset<8>(ENCODING_LENGTH).to_string();
     result = encodingLength + result;
     writeResult(out);
+
+    Huffman *h = new Huffman(oufman);
 }
 
 void Compressor::writeResult(string out)
@@ -71,6 +76,15 @@ void Compressor::writeResult(string out)
     myFile.close();
 }
 
+void Compressor::computeOufman(long s)
+{
+    if(oufman->find(s) != oufman->end()) {
+        oufman->at(s)++;
+    } else {
+        oufman->insert(std::pair<long, int>(s, 1));
+    }
+}
+
 void Compressor::initDico()
 {
     for (int var = 0; var < 256; ++var) {
@@ -85,5 +99,7 @@ string Compressor::pair(string x, char y)
     ss << y;
     return x + y;
 }
+
+
 
 

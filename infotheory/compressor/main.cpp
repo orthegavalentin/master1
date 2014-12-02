@@ -7,7 +7,7 @@ int main()
 {
     Compressor c;
     //cout << "compressing" << endl;
-    c.compress("/home/noe/Téléchargements/2.txt", "/home/noe/Téléchargements/compc");
+    c.compress("/home/noe/Téléchargements/1.txt", "/home/noe/Téléchargements/compc");
     cout << endl;
     Decompressor d;
     //cout << "decompressing" << endl;

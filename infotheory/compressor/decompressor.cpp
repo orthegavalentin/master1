@@ -20,11 +20,13 @@ void Decompressor::decompress(string in, string out)
     string entry;
     nbBar = 0;
     for (long var = 1; var < chars.size() - 1; ++var) {
+
         float f = (float)var / (float)size;
         if(f * 10 > nbBar) {
             nbBar++;
             Utils::drawProgressBar("decompressing : ", nbBar);
         }
+
         if(m.size() >= pow(2, ENCODING_LENGTH)) {
             m.clear();
             initDico();

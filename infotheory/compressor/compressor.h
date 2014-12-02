@@ -8,7 +8,9 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
-#include <utils.h>
+#include <huffman.h>
+
+#include "utils.h"
 
 using namespace std;
 
@@ -21,14 +23,17 @@ public:
 
 private:
     map<string, long>* m;
+    map<long, int>* oufman;
     long index;
     string result;
     string w;
-    void writeResult(string out);
-    void initDico();
-    string pair(string x, char y);
     long charCpt, size;
     int nbBar;
+
+    void initDico();
+    string pair(string x, char y);
+    void writeResult(string out);
+    void computeOufman(long s);
 };
 
 #endif // COMPRESSOR_H
