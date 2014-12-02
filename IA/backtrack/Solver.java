@@ -20,11 +20,11 @@ public class Solver {
 
 	// retourne une solution s'il en existe une, null sinon           
 	public HashMap<String,Object> searchSolution() { 
-		searchAllSolutions();
-		System.out.println(solutions);
-		System.out.println(solutions.size());
-		//		return backtrack();
-		return null;
+//		searchAllSolutions();
+//		System.out.println(solutions);
+//		System.out.println(solutions.size());
+		return backtrack();
+//		return null;
 	}
 
 	private boolean isConstraintValid(Constraint c, HashMap<String,Object> a) {
