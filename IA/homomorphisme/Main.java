@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 public class Main {
 
 	public static void main(String[] args) {
-		String fileName = "homo1.txt";
+		String fileName = "dep.txt";
 		try {    
 			fileName = new java.io.File( "." ).getCanonicalPath()+"/"+fileName;
 			System.out.println("Chargement du fichier : "+fileName);
@@ -15,7 +15,10 @@ public class Main {
 			return;
 		}
 		
-		Homomorphisme h = ParserHomo.parse(fileName);
+		KnowlegdeBase k = ParserHomo.parseBc(fileName);
+	}
+		
+		/*Homomorphisme h = ParserHomo.parseHomo(fileName);
 		
 		fileName = "homoexport.txt";
 		CSP myProblem;
@@ -32,6 +35,6 @@ public class Main {
 		Solver mySolver = new Solver(myProblem);
 		//HashMap<String,Object> mySolution = mySolver.searchSolution();
 		System.out.println(mySolver.searchAllSolutions());
-	}
+	}*/
 
 }
