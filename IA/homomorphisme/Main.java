@@ -1,3 +1,6 @@
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+
 
 public class Main {
 
@@ -12,8 +15,16 @@ public class Main {
 			return;
 		}
 		
-		Homomorphisme h = Parser.parse(fileName);
-		h.export();
+		Homomorphisme h = ParserHomo.parse(fileName);
+		try {
+			h.export();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
