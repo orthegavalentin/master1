@@ -54,9 +54,13 @@ SOURCES       = ../compressor/main.cpp \
 OBJECTS       = main.o \
 		compressor.o \
 		utils.o \
+<<<<<<< Updated upstream
 		decompressor.o \
 		huffman.o \
 		heap.o
+=======
+		decompressor.o
+>>>>>>> Stashed changes
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/shell-unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \

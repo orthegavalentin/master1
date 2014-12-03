@@ -26,9 +26,7 @@ public class ParserHomo {
 	
 	private static Ensemble createEnsemble(String s) {
 		System.out.println(s);
-		Ensemble e = new Ensemble();
-		boolean isConstant = s.contains("\"");
-		s.replaceAll("\"", "");
+		Ensemble e = new Ensemble();	
 		
 		String[] atomes = s.split(";");
 		for (int i = 0; i < atomes.length; i++) {
@@ -37,7 +35,8 @@ public class ParserHomo {
 			String [] termes = temp[1].substring(0, temp[1].length() - 1).split(",");
 			ArrayList<Terme> a = new ArrayList<Terme>();
 			for (int j = 0; j < termes.length; j++) {
-				System.out.println("terme : " + termes[j]);
+				boolean isConstant = termes[j].contains("'");
+				termes[j] = termes[j].replaceAll("'", "");
 				Terme t = new Terme(isConstant, termes[j]);
 				a.add(t);
 			}

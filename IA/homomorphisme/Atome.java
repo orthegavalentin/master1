@@ -1,7 +1,4 @@
-import java.awt.Panel;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 
 public class Atome {
@@ -18,6 +15,15 @@ public class Atome {
 	public boolean canWorkWith(Atome a) {
 		String patternForThis = getSameTermes(this);
 		String patternForA = getSameTermes(a);
+		
+		for (int i = 0; i < a.getTermes().size(); i++) {
+			Terme t = a.getTermes().get(i);
+			if(t.isConstant()) {
+				if(!t.equals(this.getTermes().get(i))) {
+					return false;
+				}
+			}
+		}
 		
 		if(hasDuplicate(patternForA)) {
 			return patternForA.equals(patternForThis);
