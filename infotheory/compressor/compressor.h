@@ -8,8 +8,10 @@
 #include <iostream>
 #include <math.h>
 #include <sstream>
-#include <huffman.h>
+#include <vector>
+#include <unordered_map>
 
+#include "huffman.h"
 #include "utils.h"
 
 using namespace std;
@@ -22,13 +24,16 @@ public:
     void compress(string in, string out);
 
 private:
-    map<string, long>* m;
+    unordered_map<string, long>* m;
     map<long, int>* oufman;
+    vector<int>* chars;
     long index;
     string result;
     string w;
     long charCpt, size;
     int nbBar;
+
+    bool huffman = true;
 
     void initDico();
     string pair(string x, char y);

@@ -2,8 +2,10 @@
 
 Compressor::Compressor()
 {
-    m = new map<string, long>;
+    m = new unordered_map<string, long>;
     oufman = new map<long, int>;
+    chars = new vector<int>;
+
     initDico();
     w = "";
     result = "";
@@ -25,7 +27,7 @@ void Compressor::compress(string in, string out)
         charCpt++;
 
         float f = (float)charCpt / (float)size;
-        if(f * 10 > nbBar) {
+        if( f * 100 > nbBar) {
             nbBar++;
             Utils::drawProgressBar("compressing : ", nbBar);
         }
@@ -42,17 +44,27 @@ void Compressor::compress(string in, string out)
             m->insert(std::pair<string, long>(temp, (long)index));
             index++;
             long n = m->at(w);
-            result += std::bitset<ENCODING_LENGTH>(n).to_string();;
-            computeOufman(n);
+            if(huffman) {
+                chars->push_back(n);
+                computeOufman(n);
+                //cout << n << endl;
+            } else {
+                result += std::bitset<ENCODING_LENGTH>(n).to_string();
+            }
             w = pair("", c);
         }
     }
-    result += std::bitset<ENCODING_LENGTH>(m->at(w)).to_string();
-    string encodingLength = std::bitset<8>(ENCODING_LENGTH).to_string();
-    result = encodingLength + result;
+    if(huffman) {
+        computeOufman(m->at(w));
+        chars->push_back(m->at(w));
+        Huffman *h = new Huffman(oufman);
+        result = h->convertToString(chars);
+    } else {
+        result += std::bitset<ENCODING_LENGTH>(m->at(w)).to_string();
+        string encodingLength = std::bitset<8>(ENCODING_LENGTH).to_string();
+        result = encodingLength + result;
+    }
     writeResult(out);
-
-    Huffman *h = new Huffman(oufman);
 }
 
 void Compressor::writeResult(string out)
@@ -65,14 +77,17 @@ void Compressor::writeResult(string out)
     for (int var = 0; var < n; ++var) {
         result += "0";
     }
-
+    nbBar = 0;
     for (long var = 0; var < result.size() / 8; ++var) {
+        float f = (float)var / ((float)result.size() / 8);
+        if( f * 100 > nbBar) {
+            nbBar++;
+            Utils::drawProgressBar("writing to file : ", nbBar);
+        }
         int temp = std::bitset<8>(result.substr(var * 8, 8)).to_ulong();
-        //cout << "temp : " << temp << endl;
         c[0] = temp;
         myFile.write(c, 1);
     }
-    //cout << "size : " << result.size() / 8 << endl;
     myFile.close();
 }
 

@@ -6,15 +6,8 @@ Utils::Utils()
 
 void Utils::drawProgressBar(string info, int nbBar)
 {
-    string s = info + "<";
-    for (int var = 0; var < 10; ++var) {
-        if(var < nbBar) {
-            s += "=";
-        } else {
-            s += " ";
-        }
-    }
-    s += ">";
+    if(nbBar > 100) nbBar = 100;
+    string s = info + to_string(nbBar) + "%";
     cout << s << '\r' << flush;
 
 }
