@@ -1,3 +1,6 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -37,7 +40,7 @@ public class Homomorphisme {
 		return s;
 	}
 
-	public void export() {
+	public void export() throws FileNotFoundException, UnsupportedEncodingException {
 		String ex = "";
 		int cpt = 0;
 
@@ -63,5 +66,9 @@ public class Homomorphisme {
 		ex = "" + "E\n" + getFormattedTermes() + cpt + "\n" + ex;
 		System.out.println("***************");
 		System.out.println(ex);
+		
+		PrintWriter writer = new PrintWriter("homoexport.txt", "UTF-8");
+		writer.println(ex);
+		writer.close();
 	}
 }

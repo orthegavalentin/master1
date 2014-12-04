@@ -47,7 +47,7 @@ string Huffman::convertToString(vector<int> *v)
     cout << "converting to string" << endl;
     for (int var = 0; var < v->size(); ++var) {
         //cout << charToBits->at(to_string(v->at(var)));
-        s += charToBits->at(v->at(var)+"");
+        s += charToBits->at(to_string(v->at(var)));
     }
     cout << "converted" << endl;
     return s;
