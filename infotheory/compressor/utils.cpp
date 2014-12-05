@@ -8,7 +8,7 @@ void Utils::drawProgressBar(string info, int nbBar)
 {
     if(nbBar > 100) nbBar = 100;
     string s = info + to_string(nbBar) + "%";
-    cout << s << '\r' << flush;
+    //cout << s << '\r' << flush;
 
 }
 

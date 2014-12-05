@@ -83,16 +83,23 @@ vector<int> Decompressor::parseHuffman(ifstream *infile)
     string temp = "";
     int key = -1;
     int value = -1;
-
+    int last = 0;
+    cout << "dico : 1000000010";
     while(!infile->eof()) {
         infile->read(&c, 1);
+        if((int)c + last == 0) {
+            cout << endl;
+            return decompressHuffman(infile, new Huffman(m), temp);
+        }
+        last = c;
         s += bitset<8>(c).to_string();
         if(s.size() > 12) {
             temp = s.substr(12, s.size());
             s = s.substr(0, 12);
-            int n = std::bitset<16>(s).to_ulong();
+            int n = std::bitset<512>(s).to_ulong();
             if(n == 0) {
-                return decompressHuffman(infile, new Huffman(m), temp);
+                //infile->putback(c);
+                cout << "temp : " << temp << endl;
             }
             s = temp;
             if(key < 0) key = n;
@@ -109,7 +116,7 @@ vector<int> Decompressor::parseHuffman(ifstream *infile)
 
 vector<int> Decompressor::decompressHuffman(ifstream *infile, Huffman *h, string temp)
 {
-    vector<bool> v;
+    vector<bool> *v = new vector<bool>;
     char c;
 
    /* while(temp.size() > 0) {
@@ -119,14 +126,17 @@ vector<int> Decompressor::decompressHuffman(ifstream *infile, Huffman *h, string
         int n = atoi(s.c_str());
         v.push_back(n);
     }*/
-
+    cout << "data : ";
     while(!infile->eof()) {
         infile->read(&c, 1);
-        bitset<8> bit(c);
-        for (int var = 0; var < bit.count(); ++var) {
-            //cout << bit[var];
-            v.push_back(bit[var]);
+        bitset<8> bit((int) c);
+        cout << "*****" << endl,
+        cout << bit.to_string() << endl;
+        for (int var = bit.size() - 1; var >= 0; --var) {
+            v->push_back(bit[var]);
+            cout << bit[var];
         }
+        cout << endl;
     }
     return h->convertToChars(v);
 }
