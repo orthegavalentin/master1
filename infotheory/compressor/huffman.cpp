@@ -44,40 +44,41 @@ string Huffman::convertToString(vector<int> *v)
         }
         s += std::bitset<12>(e.second).to_string();
     }
-    s += std::bitset<16>(0).to_string();
-
-    cout << "dico : " << s << endl;
-
-    cout << "dico size : " << s.size() << endl;
-    cout << "extra : " << s.size() % 8 << endl;
-
+    s += std::bitset<8>(0).to_string();
+    s += std::bitset<8>(255).to_string();
+    cout << "s : " << std::bitset<8>(255).to_string() << endl;
     cout << "converting to string" << endl;
     for (int var = 0; var < v->size(); ++var) {
         //cout << to_string(v->at(var)) << endl;
-        cout << to_string(v->at(var)) << endl;
         s += charToBits->at(to_string(v->at(var)));
         s1 += charToBits->at(to_string(v->at(var)));
     }
+    int n = s.size() % 8;
+    cout << "[convertToString] extra data : " << n << endl;
+    for (int var = 0; var < n; ++var) {
+        s += "0";
+    }
     cout << "converted" << endl;
-    cout << "data : " << s1 << endl;
+    cout << "[convertToString] data : " << s1 << endl;
     return s;
 }
 
-vector<int> Huffman::convertToChars(vector<bool>* v)
+vector<int>* Huffman::convertToChars(vector<bool>* v)
 {
     cout << "converting to chars " << endl;
     string current = "";
-    vector<int> vec;
+    vector<int>* vec = new vector<int>;
     node* n = parent;
+    cout << "size : " << v->size() << endl;
+    cout << "[convertToChars] : ";
     for (int var = 0; var < v->size(); ++var) {
         cout << v->at(var);
         if(n->left == nullptr) {
             //cout << n->code << endl;
             //cout << "value = " << n->value << " : " << n->code << endl;
-            vec.push_back(n->value);
+            vec->push_back(n->value);
             n = parent;
             current = "";
-
         }
         if(v->at(var) == n->left->valueInt) {
             n = n->left;
@@ -85,9 +86,9 @@ vector<int> Huffman::convertToChars(vector<bool>* v)
             n = n->right;
         }
     }
-
-    for(const auto& e : vec) {
-        cout << e << endl;
+    cout << endl;
+    for(const auto& e : *vec) {
+        cout << "[convertToChars] vec : " << e << endl;
     }
     return vec;
 }
@@ -120,7 +121,7 @@ void Huffman::explore(node *n)
 {
     if(n->left == nullptr) {
         total += n->code.size();
-        cout << "value = " << n->value << " : " << n->code << endl;
+        //cout << "value = " << n->value << " : " << n->code << endl;
         charToBits->insert(std::pair<string, string>(to_string(n->value), n->code));
         bitsToChar->insert(std::pair<string, string>(n->code, to_string(n->value)));
         return;

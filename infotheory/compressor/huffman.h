@@ -34,7 +34,7 @@ public:
     Huffman();
     Huffman(map<long, int> *m);
     string convertToString(vector<int>* v);
-    vector<int> convertToChars(vector<bool> *v);
+    vector<int> *convertToChars(vector<bool> *v);
 
 private:
     vector<node*> s;

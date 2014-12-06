@@ -44,10 +44,10 @@ void Compressor::compress(string in, string out)
             m->insert(std::pair<string, long>(temp, (long)index));
             index++;
             long n = m->at(w);
+            cout << "c : " << n << endl;
             if(huffman) {
                 chars->push_back(n);
                 computeOufman(n);
-                //cout << n << endl;
             } else {
                 result += std::bitset<ENCODING_LENGTH>(n).to_string();
             }
