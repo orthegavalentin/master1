@@ -15,9 +15,8 @@ Huffman::Huffman(map<long, int> *m)
 
     for(const auto& e : *m) {
         total += e.first;
-        //cout << "key : " << e.first << endl;
-        //cout << "value : " << e.second  << endl;
     }
+
     h = new Heap<node*>(m->size() * 2);
     for(const auto& e : *m) {
         f += e.second/total * log2(e.second/total);
@@ -46,10 +45,10 @@ string Huffman::convertToString(vector<int> *v)
     }
     s += std::bitset<8>(0).to_string();
     s += std::bitset<8>(255).to_string();
-    cout << "s : " << std::bitset<8>(255).to_string() << endl;
+    //cout << "[convertToString] dico : " << s << endl;
     cout << "converting to string" << endl;
     for (int var = 0; var < v->size(); ++var) {
-        //cout << to_string(v->at(var)) << endl;
+        //cout << std::bitset<512>(charToBits->at(to_string(v->at(var)))).to_ulong() << endl;
         s += charToBits->at(to_string(v->at(var)));
         s1 += charToBits->at(to_string(v->at(var)));
     }
@@ -59,7 +58,7 @@ string Huffman::convertToString(vector<int> *v)
         s += "0";
     }
     cout << "converted" << endl;
-    cout << "[convertToString] data : " << s1 << endl;
+    //cout << "[convertToString] data : " << s1 << endl;
     return s;
 }
 
@@ -70,12 +69,9 @@ vector<int>* Huffman::convertToChars(vector<bool>* v)
     vector<int>* vec = new vector<int>;
     node* n = parent;
     cout << "size : " << v->size() << endl;
-    cout << "[convertToChars] : ";
+    //cout << "[convertToChars] data : ";
     for (int var = 0; var < v->size(); ++var) {
-        cout << v->at(var);
         if(n->left == nullptr) {
-            //cout << n->code << endl;
-            //cout << "value = " << n->value << " : " << n->code << endl;
             vec->push_back(n->value);
             n = parent;
             current = "";
@@ -87,8 +83,10 @@ vector<int>* Huffman::convertToChars(vector<bool>* v)
         }
     }
     cout << endl;
+    vec->push_back(0);
+    //vec->erase(vec->begin() + vec->size() - 1);
     for(const auto& e : *vec) {
-        cout << "[convertToChars] vec : " << e << endl;
+        //cout << "[convertToChars] vec : " << e << endl;
     }
     return vec;
 }

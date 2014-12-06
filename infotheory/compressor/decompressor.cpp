@@ -12,14 +12,24 @@ void Decompressor::decompress(string in, string out)
     size = Utils::getFileSize(in);
     ofstream myFile;
     myFile.open(out, ios::out | ios::binary);
-    vector<int>* chars = decode(in);
-    w = (char)chars->at(0);
-    size = chars->size();
+    vector<int>* decoded = decode(in);
+    vector<int> chars;
+
+    for(const auto& e : *decoded) {
+        //cout << "chars.push_back(" << e << ");" << endl;
+        int n = e;
+        chars.push_back(n);
+    }
+
+    w = (char)chars.at(0);
+    size = chars.size();
     myFile << w;
     string entry;
     nbBar = 0;
-    for (long var = 1; var < chars->size() - 1; ++var) {
-        //cout << "[decompress] : " << w << endl;
+
+    string s = w;
+    for (long var = 1; var < chars.size() - 1; ++var) {
+        //cout << "[decompress] : " << chars->at(var) << endl;
         float f = (float)var / (float)size;
         if(f * 100 > nbBar) {
             nbBar++;
@@ -30,20 +40,24 @@ void Decompressor::decompress(string in, string out)
             m.clear();
             initDico();
         }
-        k = chars->at(var);
+        k = chars.at(var);
+        //cout << k << endl;
+        //cout << m.size() << endl;
         if(k < m.size()) {
             entry = m.at(k);
+            s += entry;
             myFile << entry;
             m.push_back(w + entry.at(0));
             w = entry;
         } else {
             entry = w + w.at(0);
+            s += entry;
             myFile << entry;
-
             m.push_back(entry);
             w = entry;
         }
     }
+    //cout << s << endl;
     myFile.close();
 }
 
@@ -71,25 +85,29 @@ vector<int>* Decompressor::decompressRegular(ifstream* infile, int ENCODING_LENG
             s = temp;
         }
     }
+
     return chars;
 }
 
-vector<int>* Decompressor::parseHuffman(ifstream *infile)
+vector<int>* Decompressor::parseHuffman(ifstream *infile, int l)
 {
     map<long, int> *m = new map<long, int>;
-    string s = std::bitset<8>(0).to_string();
+    bitset<8> bit(l);
+    bit[7] = 0;
+    string s = bit.to_string();
     char c;
     string temp = "";
     int key = -1;
     int value = -1;
-    infile->read(&c, 1);
-    int last = c;
+    int last = l;
+    cout << "[parseHuffman] dico : ";
     while(!infile->eof()) {
         infile->read(&c, 1);
         if(last == 0 && (int) c == -1) {
             return decompressHuffman(infile, new Huffman(m));
         }
-        s += bitset<8>(last).to_string();
+        s += bitset<8>(c).to_string();
+        //cout << bitset<8>(last).to_string();
         last = c;
         if(s.size() > 12) {
             temp = s.substr(12, s.size());
@@ -131,18 +149,19 @@ vector<int>* Decompressor::decompressHuffman(ifstream *infile, Huffman *h)
 
 vector<int>* Decompressor::decode(string in)
 {
-    ifstream infile;
+    ifstream *infile = new ifstream;
     char c;
-    infile.open(in, ios::binary | ios::in);
-    infile.read(&c, 1);
+    infile->open(in, ios::binary | ios::in);
+    infile->read(&c, 1);
     string s = std::bitset<8>(c).to_string();
     cout << s << endl;
     if(!s.substr(0, 1).compare("0")) {
         cout << "regular compression" << endl;
-        return decompressRegular(&infile, (int) c);
+        return decompressRegular(infile, (int) c);
     } else {
         cout << "huffman compression" << endl;
-        return parseHuffman(&infile);
+        ENCODING_LENGTH = 12;
+        return parseHuffman(infile, (int) c);
     }
 
 }

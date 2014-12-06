@@ -32,7 +32,7 @@ private:
     void writeResult(string out);
     vector<int> *decode(string in);
     vector<int> *decompressRegular(ifstream *infile, int ENCODING_LENGTH);
-    vector<int> *parseHuffman(ifstream *infile);
+    vector<int> *parseHuffman(ifstream *infile, int l);
     vector<int> *decompressHuffman(ifstream* infile, Huffman* h);
     void initDico();
     long size;
