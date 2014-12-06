@@ -45,8 +45,10 @@ private:
     void compute();
     void display();
     void explore(node* n);
+    string intToBitString(int size, int n);
     float total;
     float number;
+    int maxOccurence;
     Heap<node*>* h;
     //map<long, string> *m
 };
