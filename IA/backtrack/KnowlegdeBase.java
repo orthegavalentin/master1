@@ -72,7 +72,13 @@ public class KnowlegdeBase {
 		}
 	}
 	
-	public String buildHomomorphismeString(Rule rule) {
+	public HashSet<HashMap<String, Object>> requete(Rule r) {
+		sature();
+		Solver s = new Solver(Parser.parseStringHomo(buildHomomorphismeString(r)).toCSP());
+		return s.searchAllSolutions();
+	}
+	
+	private String buildHomomorphismeString(Rule rule) {
 		String bfString = "";
 		
 		for (String predicat : bf.keySet()) {

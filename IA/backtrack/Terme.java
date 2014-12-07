@@ -31,4 +31,13 @@ public class Terme {
 		}
 		return false;
 	}
+
+	public void setLabel(String terme) {
+		this.label = terme;
+	}
+
+	public void set(String terme, boolean isConstant) {
+		this.label = terme;
+		this.isConstant = isConstant;
+	}
 }

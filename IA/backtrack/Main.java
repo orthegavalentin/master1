@@ -1,5 +1,4 @@
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
 
@@ -18,6 +17,23 @@ public class Main {
 		
 		KnowlegdeBase k = Parser.parseBc(fileName);
 		k.sature();
+		
+//		ArrayList<Terme> t1 = new ArrayList<Terme>();
+//		t1.add(new Terme(false, "x1"));
+//		t1.add(new Terme(false, "y1"));
+//		t1.add(new Terme(true, "A"));
+//		t1.add(new Terme(false, "x1"));
+//		
+//		ArrayList<Terme> t2 = new ArrayList<Terme>();
+//		t2.add(new Terme(true, "B"));
+//		t2.add(new Terme(false, "x2"));
+//		t2.add(new Terme(false, "x2"));
+//		t2.add(new Terme(false, "y2"));
+//		
+//		Atome a1 = new Atome(t1);
+//		Atome a2 = new Atome(t2);
+//		
+//		System.out.println(a1.unifiable(a2));
 		
 //		Homomorphisme h = Parser.parseHomo(fileName);
 //		CSP csp = h.toCSP();

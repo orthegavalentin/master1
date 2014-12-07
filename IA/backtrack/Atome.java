@@ -11,6 +11,54 @@ public class Atome {
 	public int getArite() {
 		return termes.size();
 	}
+	
+	public boolean unifiable(Atome a) {
+		int size = Math.max(a.getArite(), this.getArite());
+		
+		ArrayList<Terme> a1 = new ArrayList<Terme>();
+		for (Terme terme : this.getTermes()) {
+			a1.add(new Terme(terme.isConstant(), terme.getLabel()));
+		}
+		
+		ArrayList<Terme> a2 = new ArrayList<Terme>();
+		for (Terme terme : a.getTermes()) {
+			a2.add(new Terme(terme.isConstant(), terme.getLabel()));
+		}
+		
+		int j = 0;
+		boolean changed = true;
+		while (j < size) {
+			changed = false;
+			changed = unify(a1, a2, j);
+			boolean temp = unify(a2, a1, j);
+			if(temp || changed) {
+				changed = true;
+				j = 0;
+			}
+			j++;
+		}
+		for (int i = 0; i < size; i++) {
+			if(!a1.get(i).equals(a2.get(i))){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean unify(ArrayList<Terme> a1, ArrayList<Terme> a2, int index) {
+		boolean changed = false;
+		if(a1.get(index).isConstant() && !a2.get(index).isConstant()) {
+			String var = a2.get(index).getLabel();
+			String terme = a1.get(index).getLabel();
+			for (Terme t : a2) {
+				if(t.getLabel().equals(var)) {
+					t.set(terme, true);
+					changed = true;
+				}
+			}
+		}
+		return changed;
+	}
 
 	public boolean canWorkWith(Atome a) {
 		String patternForThis = getSameTermes(this);
