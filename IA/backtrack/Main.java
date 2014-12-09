@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Main {
 
 	public static void main(String[] args) {
-		String fileName = "dep.txt";
+		String fileName = "basedeconnaissance.txt";
 //		try {    
 //			fileName = new java.io.File( "." ).getCanonicalPath()+"/"+fileName;
 //			System.out.println("Chargement du fichier : "+fileName);
@@ -17,6 +17,31 @@ public class Main {
 		
 		KnowlegdeBase k = Parser.parseBc(fileName);
 		k.sature();
+		
+		/**
+		 * Quels sont les animaux cruels ?
+		 */
+		Rule r = new Rule();
+		ArrayList<Terme> t = new ArrayList<Terme>();
+		t.add(new Terme(false, "x"));
+		r.addAtome("cruel", new Atome(t));
+		System.out.println("Quels sont les animaux cruels ? " + k.requete(r));
+		
+
+		/**
+		 * Quels sont les animaux cruels et que mangent-ils ?
+		 */
+		
+		r = new Rule();
+		
+		t = new ArrayList<Terme>();
+		t.add(new Terme(false, "x"));
+		r.addAtome("cruel", new Atome(t));
+		t = new ArrayList<Terme>();
+		t.add(new Terme(false, "x"));
+		t.add(new Terme(false, "y"));
+		r.addAtome("mange", new Atome(t));
+		System.out.println("Quels sont les animaux cruels et que mangent-ils ? " + k.requete(r));
 		
 //		ArrayList<Terme> t1 = new ArrayList<Terme>();
 //		t1.add(new Terme(false, "x1"));

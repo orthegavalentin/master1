@@ -36,8 +36,6 @@ public class Parser {
 		for (int i = 0; i < l.length; i++) {
 			list.add(l[i]);
 		}
-		System.out.println(list.size());
-		
 		Iterator<String> it = list.iterator();
 		String type = it.next();
 		if(type.equals("E"))
@@ -56,7 +54,6 @@ public class Parser {
 		CSP p = new CSP();
 
 		int nbVariables = Integer.parseInt(it.next());
-		System.out.println("nbvar : " + nbVariables);
 		for (int i = 1; i < nbVariables + 1; i++) {
 			String [] variables = it.next().split(";");
 			p.addVariable(variables[0]);
@@ -84,7 +81,6 @@ public class Parser {
 		boolean onlyNumerics = true;
 
 		int nbVariables = Integer.parseInt(it.next());
-		System.out.println("nbvar : " + nbVariables);
 		for (int i = 1; i < nbVariables + 1; i++) {
 			String [] variables = it.next().split(";");
 			p.addVariable(variables[0]);
@@ -271,14 +267,12 @@ public class Parser {
 	}
 	
 	public static Homomorphisme parseStringHomo(String s) {
-		
+		System.out.println("\nhomo string : " + s);
 		String[] l = s.split("\n");
 		ArrayList<String> list = new ArrayList<String>();
 		for (int i = 0; i < l.length; i++) {
 			list.add(l[i]);
 		}
-		System.out.println(list.size());
-		
 		Iterator<String> it = list.iterator();
 		String type = it.next();
 		
@@ -294,6 +288,7 @@ public class Parser {
 	}
 	
 	private static Ensemble createEnsemble(String s) {
+		System.out.println("ensemble : " + s);
 		Ensemble e = new Ensemble();	
 		
 		String[] atomes = s.split(";");
