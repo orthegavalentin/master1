@@ -37,10 +37,8 @@ public class Rule {
 		ArrayList<Terme> a = new ArrayList<Terme>();
 
 		for (Terme terme : conclusion.getTermes()) {
-//			System.out.println("terme : " + terme.export());
 			String label = (String) assignation.get(terme.getLabel());
 			if(label == null) {
-//				System.out.println("trying to find value for : " + terme.getLabel());
 				return null;
 			}
 			Terme t = new Terme(true, label);

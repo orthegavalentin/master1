@@ -54,13 +54,10 @@ public class KnowlegdeBase {
 			for (Rule rule : rules) {
 				Solver s = new Solver(Parser.parseStringHomo(buildHomomorphismeString(rule)).toCSP());
 				HashSet<HashMap<String, Object>> solutions= s.searchAllSolutions();
-//				System.out.println("solutions : " + solutions);
 				for (HashMap<String, Object> hashMap : solutions) {
 					Atome a = rule.assign(hashMap);
 					if(a != null) {
-//						System.out.println("rule : " + rule.getPredicatConclusion());
 						ArrayList<Atome> atomes = bf.get(rule.getPredicatConclusion());
-//						System.out.println("trying to add : " + rule.getPredicatConclusion() + "(" + a.toString() + ")");
 						if(atomes == null) {
 							bf.put(rule.getPredicatConclusion(), new ArrayList<Atome>());
 							atomes = bf.get(rule.getPredicatConclusion());
@@ -73,7 +70,6 @@ public class KnowlegdeBase {
 						}
 						if(!contains) {
 							atomes.add(a);
-//							System.out.println("added");
 							done = false;
 						}
 					}
@@ -92,7 +88,6 @@ public class KnowlegdeBase {
 		String s = "H\n";
 		s += rule.export();
 		s += "\n" + buildBfString();
-//		System.out.println("\nhomo string : " + s);
 		return s;
 	}
 	
