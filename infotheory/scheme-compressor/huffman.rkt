@@ -1,37 +1,53 @@
 #lang racket
+(require "heap.rkt")
 
-(define frequences (make-vector 256 0))
+;(define frequences (make-vector 256 0))
+(define dictionnary '())
+
+(define heap (make-heap 5 (lambda (x y)
+                            (< (cadr x) (cadr y)))))
 
 (define (make-frequences in)
-  (let f ([in in])
+  (let f ([in in] [frequences (make-vector 256 0)])
     (let ((x (read-char in)))
       (if (eof-object? x)
-          (void)
+          frequences
           (let ((n (char->integer x)))
             (vector-set! frequences n (+ (vector-ref frequences n) 1))
-            (f in))))))
+            (f in frequences))))))
 
-(define (sort-frequences)
+(define (sort-frequences frequences)
   (let ([l '()] [i 0])
     (let f ((l l) (i i))
       (if (eq? i (vector-length frequences))
-          (sort l
-                (lambda (x y)
-                  (< (cadr x) (cadr y))))
+          (map (lambda (x)
+                 (make-node (cadr x) (car x) '() '()))
+               (sort l (lambda (x y)
+                         (< (cadr x) (cadr y)))))
           (if (eq? (vector-ref frequences i) 0)
               (f l (+ i 1))
               (f (append l (list (list i (vector-ref frequences i)))) (+ i 1)))))))
 
 (define (make-huffman l)
+  (display l)
   (let f ([l l])
-    (if (eq? (length l) 1)
-        l
-        (f (cons (list (cons 1 (car l)) (cons 0 (cadr l))) (cddr l))))))
+    (if (eq? (length l) 2)
+        (make-node (+ (car (car l)) (car (cadr l))) '() (car l) (cadr l))
+        (begin
+          (f (append (cddr l) (list (make-node (+ (car (car l)) (car (cadr l))) '() (car l) (cadr l)))))))))
 
+(define (make-node freq char left right)
+  (list freq char left right))
 
-
-(make-frequences (open-input-string "sosa"))
-(display frequences)
-(newline)
-(define huffman (make-huffman (sort-frequences)))
-(display huffman)
+(define (make-dictionnary huffman)
+  (let f ((huffman huffman) (s '()))
+    (if (empty? (caddr huffman))
+        (list (list (cadr huffman) s))
+        (begin
+          (append (f (cadddr huffman) (append s '(1))) (f (caddr huffman) (append s '(0))))))))
+          
+(make-dictionnary 
+ (make-huffman 
+  (sort-frequences 
+   (make-frequences 
+    (open-input-string "salut tout le monde")))))
