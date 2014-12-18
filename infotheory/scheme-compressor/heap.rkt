@@ -5,13 +5,13 @@
 (provide first)
 (provide remove-first)
 (provide sort-heap)
+(provide size)
+(provide first-and-remove)
 
 (define (make-heap size proc)
   (list (box 1) proc (make-vector (+ 1 size) 0)))
 
 (define (at heap i)
-  (display (vector-ref (caddr heap) i))
-  (newline)
   (vector-ref (caddr heap) i))
 
 (define (size heap)
@@ -36,6 +36,11 @@
 
 (define (first heap)
   (at heap 1))
+
+(define (first-and-remove heap)
+  (let ((x (first heap)))
+    (remove-first heap)
+    x))
 
 (define (up heap)
   (let ((i (size heap)))
@@ -76,15 +81,12 @@
               (if (compare heap (at heap ss) (at heap i))
                   (begin
                     (switch-with-father heap ss)
-                    (if (< (* 2 ss) (vector-length (caddr heap)))
+                    (if (< (+ 1(* 2 ss)) (vector-length (caddr heap)))
                         (f ss)
                         (void)))
                   (void))))))))
 
 (define (smaller-son heap i)
-  (display "i : ")
-  (display (left-son i))
-  (newline)
   (if (> (right-son i) (size heap))
       (left-son i)
       (void))

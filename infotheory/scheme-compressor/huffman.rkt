@@ -1,12 +1,9 @@
 #lang racket
 (require "heap.rkt")
 
-;(define frequences (make-vector 256 0))
-(define dictionnary '())
-
 (define (make-frequences in)
   (let f ([in in] [frequences (make-vector 256 0)])
-    (let ((x (read-char in)))
+    (let ((x (read-byte in)))
       (if (eof-object? x)
           frequences
           (let ((n (char->integer x)))
@@ -25,13 +22,23 @@
               (f l (+ i 1))
               (f (append l (list (list i (vector-ref frequences i)))) (+ i 1)))))))
 
+(define (make-huffman-heap l)
+  (let ((v (make-heap (length l) (lambda (x y) (< (car x) (car y))))))
+    (let f ((l l))
+      (if (empty? l)
+          v
+          (begin
+            (insert v (car l))
+            (f (cdr l)))))))
+
 (define (make-huffman l)
-  (display l)
-  (let f ([l l])
-    (if (eq? (length l) 2)
-        (make-node (+ (car (car l)) (car (cadr l))) '() (car l) (cadr l))
-        (begin
-          (f (append (cddr l) (list (make-node (+ (car (car l)) (car (cadr l))) '() (car l) (cadr l)))))))))
+  (let ((v (make-huffman-heap l)))
+    (let f ([v v])
+      (if (eq? (size v) 2)
+          (first v)
+          (let ([right (first-and-remove v)] [left (first-and-remove v)])
+            (insert v (make-node (+ (car right) (+ (car left))) '() left right))
+            (f v))))))
 
 (define (make-node freq char left right)
   (list freq char left right))
@@ -42,9 +49,9 @@
         (list (list (cadr huffman) s))
         (begin
           (append (f (cadddr huffman) (append s '(1))) (f (caddr huffman) (append s '(0))))))))
-          
+
 (make-dictionnary 
  (make-huffman 
   (sort-frequences 
    (make-frequences 
-    (open-input-string "salut tout le monde")))))
+    (open-input-file "/home/noe/Téléchargements/1.bin"y)))))
