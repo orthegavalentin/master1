@@ -4,9 +4,6 @@
 ;(define frequences (make-vector 256 0))
 (define dictionnary '())
 
-(define heap (make-heap 5 (lambda (x y)
-                            (< (cadr x) (cadr y)))))
-
 (define (make-frequences in)
   (let f ([in in] [frequences (make-vector 256 0)])
     (let ((x (read-char in)))
