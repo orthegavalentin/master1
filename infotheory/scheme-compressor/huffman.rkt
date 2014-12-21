@@ -6,7 +6,7 @@
     (let ((x (read-byte in)))
       (if (eof-object? x)
           frequences
-          (let ((n (char->integer x)))
+          (let ((n x))
             (vector-set! frequences n (+ (vector-ref frequences n) 1))
             (f in frequences))))))
 
@@ -54,4 +54,4 @@
  (make-huffman 
   (sort-frequences 
    (make-frequences 
-    (open-input-file "/home/noe/Téléchargements/1.bin"y)))))
+    (open-input-file "/home/noe/Téléchargements/ecranoffline.png")))))

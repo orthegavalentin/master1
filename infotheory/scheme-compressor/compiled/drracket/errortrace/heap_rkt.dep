@@ -1,1 +1,1 @@
-("5.3.4" ("6d267d3a789773849ab2cad3e36707ed9f32ba22" . "e1564ae9aab7e4865de5dc3e36c4f31538c28b74") (collects #"racket" #"main.rkt") (collects #"racket" #"lang" #"reader.rkt"))
+("5.3.6" ("6d267d3a789773849ab2cad3e36707ed9f32ba22" . "49520358954d10434b791c373d9b6370cf53da86") (collects #"racket" #"main.rkt") (collects #"racket" #"lang" #"reader.rkt"))
