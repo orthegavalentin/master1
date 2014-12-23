@@ -54,4 +54,4 @@
  (make-huffman 
   (sort-frequences 
    (make-frequences 
-    (open-input-file "/home/noe/Téléchargements/ecranoffline.png")))))
+    (open-input-file "/home/noe/Téléchargements/test.txt")))))
