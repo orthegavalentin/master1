@@ -11,8 +11,7 @@
             (f in frequences))))))
 
 (define (sort-frequences frequences)
-  (let ([l '()] [i 0])
-    (let f ((l l) (i i))
+    (let f ((l '()) (i 0))
       (if (eq? i (vector-length frequences))
           (map (lambda (x)
                  (make-node (cadr x) (car x) '() '()))
@@ -20,7 +19,7 @@
                          (< (cadr x) (cadr y)))))
           (if (eq? (vector-ref frequences i) 0)
               (f l (+ i 1))
-              (f (append l (list (list i (vector-ref frequences i)))) (+ i 1)))))))
+              (f (append l (list (list i (vector-ref frequences i)))) (+ i 1))))))
 
 (define (make-huffman-heap l)
   (let ((v (make-heap (length l) (lambda (x y) (< (car x) (car y))))))
@@ -32,8 +31,7 @@
             (f (cdr l)))))))
 
 (define (make-huffman l)
-  (let ((v (make-huffman-heap l)))
-    (let f ([v v])
+    (let f ([v (make-huffman-heap l)])
       (if (eq? (size v) 2)
           (first v)
           (let ([right (first-and-remove v)] [left (first-and-remove v)])

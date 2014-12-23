@@ -43,15 +43,14 @@
     x))
 
 (define (up heap)
-  (let ((i (size heap)))
-    (let f ((i i))
+    (let f ((i (size heap)))
       (if (eq? i 1)
           (void)
           (begin
             (if (father-greater? heap i)
                 (switch-with-father heap i)
                 (void))
-            (f (father i)))))))
+            (f (father i))))))
 
 (define (father i)
   (floor (/ i 2)))
@@ -72,8 +71,7 @@
 
 
 (define (down heap)
-  (let ((i 1))
-    (let f ([i i])
+    (let f ([i 1])
       (let ((ss (smaller-son heap i)))
         (if (> ss (size heap))
             (void)
@@ -84,7 +82,7 @@
                     (if (< (+ 1(* 2 ss)) (vector-length (caddr heap)))
                         (f ss)
                         (void)))
-                  (void))))))))
+                  (void)))))))
 
 (define (smaller-son heap i)
   (if (> (right-son i) (size heap))
