@@ -36,7 +36,7 @@
           (first v)
           (let ([right (first-and-remove v)] [left (first-and-remove v)])
             (insert v (make-node (+ (car right) (+ (car left))) '() left right))
-            (f v))))))
+            (f v)))))
 
 (define (make-node freq char left right)
   (list freq char left right))
