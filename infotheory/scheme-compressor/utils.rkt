@@ -14,7 +14,7 @@
           (append (div (/ (- n rest) 2)) (list rest))))))
 
 (define (to-integer l)
-    (let f ((n 0) (l l) (result 0))
+    (let f ((n 0) (l (reverse l)) (result 0))
       (if (empty? l)
           result
           (f (+ 1 n) (cdr l) (+ result (* (car l) (expt 2 n)))))))
