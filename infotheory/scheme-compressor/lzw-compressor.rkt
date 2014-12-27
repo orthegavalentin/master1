@@ -18,27 +18,19 @@
                   (f dico result temp index)
                   (begin
                     (hash-set! dico temp index)
-                    (display (list->string (map (lambda (i)
-                                                  (integer->char i))
-                                                temp)))
-                    (newline)
                     (let ([result (write-result
                                    (append result
                                            (binary-with-encoding-length
                                             (to-binary (hash-ref dico w)) encoding-length)) out)]
                           [w (list x)])    
-                      (if (eq? index max-size)
+                      (if (>= index max-size)
                           (f (init-dico) result w 256)
                           (f dico result w (+ 1 index)))))))))))
 
 (define (write-result l out)
-  (display l)
-  (newline)
   (if (> 8 (length l))
       l
       (let ((n (to-integer (take l 8))))
-        (display n)
-        (newline)
         (write-bytes (bytes n) out)
         (write-result (drop l 8) out))))
 

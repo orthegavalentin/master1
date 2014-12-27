@@ -5,42 +5,41 @@
 (define (decompress in out)
   (let ([encoding-length (read-byte in)])
     (let ([data (read-lzw in encoding-length '())])
-      (let f (
-              [dico (init-dico encoding-length)]
-              [data (read-lzw in encoding-length (drop data encoding-length))]
-              [size 256]
+      (let f ([dico (init-dico encoding-length)]
+              [data data]
+              [size 255]
               [w (list (to-integer (take data encoding-length)))])
+        (if (>= size (expt 2 encoding-length))
+            (set! size 255)
+            (void))
         (if (empty? data)
-            (void)
+            (close-output-port out)
             (let ([x (to-integer (take data encoding-length))])
               (if (< x size)
                   (let ([entry (vector-ref dico x)])
-                    (display w)
                     (write-result entry out)
-                    (vector-set! dico size (append w (car w)))
+                    (vector-set! dico size (append w (list (car entry))))
                     (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry))
                   (let ([entry (append w (list (car w)))])
-                    (display w)
                     (write-result entry out)
                     (vector-set! dico size entry)
                     (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry)))))))))
 
 (define (write-result result out)
-  (display result)
   (let f ([result result])
     (if (empty? result)
         (void)
         (begin
-          (write-char (integer->char (car result)))
+          (write-char (integer->char (car result)) out)
           (f (cdr result))))))
 
 (define (read-lzw in encoding-length old)
-  (let f ([x (read-byte in)])
-    (if (eof-object? x)
-        '()
-        (let ([l (append old (to-binary (read-byte in)))])
-          (if (<= encoding-length (length l))
-              l
+  (if (<= encoding-length (length old))
+      old
+      (let f ([x (read-byte in)])
+        (if (eof-object? x)
+            '()
+            (let ([l (append old (binary-with-encoding-length (to-binary x) 8))])
               (read-lzw in encoding-length l))))))
 
 (define (init-dico encoding-length)
