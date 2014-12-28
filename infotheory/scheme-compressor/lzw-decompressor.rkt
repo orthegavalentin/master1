@@ -9,12 +9,9 @@
               [data data]
               [size 255]
               [w (list (to-integer (take data encoding-length)))])
-        (if (>= size (expt 2 encoding-length))
-            (set! size 255)
-            (void))
         (if (empty? data)
             (close-output-port out)
-            (let ([x (to-integer (take data encoding-length))])
+            (let ([x (to-integer (take data encoding-length))] [size (if (>= size (expt 2 encoding-length)) 255 size)])
               (if (< x size)
                   (let ([entry (vector-ref dico x)])
                     (write-result entry out)
