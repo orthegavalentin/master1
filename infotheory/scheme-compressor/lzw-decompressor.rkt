@@ -2,6 +2,8 @@
 
 (require "utils.rkt")
 
+(provide decompress)
+
 (define (decompress in out)
   (let ([encoding-length (read-byte in)])
     (let ([data (read-lzw in encoding-length '())])
@@ -23,12 +25,7 @@
                     (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry)))))))))
 
 (define (write-result result out)
-  (let f ([result result])
-    (if (empty? result)
-        (void)
-        (begin
-          (write-char (integer->char (car result)) out)
-          (f (cdr result))))))
+  (write-bytes (list->bytes result) out))
 
 (define (read-lzw in encoding-length old)
   (if (<= encoding-length (length old))
@@ -44,5 +41,3 @@
     (for ([i (in-range 256)])
       (vector-set! dico i (list i)))
     dico))
-
-(decompress (open-input-file "/home/noe/Téléchargements/out.bin" #:mode 'binary) (open-output-file "/home/noe/Téléchargements/out.txt" #:mode 'binary #:exists 'replace))

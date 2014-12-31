@@ -36,7 +36,7 @@ void Decompressor::decompress(string in, string out)
             Utils::drawProgressBar("decompressing : ", nbBar);
         }
 
-        if(m.size() >= pow(2, ENCODING_LENGTH)) {
+        if(m.size() > pow(2, ENCODING_LENGTH)) {
             m.clear();
             initDico();
         }
@@ -84,8 +84,6 @@ vector<int>* Decompressor::decompressRegular(ifstream* infile, int ENCODING_LENG
             temp = s.substr(ENCODING_LENGTH, s.size() - ENCODING_LENGTH);
             s = s.substr(0, ENCODING_LENGTH);
             chars->push_back(bitset<512>(s).to_ulong());
-            cout << bitset<512>(s).to_ulong() << endl;
-	    cout << s << endl;
             s = temp;
         }
     }
