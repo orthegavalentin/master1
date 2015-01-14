@@ -5,9 +5,9 @@
 
 
 (compress
- (open-input-file "/home/noe/Téléchargements/test.txt" #:mode 'binary)
+ (open-input-file "/home/noe/Téléchargements/ACSI.ods" #:mode 'binary)
  (open-output-file "/home/noe/Téléchargements/out.bin" #:mode 'binary #:exists 'replace))
 
 (decompress 
  (open-input-file "/home/noe/Téléchargements/out.bin" #:mode 'binary)
- (open-output-file "/home/noe/Téléchargements/out.txt" #:mode 'binary #:exists 'replace))
+ (open-output-file "/home/noe/Téléchargements/out.ods" #:mode 'binary #:exists 'replace))

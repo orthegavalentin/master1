@@ -16,6 +16,6 @@
       (vector-set! v i (cadr (vector-ref vec i))))
     (list->string (vector->list v))))
 
-(define (reverse-bwt s) 
+;(define (reverse-bwt s)
 
 (bwt "this is a test.")

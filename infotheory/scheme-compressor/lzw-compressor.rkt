@@ -16,19 +16,19 @@
             (write-result (binary-with-encoding-length
                            (to-binary (hash-ref dico w)) encoding-length) out)
             (close-output-port out))
-            (let ((temp (pair w x)))
-              (if (hash-has-key? dico temp)
-                  (f dico result temp index)
-                  (begin
-                    (hash-set! dico temp index)
-                    (let ([result (write-result
-                                   (append result
-                                           (binary-with-encoding-length
-                                            (to-binary (hash-ref dico w)) encoding-length)) out)]
-                          [w (list x)])    
-                      (if (>= index max-size)
-                          (f (init-dico) result w 256)
-                          (f dico result w (+ 1 index)))))))))))
+          (let ((temp (pair w x)))
+            (if (hash-has-key? dico temp)
+                (f dico result temp index)
+                (begin
+                  (hash-set! dico temp index)
+                  (let ([result (write-result
+                                 (append result
+                                         (binary-with-encoding-length
+                                          (to-binary (hash-ref dico w)) encoding-length)) out)]
+                        [w (list x)])    
+                    (if (>= index max-size)
+                        (f (init-dico) result w 256)
+                        (f dico result w (+ 1 index)))))))))))
 
 (define (write-result l out)
   (if (> 8 (length l))

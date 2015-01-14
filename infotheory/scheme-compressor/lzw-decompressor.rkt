@@ -7,22 +7,24 @@
 (define (decompress in out)
   (let ([encoding-length (read-byte in)])
     (let ([data (read-lzw in encoding-length '())])
-      (let f ([dico (init-dico encoding-length)]
-              [data data]
-              [size 255]
-              [w (list (to-integer (take data encoding-length)))])
-        (if (empty? data)
-            (close-output-port out)
-            (let ([x (to-integer (take data encoding-length))] [size (if (>= size (expt 2 encoding-length)) 255 size)])
-              (if (< x size)
-                  (let ([entry (vector-ref dico x)])
-                    (write-result entry out)
-                    (vector-set! dico size (append w (list (car entry))))
-                    (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry))
-                  (let ([entry (append w (list (car w)))])
-                    (write-result entry out)
-                    (vector-set! dico size entry)
-                    (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry)))))))))
+      (let ([data (read-lzw in encoding-length (drop data encoding-length))] [w (list (to-integer (take data encoding-length)))])
+        (write-result w out)
+        (let f ([dico (init-dico encoding-length)]
+                [data data]
+                [size 256]
+                [w w])
+          (if (empty? data)
+                (close-output-port out)
+              (let ([x (to-integer (take data encoding-length))] [size (if (>= size (expt 2 encoding-length)) 256 size)])
+                (let ((entry '()))
+                  (if (> x 255)
+                      (if (< x size)
+                          (set! entry (vector-ref dico x))
+                          (set! entry (append w (list (car w)))))
+                      (set! entry (list x)))
+                  (write-result entry out)
+                  (vector-set! dico size (append w (list (car entry))))
+                  (f dico (read-lzw in encoding-length (drop data encoding-length)) (+ 1 size) entry)))))))))
 
 (define (write-result result out)
   (write-bytes (list->bytes result) out))
