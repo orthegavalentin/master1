@@ -1,1 +1,1 @@
-("5.3.4" ("4367124fc6acf8778637967eaf7a2c80f68be1ac" . "7637961d41f676c56d986ee024ad2bca39b28b9c") (collects #"racket" #"main.rkt") #"/home/noe/dev/fac/master1/fac/infotheory/scheme-compressor/utils.rkt" (collects #"racket" #"lang" #"reader.rkt"))
+("5.3.6" ("8f2b0235879dbd495b2f92054c4c10c2abd211f7" . "5bfb039f27584b8db866f838a72aca166f5b6a44") (collects #"racket" #"main.rkt") #"/home/noe/dev/fac/master1/fac/infotheory/scheme-compressor/utils.rkt" (collects #"racket" #"lang" #"reader.rkt"))

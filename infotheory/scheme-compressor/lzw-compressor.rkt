@@ -4,7 +4,7 @@
 
 (provide compress)
 
-(define encoding-length 16)
+(define encoding-length 12)
 (define max-size (expt 2 encoding-length))
 
 (define (compress in out)
@@ -13,8 +13,9 @@
     (let ((x (read-byte in)))
       (if (eof-object? x)
           (begin
-            (write-result (binary-with-encoding-length
-                           (to-binary (hash-ref dico w)) encoding-length) out)
+           (write-result (append result
+                                  (binary-with-encoding-length
+                                   (to-binary (hash-ref dico w)) encoding-length)) out)
             (close-output-port out))
           (let ((temp (pair w x)))
             (if (hash-has-key? dico temp)
