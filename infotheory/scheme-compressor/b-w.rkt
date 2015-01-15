@@ -9,13 +9,15 @@
     (last-column (sort-heap heap))))
 
 (define (last-column vec)
-  (displayln vec)
-  (let ([v (make-vector (vector-length vec))])
+  (let ([v (make-vector (vector-length vec))] [indexes (make-vector (vector-length vec))])
+    (displayln vec)
     (for ([i (in-range (vector-length vec))])
       (displayln (vector-ref vec i))
-      (vector-set! v i (cadr (vector-ref vec i))))
+      (let ([c (cdr (vector-ref vec i))])
+        (vector-set! v i (car c))
+        (vector-set! indexes i (cadr c))))
+    (displayln indexes)
     (list->string (vector->list v))))
 
-;(define (reverse-bwt s)
 
-(bwt "this is a test.")
+(bwt "abca")
