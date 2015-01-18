@@ -3,13 +3,13 @@
 (require "utils.rkt")
 
 (define (make-frequences in)
-  (let f ([in in] [frequences (make-vector 256 0)])
+  (let f ([frequences (make-vector 256 0)])
     (let ((x (read-byte in)))
       (if (eof-object? x)
           frequences
           (let ((n x))
             (vector-set! frequences n (+ (vector-ref frequences n) 1))
-            (f in frequences))))))
+            (f frequences))))))
 
 (define (sort-frequences frequences)
   (let f ((l '()) (i 0))
@@ -49,24 +49,21 @@
         (begin
           (append (f (cadddr huffman) (append s '(1))) (f (caddr huffman) (append s '(0))))))))
 
-(define (get-encoding-length dico)
-  (let f ([dico (cdr dico)] [max (length (car (cdar dico)))])
-    (if (empty? dico)
-        max
-        (let ([size (length (car (cdar dico)))])
-          (if (< max size)
-              (f (cdr dico) size)
-              (f (cdr dico) max))))))
+(define (get-encoding-length frequences)
+  (let ([m (vector-ref frequences 0)])
+    (for ([i (in-range 256)])
+      (set! m (max (vector-ref frequences i) m)))
+    (inexact->exact (* 8 (ceiling (/ (/ (log m) (log 2)) 8))))))
 
-(define (export-dico dico max-size out)
-  (write-bytes (bytes max-size) out)
-  (let f ([dico dico] [data '()])
-    (if (empty? dico)
-        (void)
-        (let ([current (car dico)])
-          (let ([new-data (append (to-binary (car current)) (binary-with-encoding-length (cadr current) max-size))])
-            (let ([data (write-result (append data new-data) out)])
-              (f (cdr dico) data)))))))
+(define (export-dico frequences encoding-length out)
+  (write-result (binary-with-encoding-length (to-binary encoding-length) 8) out)
+  (for ([i (in-range 256)])
+    (if (> (vector-ref frequences i) 0)
+           (begin
+             (write-result (binary-with-encoding-length (to-binary i) 8) out)
+             (write-result (binary-with-encoding-length (to-binary (vector-ref frequences i)) encoding-length) out))
+           (void)))
+  (write-result (binary-with-encoding-length (to-binary 0) (+ encoding-length 8)) out))
 
 (define (write-result l out)
   (if (> 8 (length l))
@@ -75,18 +72,36 @@
         (write-bytes (bytes n) out)
         (write-result (drop l 8) out)))) 
 
+(define (read-frequence in encoding-length)
+  (let f ([data (binary-with-encoding-length (to-binary (read-byte in)) 8)])
+    (if (= (length data) encoding-length)
+        (to-integer data)
+        (f (append data (binary-with-encoding-length (to-binary (read-byte in)) 8))))))
+
 (define (parse-dico in)
-  (let ([size (read-byte in)])
-    
+  (let ([in (open-input-file in #:mode 'binary)])
+  (let ([encoding-length (read-byte in)] [frequences (make-vector 256 0)])
+    (let f ()
+          (let ([index (read-byte in)] [freq (read-frequence in encoding-length)])
+            (if (and (= 0 index) (= 0 freq))
+                frequences
+                (begin
+                  (vector-set! frequences index freq)
+                  (f))))))))
 
 (define (compress in out)
-  (let ([dico (make-dictionnary 
-               (make-huffman 
-                (sort-frequences 
-                 (make-frequences (open-input-file in)))))])
-    (pretty-display dico)
+  (let ([frequences (make-frequences (open-input-file in #:mode 'binary))])
+    (let ([dico (make-dictionnary 
+                 (make-huffman 
+                  (sort-frequences 
+                   frequences)))])
+      (pretty-display dico))
+    (newline)
+    (displayln frequences)
     (let ([out (open-output-file out #:mode 'binary #:exists 'replace)])
-      (export-dico dico (get-encoding-length dico) out)
+      (export-dico frequences (get-encoding-length frequences) out)
       (close-output-port out))))
 
 (compress "/home/noe/Téléchargements/test1.txt" "/home/noe/Téléchargements/out.bin")
+(newline)
+(display (parse-dico "/home/noe/Téléchargements/out.bin"))
