@@ -13,9 +13,12 @@
     (let ((x (read-byte in)))
       (if (eof-object? x)
           (begin
-           (write-result (append result
+            (let ([x
+                   (write-result (append result
                                   (binary-with-encoding-length
-                                   (to-binary (hash-ref dico w)) encoding-length)) out)
+                                   (to-binary (hash-ref dico w)) encoding-length)) out)])
+              (write-byte (to-integer (append x (make-list (length x) 0))) out))
+            
             (close-output-port out))
           (let ((temp (pair w x)))
             (if (hash-has-key? dico temp)

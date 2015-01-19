@@ -1,6 +1,12 @@
 #lang racket
+
 (require "heap.rkt")
 (require "utils.rkt")
+
+(provide h-compress)
+(provide h-decompress)
+
+(define moche 0)
 
 (define (make-frequences in)
   (let f ([frequences (make-vector 256 0)])
@@ -99,7 +105,11 @@
       data
       (let ([x (read-byte in)])
         (if (eof-object? x)
-            data
+            (if (eq? moche 1)
+                data
+                (let ([to-skip (to-integer (drop data (- (length data) 8)))])
+                  (set! moche 1)
+                  (take data (- (length data) 8 to-skip))))
             (read-data (append data (binary-with-encoding-length (to-binary x) 8)) in)))))
 
 (define (get-char-from-dico data dico)
@@ -116,10 +126,13 @@
   (let f ([data '()])
     (let ([x (read-byte in)])
       (if (eof-object? x)
-          (void)
+          (let ([data (write-result data out)])
+            (let ([remaining (- 8 (length data))])
+              (write-byte (to-integer (append data (make-list remaining 1))) out)
+              (write-byte remaining out)))
           (f (write-result (append data (vector-ref dico x)) out))))))
 
-(define (compress in in1 out)
+(define (h-compress in in1 out)
   (let ([frequences (make-frequences in)])
     (let ([dico (make-dictionnary 
                  (make-huffman 
@@ -129,7 +142,7 @@
       (encode in1 out (make-vector-dictionnary dico))
       (close-output-port out))))
 
-(define (decompress in out)
+(define (h-decompress in out)
   (let ([huffman (make-huffman
                   (sort-frequences
                    (parse-dico in)))])
@@ -140,10 +153,3 @@
             (begin
               (write-byte (car res) out)
               (f (read-data (cdr res) in))))))))
-
-(compress (open-input-file "/home/noe/Téléchargements/test1.txt" #:mode 'binary)
-          (open-input-file "/home/noe/Téléchargements/test1.txt" #:mode 'binary)
-          (open-output-file "/home/noe/Téléchargements/out1.bin" #:mode 'binary #:exists 'replace))
-
-(decompress (open-input-file "/home/noe/Téléchargements/out1.bin" #:mode 'binary)            
-            (open-output-file "/home/noe/Téléchargements/out.txt" #:mode 'binary #:exists 'replace))
