@@ -36,7 +36,7 @@
     (if (eq? (size v) 2)
         (first v)
         (let ([right (first-and-remove v)] [left (first-and-remove v)])
-          (insert v (make-node (+ (car right) (+ (car left))) '() left right))
+          (insert v (make-node (+ (car right) (car left)) '() left right))
           (f v)))))
 
 (define (make-node freq char left right)
@@ -46,8 +46,14 @@
   (let f ((huffman huffman) (s '()))
     (if (empty? (caddr huffman))
         (list (list (cadr huffman) s))
-        (begin
-          (append (f (cadddr huffman) (append s '(1))) (f (caddr huffman) (append s '(0))))))))
+        (append (f (cadddr huffman) (append s '(0))) (f (caddr huffman) (append s '(1)))))))
+
+(define (make-vector-dictionnary l)
+  (let ([dico (make-vector 256)])
+    (map (lambda (i)
+           (vector-set! dico (car i) (cadr i)))
+         l)
+    dico))
 
 (define (get-encoding-length frequences)
   (let ([m (vector-ref frequences 0)])
@@ -59,10 +65,10 @@
   (write-result (binary-with-encoding-length (to-binary encoding-length) 8) out)
   (for ([i (in-range 256)])
     (if (> (vector-ref frequences i) 0)
-           (begin
-             (write-result (binary-with-encoding-length (to-binary i) 8) out)
-             (write-result (binary-with-encoding-length (to-binary (vector-ref frequences i)) encoding-length) out))
-           (void)))
+        (begin
+          (write-result (binary-with-encoding-length (to-binary i) 8) out)
+          (write-result (binary-with-encoding-length (to-binary (vector-ref frequences i)) encoding-length) out))
+        (void)))
   (write-result (binary-with-encoding-length (to-binary 0) (+ encoding-length 8)) out))
 
 (define (write-result l out)
@@ -79,29 +85,65 @@
         (f (append data (binary-with-encoding-length (to-binary (read-byte in)) 8))))))
 
 (define (parse-dico in)
-  (let ([in (open-input-file in #:mode 'binary)])
   (let ([encoding-length (read-byte in)] [frequences (make-vector 256 0)])
     (let f ()
-          (let ([index (read-byte in)] [freq (read-frequence in encoding-length)])
-            (if (and (= 0 index) (= 0 freq))
-                frequences
-                (begin
-                  (vector-set! frequences index freq)
-                  (f))))))))
+      (let ([index (read-byte in)] [freq (read-frequence in encoding-length)])
+        (if (and (= 0 index) (= 0 freq))
+            frequences
+            (begin
+              (vector-set! frequences index freq)
+              (f)))))))
 
-(define (compress in out)
-  (let ([frequences (make-frequences (open-input-file in #:mode 'binary))])
+(define (read-data data in)
+  (if (> (length data) 32)
+      data
+      (let ([x (read-byte in)])
+        (if (eof-object? x)
+            data
+            (read-data (append data (binary-with-encoding-length (to-binary x) 8)) in)))))
+
+(define (get-char-from-dico data dico)
+  (if (empty? (caddr dico))
+      (cons (cadr dico) data)
+      (if (empty? data)
+          '()
+          (get-char-from-dico (cdr data)
+                              (if (eq? (car data) 1)
+                                  (caddr dico)
+                                  (cadddr dico))))))
+
+(define (encode in out dico)
+  (let f ([data '()])
+    (let ([x (read-byte in)])
+      (if (eof-object? x)
+          (void)
+          (f (write-result (append data (vector-ref dico x)) out))))))
+
+(define (compress in in1 out)
+  (let ([frequences (make-frequences in)])
     (let ([dico (make-dictionnary 
                  (make-huffman 
                   (sort-frequences 
                    frequences)))])
-      (pretty-display dico))
-    (newline)
-    (displayln frequences)
-    (let ([out (open-output-file out #:mode 'binary #:exists 'replace)])
       (export-dico frequences (get-encoding-length frequences) out)
+      (encode in1 out (make-vector-dictionnary dico))
       (close-output-port out))))
 
-(compress "/home/noe/Téléchargements/test1.txt" "/home/noe/Téléchargements/out.bin")
-(newline)
-(display (parse-dico "/home/noe/Téléchargements/out.bin"))
+(define (decompress in out)
+  (let ([huffman (make-huffman
+                  (sort-frequences
+                   (parse-dico in)))])
+    (let f ([data (read-data '() in)])
+      (let ([res (get-char-from-dico data huffman)])
+        (if (empty? res)
+            (close-output-port out)
+            (begin
+              (write-byte (car res) out)
+              (f (read-data (cdr res) in))))))))
+
+(compress (open-input-file "/home/noe/Téléchargements/test1.txt" #:mode 'binary)
+          (open-input-file "/home/noe/Téléchargements/test1.txt" #:mode 'binary)
+          (open-output-file "/home/noe/Téléchargements/out1.bin" #:mode 'binary #:exists 'replace))
+
+(decompress (open-input-file "/home/noe/Téléchargements/out1.bin" #:mode 'binary)            
+            (open-output-file "/home/noe/Téléchargements/out.txt" #:mode 'binary #:exists 'replace))

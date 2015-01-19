@@ -33,7 +33,7 @@ private:
     long charCpt, size;
     int nbBar;
 
-    bool huffman = false;
+    bool huffman = true;
 
     void initDico();
     string pair(string x, char y);
