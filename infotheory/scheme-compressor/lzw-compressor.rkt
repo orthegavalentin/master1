@@ -17,7 +17,7 @@
                    (write-result (append result
                                   (binary-with-encoding-length
                                    (to-binary (hash-ref dico w)) encoding-length)) out)])
-              (write-byte (to-integer (append x (make-list (length x) 0))) out))
+              (write-byte (to-integer (append x (make-list (- 8 (length x)) 0))) out))
             
             (close-output-port out))
           (let ((temp (pair w x)))

@@ -22,6 +22,22 @@
    (open-output-file output #:mode 'binary #:exists 'replace))
   (delete-file "temp.bin"))
 
-(compress-file "/home/noe/Téléchargements/sublime-text_build-3065_amd64.deb" "/home/noe/Téléchargements/out.bin")
-(display "compressed")
-(decompress-file "/home/noe/Téléchargements/out.bin" "/home/noe/Téléchargements/out.txt")
+(define (display-help)
+  (displayln "rouleau -c[ompress] input_file output_file")
+  (displayln "rouleau -d[ecompress] input_file output_file"))
+
+(define (main)
+  (let ([args (current-command-line-arguments)])
+    (cond
+      [(< (vector-length args) 3) (display-help)]
+      [(or
+        (equal? (vector-ref args 0) "-c")
+        (equal? (vector-ref args 0) "-compress"))
+       (compress-file (vector-ref args 1) (vector-ref args 2))]
+      [(or
+        (equal? (vector-ref args 0) "-d")
+        (equal? (vector-ref args 0) "-decompress"))
+       (decompress-file (vector-ref args 1) (vector-ref args 2))]
+      [else (display-help)])))
+
+(main)

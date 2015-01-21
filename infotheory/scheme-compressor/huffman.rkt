@@ -6,8 +6,6 @@
 (provide h-compress)
 (provide h-decompress)
 
-(define moche 0)
-
 (define (make-frequences in)
   (let f ([frequences (make-vector 256 0)])
     (let ((x (read-byte in)))
@@ -103,14 +101,14 @@
 (define (read-data data in)
   (if (> (length data) 32)
       data
-      (let ([x (read-byte in)])
-        (if (eof-object? x)
-            (if (eq? moche 1)
-                data
+      (if (port-closed? in)
+          data
+          (let ([x (read-byte in)])
+            (if (eof-object? x)
                 (let ([to-skip (to-integer (drop data (- (length data) 8)))])
-                  (set! moche 1)
-                  (take data (- (length data) 8 to-skip))))
-            (read-data (append data (binary-with-encoding-length (to-binary x) 8)) in)))))
+                  (close-input-port in)
+                  (take data (- (length data) 8 to-skip)))
+                (read-data (append data (binary-with-encoding-length (to-binary x) 8)) in))))))
 
 (define (get-char-from-dico data dico)
   (if (empty? (caddr dico))
