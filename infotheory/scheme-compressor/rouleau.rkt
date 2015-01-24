@@ -40,4 +40,7 @@
        (decompress-file (vector-ref args 1) (vector-ref args 2))]
       [else (display-help)])))
 
-(main)
+;(main)
+
+(compress-file "/home/noe/Téléchargements/test.txt" "/home/noe/Téléchargements/out.bin")
+(decompress-file "/home/noe/Téléchargements/out.bin" "/home/noe/Téléchargements/out.txt")

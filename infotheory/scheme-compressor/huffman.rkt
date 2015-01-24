@@ -68,11 +68,9 @@
 (define (export-dico frequences encoding-length out)
   (write-result (binary-with-encoding-length (to-binary encoding-length) 8) out)
   (for ([i (in-range 256)])
-    (if (> (vector-ref frequences i) 0)
-        (begin
+    (when (> (vector-ref frequences i) 0)
           (write-result (binary-with-encoding-length (to-binary i) 8) out)
-          (write-result (binary-with-encoding-length (to-binary (vector-ref frequences i)) encoding-length) out))
-        (void)))
+          (write-result (binary-with-encoding-length (to-binary (vector-ref frequences i)) encoding-length) out)))
   (write-result (binary-with-encoding-length (to-binary 0) (+ encoding-length 8)) out))
 
 (define (write-result l out)
