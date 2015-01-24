@@ -2,22 +2,20 @@
 
 (require "heap.rkt")
 
+
+
 (define (bwt s)
-  (let ([heap (make-heap (string-length s) (lambda (x y) (char<? (car x) (car y))))] [size (string-length s)])
+  (letrec ([size (string-length s)] [heap (make-heap size (lambda (x y) (string<? (car x) (car y))))])
     (for ([i (in-range size)])
-      (insert heap (list (string-ref s i) (string-ref s (modulo (- (+ i size) 1) size)) i)))
+      (insert heap (list (string-join (list (substring s i (string-length s)) (substring s 0 i)) "") i)))
     (last-column (sort-heap heap))))
 
 (define (last-column vec)
-  (let ([v (make-vector (vector-length vec))] [indexes (make-vector (vector-length vec))])
-    ; (displayln vec)
-    (for ([i (in-range (vector-length vec))])
-      ;(displayln (vector-ref vec i))
-      (let ([c (cdr (vector-ref vec i))])
-        (vector-set! v i (car c))
-        (vector-set! indexes i (cadr c))))
-    ;(displayln indexes)
-    (list->string (vector->list v))))
+  (list->bytes (vector->list (vector-map (lambda (i)
+                (when (eq? (cadr i) 0)
+                  (display (vector-member i vec)))
+                (char->integer (string-ref (car i) (- (string-length (car i)) 1)))) vec))))
+  
 
 (define (make-precedings s)
   (let ([v (make-vector 256 0)])
@@ -43,8 +41,8 @@
             (insert heap (car s))
             (f (cdr s)))))))
 
-(define (reverse-bwt s)
-  (let ([prec (make-precedings s)] [lt (make-less-than s)] [first 14])
+(define (reverse-bwt s first)
+  (let ([prec (make-precedings s)] [lt (make-less-than s)])
     (let f ([reversed '()] [last first])
       (if (eq? (length s) (length reversed))
           (list->bytes reversed)
@@ -55,4 +53,4 @@
             (f (append (list (car x)) reversed) current))))))
 
 (bwt "this is a test.")
-(reverse-bwt (bytes->list(string->bytes/utf-8 "ssat tt hiies .")))
+(reverse-bwt (bytes->list(string->bytes/utf-8 "ssat tt hiies .")) 14)
