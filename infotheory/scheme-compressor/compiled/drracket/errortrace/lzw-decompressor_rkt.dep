@@ -1,1 +1,0 @@
-("5.3.6" ("8f2b0235879dbd495b2f92054c4c10c2abd211f7" . "5bfb039f27584b8db866f838a72aca166f5b6a44") (collects #"racket" #"main.rkt") #"/home/noe/dev/fac/master1/fac/infotheory/scheme-compressor/utils.rkt" (collects #"racket" #"lang" #"reader.rkt"))

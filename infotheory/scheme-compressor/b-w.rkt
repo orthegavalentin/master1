@@ -1,6 +1,11 @@
 #lang racket
 
 (require "heap.rkt")
+(require "utils.rkt")
+
+(provide c-bwt)
+(provide d-bwt)
+(provide get-index)
 
 (define (bwt s)
   (letrec ([size (string-length s)] [heap (make-heap size (lambda (x y) (string<? (car x) (car y))))])
@@ -42,7 +47,6 @@
             (f (cdr s)))))))
 
 (define (reverse-bwt s first)
-  (let ([s (bytes->list(string->bytes/utf-8 s))])
   (let ([prec (make-precedings s)] [lt (make-less-than s)])
     (let f ([reversed '()] [last first])
       (if (eq? (length s) (length reversed))
@@ -51,7 +55,35 @@
                    [current (+ (cadr x) (vector-ref lt (car x)))])
             (let ([last-char (vector-ref prec last)])
               (vector-set! prec last (list (car last-char) (- (cadr last-char) 1))))
-            (f (append (list (car x)) reversed) current)))))))
+            (f (append (list (car x)) reversed) current))))))
 
-(bwt "bananaaa")
-(reverse-bwt "ssat tt hiies ." 14)
+(define (write-result l out)
+  (if (> 8 (length l))
+      l
+      (let ((n (to-integer (take l 8))))
+        (write-bytes (bytes n) out)
+        (write-result (drop l 8) out)))) 
+
+(define (read-file in)
+    (let f ([data ""])
+      (let ([s (read-string 100 in)])
+        (if (eof-object? s)
+            data
+            (f (string-join (list data s) ""))))))
+
+(define (get-index in)
+  (let ([size (read-byte in)])
+    (let f ([data '()])
+      (if (eq? (length data) size)
+          (to-integer data)
+          (f (append data (binary-with-encoding-length (to-binary (read-byte in)) 8)))))))
+
+(define (c-bwt in out)
+  (letrec ([x (bwt (read-file in))] [index (cadr x)] [size (inexact->exact (* 8 (ceiling (/ (integer-length index) 8))))])
+    (write-byte size out)
+    (write-result (binary-with-encoding-length (to-binary index) size) out)
+    (car x)))
+
+(define (d-bwt out s index)
+  (write-bytes (reverse-bwt s index) out)
+  (close-output-port out))
