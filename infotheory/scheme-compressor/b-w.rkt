@@ -8,19 +8,26 @@
 (provide get-index)
 
 (define (bwt s)
-  (letrec ([size (string-length s)] [heap (make-heap size (lambda (x y) (string<? (car x) (car y))))])
+  (letrec ([size (length s)] [v (make-vector size)])
     (for ([i (in-range size)])
-      (insert heap (list (string-join (list (substring s i (string-length s)) (substring s 0 i)) "") i)))
-    (last-column (sort-heap heap))))
+      (vector-set! v i i))
+    (last-column (sort (vector->list v) (lambda (x y) (compare x y s size))) s size)))
 
-(define (last-column vec)
+(define (compare x y l size)
+  (let f ([x x] [y y])
+    (if (eq? (* 2 size) x)
+        #f
+        (let ([x-byte (list-ref l (modulo x size))] [y-byte (list-ref l (modulo y size))])
+          (if (eq? x-byte y-byte)
+              (f (+ 1 x) (+ 1 y))
+              (< x-byte y-byte))))))
+
+(define (last-column l s size)
   (let ([index 0])
-    (list (vector->list
-      (vector-map (lambda (i)
-                    (when (eq? (cadr i) 0)
-                      (set! index (vector-member i vec)))
-                    (char->integer (string-ref (car i) (- (string-length (car i)) 1)))) vec)) index)))
-
+    (list (map (lambda (i)
+                 (when (eq? i 0)
+                   (set! index (- size (length (member i l)))))
+                 (list-ref s (modulo (- (+ i size) 1) size))) l) index)))
 
 (define (make-precedings s)
   (let ([v (make-vector 256 0)])
@@ -65,11 +72,7 @@
         (write-result (drop l 8) out)))) 
 
 (define (read-file in)
-    (let f ([data ""])
-      (let ([s (read-string 100 in)])
-        (if (eof-object? s)
-            data
-            (f (string-join (list data s) ""))))))
+  (bytes->list (port->bytes in)))
 
 (define (get-index in)
   (let ([size (read-byte in)])
@@ -79,7 +82,7 @@
           (f (append data (binary-with-encoding-length (to-binary (read-byte in)) 8)))))))
 
 (define (c-bwt in out)
-  (letrec ([x (bwt (read-file in))] [index (cadr x)] [size (inexact->exact (* 8 (ceiling (/ (integer-length index) 8))))])
+  (letrec ([x (bwt (read-file in))] [index (cadr x)] [size (if (= 0 index) 8 (inexact->exact (* 8 (ceiling (/ (integer-length index) 8)))))])
     (write-byte size out)
     (write-result (binary-with-encoding-length (to-binary index) size) out)
     (car x)))
@@ -87,3 +90,5 @@
 (define (d-bwt out s index)
   (write-bytes (reverse-bwt s index) out)
   (close-output-port out))
+
+(c-bwt (open-input-file "/home/noe/Téléchargements/test.txt" #:mode 'binary) (current-output-port))

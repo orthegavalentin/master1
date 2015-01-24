@@ -22,11 +22,7 @@
         (f (+ 1 i) (append l (list i))))))
 
 (define (read-file in)
-    (let f ([data '()])
-      (let ([s (read-byte in)])
-        (if (eof-object? s)
-            data
-            (f (append data (list s)))))))
+  (bytes->list (port->bytes in)))
 
 (define (c-mtf l out)
   (write-bytes (list->bytes (move-to-front l)) out)

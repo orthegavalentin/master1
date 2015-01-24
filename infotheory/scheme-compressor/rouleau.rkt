@@ -60,4 +60,8 @@
        (decompress-bwt (vector-ref args 1) (vector-ref args 2))]
       [else (display-help)])))
 
-(main)
+;(main)
+
+(compress-bwt "/home/noe/Téléchargements/test.txt" "/home/noe/Téléchargements/out.bin")
+(display "compressed")
+(decompress-bwt "/home/noe/Téléchargements/out.bin" "/home/noe/Téléchargements/out.txt")
