@@ -21,8 +21,6 @@
   (letrec ([in (open-input-file input #:mode 'binary)]
            [bwt (read-byte in)]
            [out-lzw (if (= bwt 0) output "temp1.bin")])
-    (display "bwt : ")
-    (displayln bwt)
     (h-decompress in (open-output-file "temp.bin" #:mode 'binary #:exists 'replace))
     (decompress 
      (open-input-file "temp.bin" #:mode 'binary)
