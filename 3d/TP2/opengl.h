@@ -48,6 +48,32 @@ long facto(long n) {
 }
 
 Point **BezierCurveByBernstein(Point **t, long nbPts, long nbU) {
+	Point **pts = new Point*[nbU + 1];
+
+	for (int j = 0; j < nbU; ++j)
+	{
+		float u = 1 / (float) nbU * (float) j;
+
+		float x = 0, y = 0, z = 0;
+
+		for (int i = 0; i < nbPts; ++i)
+		{
+			float b = (facto(nbPts - 1) / (facto(i) * facto(nbPts - i - 1))) * pow(u, i) * pow((1 - u), nbPts - i - 1);
+			x += b * t[i]->getX();
+			y += b * t[i]->getY();
+			z += b * t[i]->getZ();
+		}
+
+
+		pts[j] = new Point(x, y, z);
+	}
+
+	pts[nbU] = new Point(t[nbPts - 1]->getX(), t[nbPts - 1]->getY(), t[nbPts - 1]->getZ());
+
+	return pts;
+}
+
+Point **BezierCurveByCasteljau(Point **t, long nbPts, long nbU) {
 	Point **pts = new Point*[nbU];
 
 	for (int j = 0; j < nbU; ++j)

@@ -176,7 +176,7 @@ void render_scene()
 	pts3[3] = new Point(2,2,0);
 
 	Point** pts2 = BezierCurveByBernstein(pts3, nbr, 10);
-	DrawCurve(pts2, 10);
+	DrawCurve(pts2, 11);
 	glColor3f(1.0, 0, 0);
 	DrawCurve(pts3, nbr);
 
