@@ -9,8 +9,9 @@ int main() {
 
     std::cout << c->projectOnLine(a, b) << std::endl;
 
-    Vector *v = new Vector(5, -2, 0);
-    Vector *v2 = new Vector(7, -6, 0);
+    Point *a1 = new Point(0, 0, 0);
+    Vector *n = new Vector(0, 0, 1);
+    Point *m = new Point(1, 1, 1);
 
-    std::cout << v->scalar(v2) << std::endl;
+    std::cout << m->projectOnPlan(a1, n) << std::endl;
 }

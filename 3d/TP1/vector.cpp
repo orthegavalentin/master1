@@ -9,7 +9,7 @@ Vector::Vector(double x, double y, double z) : Coord(x, y, z)
 
 }
 
-Vector::Vector(Coord *p1, Coord *p2) : Coord(p2->getX() - p1->getX(), p2->getY() - p1->getY(), p2->getZ() - p1->getZ())
+Vector::Vector(Coord *p2, Coord *p1) : Coord(p2->getX() - p1->getX(), p2->getY() - p1->getY(), p2->getZ() - p1->getZ())
 {
 
 }
@@ -29,7 +29,7 @@ void Vector::normalize()
 
 double Vector::scalar(Vector *vector2)
 {
-    return this->getX() * vector2->getX() + this->getY() * vector2->getY() + this->getZ() + vector2->getZ();
+    return this->getX() * vector2->getX() + this->getY() * vector2->getY() + this->getZ() * vector2->getZ();
 }
 
 Vector *Vector::vectoriel(Vector* vector2)
