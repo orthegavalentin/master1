@@ -2,40 +2,20 @@
 
 #include "../lib_c/image_ppm.h"
 #include "math.h"
-#include "utils.h"
-
-void eroder(OCTET *in, OCTET *out, int lignes, int colonnes) {
-
-	int i, j;
-
-	for (i=0; i < lignes; i++) {
-		for (j=0; j < colonnes; j++) {
-			
-			int index = i*colonnes+j;
-
-			if(in[index] == 255) {
-				out[indexN(index, colonnes)] = in[index];
-				out[indexS(index, lignes, colonnes)] = in[index];
-				out[indexE(index, lignes, colonnes)] = in[index];
-				out[indexW(index)] = in[index];
-			}
-		}
-	}
-}
 
 int main(int argc, char* argv[])
 {
 	char cNomImgLue[250];
 	char out[250] = "out.pgm";
-
+       
 	int lignes, colonnes, nTaille, S;
 
 	if (argc == 1) {
-		sscanf (out, "%s", cNomImgLue);
+	  sscanf (out, "%s", cNomImgLue);
 	} else if (argc == 2) {
-		sscanf (argv[1],"%s",cNomImgLue);
+	  sscanf (argv[1],"%s",cNomImgLue);
 	} else {
-		printf("to many arguments");
+	  printf("to many arguments");
 	}
 
 
