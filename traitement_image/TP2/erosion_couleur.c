@@ -1,8 +1,8 @@
 #include <stdio.h>
 
+#include "utils.h"
 #include "../lib_c/image_ppm.h"
 #include "math.h"
-#include "utils.h"
 
 #define seuil 90
 
@@ -10,26 +10,22 @@ void eroder(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i, j;
 
-	for (i=0; i < lignes; i++) {
-		for (j=0; j < colonnes; j++) {
-			
-			int index = i*colonnes+j;
-
-			if(in[index] > seuil) {
-				out[indexN(index, colonnes)] = 255;
-				out[indexS(index, lignes, colonnes)] = 255;
-				out[indexE(index, lignes, colonnes)] = 255;
-				out[indexW(index)] = 255;
-			}
+	for (i=0; i < lignes * colonnes * 3; i++) {
+		if(in[i] > seuil) {
+			out[coul_indexN(i, colonnes)] = 255;
+			out[coul_indexS(i, lignes, colonnes)] = 255;
+			out[coul_indexE(i, lignes, colonnes)] = 255;
+			out[coul_indexW(i)] = 255;
 		}
 	}
 }
 
+
 int main(int argc, char* argv[])
 {
 	char cNomImgLue[250];
-	char out[250] = "out.pgm";
-
+	char out[250] = "out.ppm";
+	
 	int lignes, colonnes, nTaille, S;
 
 	if (argc == 1) {
@@ -43,16 +39,16 @@ int main(int argc, char* argv[])
 
 	OCTET *ImgIn, *ImgOut, *ImgOut1;
 
-	lire_nb_lignes_colonnes_image_pgm(cNomImgLue, &lignes, &colonnes);
-	nTaille = lignes * colonnes;
+	lire_nb_lignes_colonnes_image_ppm(cNomImgLue, &lignes, &colonnes);
+	nTaille = lignes * colonnes * 3;
 
 	allocation_tableau(ImgIn, OCTET, nTaille);
-	lire_image_pgm(cNomImgLue, ImgIn, lignes * colonnes);
+	lire_image_ppm(cNomImgLue, ImgIn, lignes * colonnes);
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
 	eroder(ImgIn, ImgOut, lignes, colonnes);
 
-	ecrire_image_pgm(out, ImgOut,  lignes, colonnes);
+	ecrire_image_ppm(out, ImgOut,  lignes, colonnes);
 	free(ImgIn);
 
 	return 1;
