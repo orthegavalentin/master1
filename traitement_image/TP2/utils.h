@@ -63,3 +63,21 @@ int coul_indexW(int index) {
 	}
 	return n;
 }
+
+int between (int value, int cmp1, int cmp2) {
+	return value > cmp1 && value < cmp2;
+}
+
+int min(int a, int b) {
+	if(a < b) {
+		return a;
+	}
+	return b;
+}
+
+int max(int a, int b) {
+	if(a > b) {
+		return a;
+	}
+	return b;
+}

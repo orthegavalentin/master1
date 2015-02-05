@@ -4,22 +4,26 @@
 #include "../lib_c/image_ppm.h"
 #include "math.h"
 
-#define seuil 90
-
 void dilater(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i, j;
-	
-	for (i=0; i < lignes * colonnes * 3; i++) {
-		out[i] = 255;
-	}
 
 	for (i=0; i < lignes * colonnes * 3; i++) {
-		if(in[i] < seuil) {
-			out[coul_indexN(i, colonnes)] = 0;
-			out[coul_indexS(i, lignes, colonnes)] = 0;
-			out[coul_indexE(i, lignes, colonnes)] = 0;
-			out[coul_indexW(i)] = 0;
+		for (j = 0; j < 3; ++j)
+		{
+			int index = i + j;
+
+			int val = in[index];
+			int n = in[coul_indexN(index, colonnes)];
+			int s = in[coul_indexS(index, lignes, colonnes)];
+			int e = in[coul_indexE(index, lignes, colonnes)];
+			int w = in[coul_indexW(index)];
+
+			int m = min(n, s);
+			m = min(m, e);
+			m = min(m, w);
+
+			out[index] = m;		
 		}
 	}
 }

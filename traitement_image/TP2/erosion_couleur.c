@@ -4,18 +4,26 @@
 #include "../lib_c/image_ppm.h"
 #include "math.h"
 
-#define seuil 90
-
 void eroder(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i, j;
 
 	for (i=0; i < lignes * colonnes * 3; i++) {
-		if(in[i] > seuil) {
-			out[coul_indexN(i, colonnes)] = 255;
-			out[coul_indexS(i, lignes, colonnes)] = 255;
-			out[coul_indexE(i, lignes, colonnes)] = 255;
-			out[coul_indexW(i)] = 255;
+		for (j = 0; j < 3; ++j)
+		{
+			int index = i + j;
+
+			int val = in[index];
+			int n = in[coul_indexN(index, colonnes)];
+			int s = in[coul_indexS(index, lignes, colonnes)];
+			int e = in[coul_indexE(index, lignes, colonnes)];
+			int w = in[coul_indexW(index)];
+
+			int m = max(n, s);
+			m = max(m, e);
+			m = max(m, w);
+
+			out[index] = m;		
 		}
 	}
 }

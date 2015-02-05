@@ -4,24 +4,24 @@
 #include "math.h"
 #include "utils.h"
 
-#define seuil 90
+#define seuil 200
 
 void eroder(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
-	int i, j;
+	int index;
 
-	for (i=0; i < lignes; i++) {
-		for (j=0; j < colonnes; j++) {
-			
-			int index = i*colonnes+j;
+	for (index=0; index < lignes * colonnes; index++) {
+		int val = in[index];
+		int n = in[indexN(index, colonnes)];
+		int s = in[indexS(index, lignes, colonnes)];
+		int e = in[indexE(index, lignes, colonnes)];
+		int w = in[indexW(index)];
 
-			if(in[index] > seuil) {
-				out[indexN(index, colonnes)] = 255;
-				out[indexS(index, lignes, colonnes)] = 255;
-				out[indexE(index, lignes, colonnes)] = 255;
-				out[indexW(index)] = 255;
-			}
-		}
+		int m = max(n, s);
+		m = max(m, e);
+		m = max(m, w);
+
+		out[index] = m;				
 	}
 }
 

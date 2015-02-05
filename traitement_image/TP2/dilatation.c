@@ -8,26 +8,20 @@
 
 void dilater(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
-	int i, j;
-	
-	for (i=0; i < lignes; i++) {
-		for (j=0; j < colonnes; j++) {
-			out[i*colonnes+j] = 255;
-		}
-	}
+	int index;
 
-	for (i=0; i < lignes; i++) {
-		for (j=0; j < colonnes; j++) {
-			
-			int index = i*colonnes+j;
+	for (index=0; index < lignes * colonnes; index++) {
+		int val = in[index];
+		int n = in[indexN(index, colonnes)];
+		int s = in[indexS(index, lignes, colonnes)];
+		int e = in[indexE(index, lignes, colonnes)];
+		int w = in[indexW(index)];
 
-			if(in[index] < seuil) {
-				out[indexN(index, colonnes)] = 0;
-				out[indexS(index, lignes, colonnes)] = 0;
-				out[indexE(index, lignes, colonnes)] = 0;
-				out[indexW(index)] = 0;
-			}
-		}
+		int m = min(n, s);
+		m = min(m, e);
+		m = min(m, w);
+
+		out[index] = m;				
 	}
 }
 
