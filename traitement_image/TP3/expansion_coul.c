@@ -35,8 +35,8 @@ void expansion(OCTET *in, OCTET *out, int lignes, int colonnes) {
 	printf("gmin : %d\ngmax : %d\n", ag, bg);
 	printf("bmin : %d\nbmax : %d\n", ab, bb);*/
 
-	for (i=0; i < 255; i++) {
-		printf("%d %d %d %d\n", i, histor[i], histob[i], histog[i]);
+	for (i=0; i < 256; i++) {
+		printf("%d %d %d %d\n", i, histor[i], histog[i], histob[i]);
 	}
 
 	for (i=0; i < lignes * colonnes * 3; i += 3) {

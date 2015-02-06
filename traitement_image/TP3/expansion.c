@@ -21,7 +21,7 @@ void expansion(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	float delta = 255.0 / (b - a);
 
-	for (i = 0; i < 255; ++i)
+	for (i = 0; i < 256; ++i)
 	{
 		printf("%d %d\n", i, histo[i]);
 	}
