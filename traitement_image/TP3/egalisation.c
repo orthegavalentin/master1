@@ -47,8 +47,7 @@ void egalisation(OCTET *in, OCTET *out, int lignes, int colonnes) {
 	int* proba = densiteProba(in, lignes, colonnes);
 
 	for (i=0; i < lignes * colonnes; i++) {
-		float p = ((float) proba[in[i]] / (float) (lignes * colonnes));
-		out[i] = (int) in[i] * p;
+		out[i] = (float) (proba[in[i]] * 255) / (float) (lignes * colonnes)
 	}
 }
 
