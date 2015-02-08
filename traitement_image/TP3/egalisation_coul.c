@@ -22,10 +22,10 @@ void histo(OCTET *in, int lignes, int colonnes) {
 	}
 }
 
-int* densiteProba(OCTET *in, int lignes, int colonnes, int couleur) {
+float* densiteProba(OCTET *in, int lignes, int colonnes, int couleur) {
 	int i;
 
-	int *proba = malloc(256 * sizeof(int));
+	float *proba = malloc(256 * sizeof(int));
 	int histo[256] = {0};
 
 	bzero(proba, 256);
@@ -34,10 +34,10 @@ int* densiteProba(OCTET *in, int lignes, int colonnes, int couleur) {
 		histo[in[i + couleur]]++;	
 	}
 
-	proba[0] = histo[0];
+	proba[0] = (float) histo[0] / (float) (lignes * colonnes);
 
 	for (i=1; i < 256; i++) {
-		proba[i] = proba[i - 1] + histo[i];
+		proba[i] = proba[i - 1] + (float) histo[i] / (float) (lignes * colonnes);
 	}
 
 	return proba;
@@ -47,19 +47,14 @@ void egalisation(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i;
 
-	int* probar = densiteProba(in, lignes, colonnes, 0);
-	int* probag = densiteProba(in, lignes, colonnes, 1);
-	int* probab = densiteProba(in, lignes, colonnes, 2);
+	float* probar = densiteProba(in, lignes, colonnes, 0);
+	float* probag = densiteProba(in, lignes, colonnes, 1);
+	float* probab = densiteProba(in, lignes, colonnes, 2);
 
 	for (i=0; i < lignes * colonnes * 3; i += 3) {
-		float p = ((float) probar[in[i]] / (float) (lignes * colonnes));
-		out[i] = (int) in[i] * p;
-
-		p = ((float) probag[in[i + 1]] / (float) (lignes * colonnes));
-		out[i + 1] = (int) in[i + 1] * p;
-
-		p = ((float) probab[in[i + 2]] / (float) (lignes * colonnes));
-		out[i + 2] = (int) in[i + 2] * p;
+		out[i] = probar[in[i]] * 255;
+		out[i+1] = probag[in[i+1]] * 255;
+		out[i+2] = probab[in[i+2]] * 255;
 	}
 }
 
@@ -88,6 +83,7 @@ int main(int argc, char* argv[])
 	lire_image_ppm(cNomImgLue, ImgIn, lignes * colonnes);
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
+	histo(ImgIn, lignes, colonnes);
 	egalisation(ImgIn, ImgOut, lignes, colonnes);
 
 	ecrire_image_ppm(out, ImgOut,  lignes, colonnes);
