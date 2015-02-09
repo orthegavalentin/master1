@@ -18,36 +18,36 @@ void histo(OCTET *in, int lignes, int colonnes) {
 	}
 }
 
-int* densiteProba(OCTET *in, int lignes, int colonnes, int a, int b) {
+int* densiteProba(OCTET *in, int lignes, int colonnes) {
 	int i;
 
 	int *proba = malloc(256 * sizeof(int));
+	int histo[256] = {0};
+
+	bzero(proba, 256);
 
 	for (i=0; i < lignes * colonnes; i++) {
 		histo[in[i]]++;	
 	}
+
+	proba[0] = histo[0];
+
+	for (i=1; i < 256; i++) {
+		proba[i] = proba[i - 1] + histo[i];
+	}
+
+
+	return proba;
 }
 
 void egalisation(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i;
 
-	int a = 255, b = 0;
-
-	int histo[256] = {0};
+	int* proba = densiteProba(in, lignes, colonnes);
 
 	for (i=0; i < lignes * colonnes; i++) {
-
-		a = min(a, in[i]);
-		b = max(b, in[i]);
-		histo[in[i]]++;	
-	}
-
-	float delta = 255.0 / (b - a);
-
-
-	for (i=0; i < lignes * colonnes; i++) {
-		out[i] = (in[i] - a) * 255 / (b - a);
+		out[i] = (float) (proba[in[i]] * 255) / (float) (lignes * colonnes)
 	}
 }
 
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
 
-	histo(ImgIn, lignes, colonnes);
+	//histo(ImgIn, lignes, colonnes);
 	egalisation(ImgIn, ImgOut, lignes, colonnes);
 
 	ecrire_image_pgm(out, ImgOut,  lignes, colonnes);
