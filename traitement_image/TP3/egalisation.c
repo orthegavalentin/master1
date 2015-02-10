@@ -4,20 +4,6 @@
 #include "math.h"
 #include "../lib_c/utils.h"
 
-void histo(OCTET *in, int lignes, int colonnes) {
-	int i;
-	int histo[256] = {0};
-
-	for (i=0; i < lignes * colonnes; i++) {
-		histo[in[i]]++;	
-	}
-
-	for (i = 0; i < 255; ++i)
-	{
-		printf("%d %d\n", i, histo[i]);
-	}
-}
-
 int* densiteProba(OCTET *in, int lignes, int colonnes) {
 	int i;
 
@@ -47,7 +33,7 @@ void egalisation(OCTET *in, OCTET *out, int lignes, int colonnes) {
 	int* proba = densiteProba(in, lignes, colonnes);
 
 	for (i=0; i < lignes * colonnes; i++) {
-		out[i] = (float) (proba[in[i]] * 255) / (float) (lignes * colonnes)
+		out[i] = (float) (proba[in[i]] * 255) / (float) (lignes * colonnes);
 	}
 }
 

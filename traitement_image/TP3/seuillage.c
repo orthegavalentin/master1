@@ -4,23 +4,6 @@
 #include "math.h"
 #include "../lib_c/utils.h"
 
-void histo(OCTET *in, int lignes, int colonnes) {
-	int i;
-	int histor[256] = {0};
-	int histog[256] = {0};
-	int histob[256] = {0};
-
-	for (i=0; i < lignes * colonnes * 3; i += 3) {
-		histor[in[i]]++;
-		histog[in[i+1]]++;
-		histob[in[i+2]]++;	
-	}
-
-	for (i=0; i < 256; i++) {
-		printf("%d %d %d %d\n", i, histor[i], histog[i], histob[i]);
-	}
-}
-
 int* getSeuils(OCTET *in, int lignes, int colonnes, int couleur) {
 	int histo[256] = {0};
 	int i, sum = 0;

@@ -4,24 +4,6 @@
 #include "math.h"
 #include "../lib_c/utils.h"
 
-void histo(OCTET *in, int lignes, int colonnes) {
-	int i;
-
-	int histor[256] = {0};
-	int histog[256] = {0};
-	int histob[256] = {0};
-
-	for (i=0; i < lignes * colonnes * 3; i += 3) {
-		histor[in[i]]++;
-		histog[in[i+1]]++;
-		histob[in[i+2]]++;	
-	}
-
-	for (i=0; i < 256; i++) {
-		printf("%d %d %d %d\n", i, histor[i], histog[i], histob[i]);
-	}
-}
-
 float* densiteProba(OCTET *in, int lignes, int colonnes, int couleur) {
 	int i;
 
@@ -83,7 +65,7 @@ int main(int argc, char* argv[])
 	lire_image_ppm(cNomImgLue, ImgIn, lignes * colonnes);
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
-	histo(ImgIn, lignes, colonnes);
+	histo_coul(ImgIn, lignes, colonnes);
 	egalisation(ImgIn, ImgOut, lignes, colonnes);
 
 	ecrire_image_ppm(out, ImgOut,  lignes, colonnes);
