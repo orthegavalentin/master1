@@ -1,5 +1,7 @@
 #lang racket
 
+(provide read-file)
+
 (define (make-clauses in)
   (let f ([data '()])
     (let ([line (read-line in)])
@@ -15,5 +17,3 @@
           (f)
           (let ([l (string-split line)])
             (list (string->number (caddr l)) (string->number (cadddr l)) (make-clauses in)))))))
-
-(read-file (open-input-file "uf20-0912.cnf" #:mode 'binary))
