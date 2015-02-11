@@ -81,3 +81,36 @@ int max(int a, int b) {
 	}
 	return b;
 }
+
+void histo_coul(OCTET *in, int lignes, int colonnes) {
+	int i;
+
+	int histor[256] = {0};
+	int histog[256] = {0};
+	int histob[256] = {0};
+
+	for (i=0; i < lignes * colonnes * 3; i += 3) {
+		histor[in[i]]++;
+		histog[in[i+1]]++;
+		histob[in[i+2]]++;	
+	}
+
+	for (i=0; i < 256; i++) {
+		printf("%d %d %d %d\n", i, histor[i], histog[i], histob[i]);
+	}
+}
+
+
+void histo(OCTET *in, int lignes, int colonnes) {
+	int i;
+	int histo[256] = {0};
+
+	for (i=0; i < lignes * colonnes; i++) {
+		histo[in[i]]++;	
+	}
+
+	for (i = 0; i < 255; ++i)
+	{
+		printf("%d %d\n", i, histo[i]);
+	}
+}
