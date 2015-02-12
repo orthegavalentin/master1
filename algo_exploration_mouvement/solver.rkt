@@ -1,7 +1,7 @@
 #lang racket
 (require "parser.rkt")
 
-(define max-tries 100)
+(define max-tries 50)
 (define max-moves 5)
 
 (define cpt 0)
@@ -43,25 +43,37 @@
             (f (and (not accepted?) (< i max-n)) (add1 i)))
             best))))
 
+;(define (solve atom-number clause-number problem)
+;  (let ([best #()] [solution #()])
+;    (for ([i (in-range max-tries)])
+;      (set! solution (generate-random-solution atom-number))
+;      (let ([best-walk solution])
+;        (for ([j (in-range max-moves)])
+;          (generic-move problem solution atom-number)
+;          (when (> (cost problem solution) (cost problem best-walk))
+;            (set! best-walk solution)))
+;        (when (> (cost problem best-walk) (cost problem best))
+;          (set! best best-walk))))
+;    (list (cost problem best) '/ clause-number)))
+
 (define (solve atom-number clause-number problem)
   (let ([best #()] [solution #()])
     (for ([i (in-range max-tries)])
-      (set! solution (generate-random-solution atom-number))
-      (let ([best-walk solution])
+      (letrec ([solution (generate-random-solution atom-number)] [best-walk solution])
         (for ([j (in-range max-moves)])
           (generic-move problem solution atom-number)
-          (when (> (cost problem solution) (cost problem best-walk))
-            (set! best-walk solution)))
-        (when (> (cost problem best-walk) (cost problem best))
+         (when (> (cost problem solution) (cost problem best-walk))
+           (set! best-walk solution)))
+       (when (> (cost problem best-walk) (cost problem best))
           (set! best best-walk))))
-    (list (cost problem best) best)))
+    (list (cost problem best) '/ clause-number)))
 
 (define (main)
-  (letrec ([p (read-file (open-input-file "uf20-0912.cnf" #:mode 'binary))]
+  (letrec ([p (read-file (open-input-file "test.cnf" #:mode 'binary))]
            [atom-number (car p)]
            [clause-number (cadr p)]
            [problem (caddr p)])
     (solve atom-number clause-number problem)))
 
-(main)
+(time (main))
 (display cpt)
