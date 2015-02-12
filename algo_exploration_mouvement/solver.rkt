@@ -1,9 +1,6 @@
 #lang racket
 (require "parser.rkt")
 
-(define max-tries 50)
-(define max-moves 5)
-
 (define cpt 0)
 
 (define (not-atom i)
@@ -12,6 +9,7 @@
 (define (satisfiable? clause solution)
   (if (< 0 (apply + (map (lambda (i)
                            (letrec ([val (vector-ref solution (- (abs i) 1))] [x (if (= val 1) 1 -1)])
+                             (set! cpt (add1 cpt))
                              (if (< 0 (* i x)) 1 0))) clause))) #t #f))
 
 (define (generate-random-solution size)
@@ -22,58 +20,47 @@
       (apply + (map (lambda (i)
                       (if (satisfiable? i solution) 1 0)) problem))))
 
-(define (generate-neighbor solution)
-  (let ([r (random (vector-length solution))])
-    (vector-set! solution r (not-atom (vector-ref solution r)))))
+(define (generate-neighbor solution i)
+  (vector-set! solution i (not-atom (vector-ref solution i))))
 
 (define (generic-move problem x max-n)
   (let ([best-cost 0]
         [best x]
-        [x-cost (cost problem x)]
-        [temp (vector-copy x)])
+        [x-cost (cost problem x)])
     (let f ([continue? #t] [i 0])
-      (set! cpt (add1 cpt))
-      (generate-neighbor x)
       (if continue?
-          (letrec ([c (cost problem x)] [accepted? (> c x-cost)])
-            (when (> c best-cost)
-              (set! best x)
-              (set! best-cost c))
-            (vector-copy! x 0 temp)
-            (f (and (not accepted?) (< i max-n)) (add1 i)))
-            best))))
+          (begin 
+            (generate-neighbor x i) 
+            (letrec ([c (cost problem x)] [accepted? (> c x-cost)])
+              (when (> c best-cost)
+                (set! best (vector-copy x))
+                (set! best-cost c))
+              (vector-set! x i (not-atom (vector-ref x i)))
+              (f (and (not accepted?) (< (add1 i) max-n)) (add1 i))))
+          best))))
 
-;(define (solve atom-number clause-number problem)
-;  (let ([best #()] [solution #()])
-;    (for ([i (in-range max-tries)])
-;      (set! solution (generate-random-solution atom-number))
-;      (let ([best-walk solution])
-;        (for ([j (in-range max-moves)])
-;          (generic-move problem solution atom-number)
-;          (when (> (cost problem solution) (cost problem best-walk))
-;            (set! best-walk solution)))
-;        (when (> (cost problem best-walk) (cost problem best))
-;          (set! best best-walk))))
-;    (list (cost problem best) '/ clause-number)))
-
-(define (solve atom-number clause-number problem)
-  (let ([best #()] [solution #()])
+(define (solve max-tries max-moves atom-number clause-number problem)
+  (let ([best #()])
     (for ([i (in-range max-tries)])
       (letrec ([solution (generate-random-solution atom-number)] [best-walk solution])
         (for ([j (in-range max-moves)])
-          (generic-move problem solution atom-number)
-         (when (> (cost problem solution) (cost problem best-walk))
-           (set! best-walk solution)))
-       (when (> (cost problem best-walk) (cost problem best))
+          (let ([s (generic-move problem solution atom-number)])
+            (when (> (cost problem s) (cost problem best-walk))
+              (set! best-walk s))))
+        (when (> (cost problem best-walk) (cost problem best))
           (set! best best-walk))))
-    (list (cost problem best) '/ clause-number)))
+    (display (list (cost problem best) '/ clause-number " in " cpt " steps"))
+    (newline)
+    (list (cost problem best) best)))
 
 (define (main)
-  (letrec ([p (read-file (open-input-file "test.cnf" #:mode 'binary))]
+  (letrec ([args (current-command-line-arguments)]
+           [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
+           [max-tries (string->number (vector-ref args 1))]
+           [max-moves (string->number (vector-ref args 2))]
            [atom-number (car p)]
            [clause-number (cadr p)]
            [problem (caddr p)])
-    (solve atom-number clause-number problem)))
+    (solve max-tries max-moves atom-number clause-number problem)))
 
 (time (main))
-(display cpt)
