@@ -64,6 +64,8 @@ void seuillage(OCTET *in, OCTET *out, int lignes, int colonnes) {
 		in[i+2] = max(sb[0], in[i+2]);
 	}
 
+	char o[250] = "temp.ppm";
+	ecrire_image_ppm(o, in,  lignes, colonnes);
 	histo(in, lignes, colonnes);
 
 	for (i=0; i < lignes * colonnes * 3; i += 3) {
@@ -120,6 +122,8 @@ int main(int argc, char* argv[])
 	allocation_tableau(ImgIn, OCTET, nTaille);
 	lire_image_ppm(cNomImgLue, ImgIn, lignes * colonnes);
 	allocation_tableau(ImgOut, OCTET, nTaille);
+
+	histo_coul(ImgIn, lignes, colonnes);
 
 	seuillage(ImgIn, ImgOut, lignes, colonnes);
 

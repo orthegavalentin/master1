@@ -17,6 +17,7 @@ float* densiteProba(OCTET *in, int lignes, int colonnes, int couleur) {
 	}
 
 	proba[0] = (float) histo[0] / (float) (lignes * colonnes);
+	printf("%d %f\n", 0, proba[0]);
 
 	for (i=1; i < 256; i++) {
 		proba[i] = proba[i - 1] + (float) histo[i] / (float) (lignes * colonnes);
@@ -33,10 +34,16 @@ void egalisation(OCTET *in, OCTET *out, int lignes, int colonnes) {
 	float* probag = densiteProba(in, lignes, colonnes, 1);
 	float* probab = densiteProba(in, lignes, colonnes, 2);
 
+	for (i=0; i < 256; i++) {
+		//printf("%d %f %f %f\n", i, probar[i], probag[i], probab[i]);
+	}
+
 	for (i=0; i < lignes * colonnes * 3; i += 3) {
 		out[i] = probar[in[i]] * 255;
 		out[i+1] = probag[in[i+1]] * 255;
 		out[i+2] = probab[in[i+2]] * 255;
+
+
 	}
 }
 
