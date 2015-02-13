@@ -32,7 +32,7 @@ int indexW(int index) {
 }
 
 
-int coul_indexN(int index, int colonnes) {
+int coul_indexN(int index, int lignes, int colonnes) {
 	int n = index - colonnes * 3;
 	if(n < 0) {
 		return 0;
@@ -56,12 +56,28 @@ int coul_indexE(int index, int lignes, int colonnes) {
 	return n;
 }
 
-int coul_indexW(int index) {
+int coul_indexW(int index, int lignes, int colonnes){
 	int n = index - 3;
 	if(n < 0) {
 		return 0;
 	}
 	return n;
+}
+
+int coul_indexNW(int index, int lignes, int colonnes) {
+	return coul_indexW(coul_indexN(index, lignes, colonnes), lignes, colonnes);
+}
+
+int coul_indexNE(int index, int lignes, int colonnes) {
+	return coul_indexE(coul_indexN(index, lignes, colonnes), lignes, colonnes);
+}
+
+int coul_indexSE(int index, int lignes, int colonnes) {
+	return coul_indexE(coul_indexS(index, lignes, colonnes), lignes, colonnes);
+}
+
+int coul_indexSW(int index, int lignes, int colonnes) {
+	return coul_indexW(coul_indexS(index, lignes, colonnes), lignes, colonnes);
 }
 
 int between (int value, int cmp1, int cmp2) {
