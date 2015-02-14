@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
 
-	//histo(ImgIn, lignes, colonnes);
+	histo(ImgIn, lignes, colonnes);
 	egalisation(ImgIn, ImgOut, lignes, colonnes);
 
 	ecrire_image_pgm(out, ImgOut,  lignes, colonnes);
