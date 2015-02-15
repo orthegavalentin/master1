@@ -15,34 +15,34 @@ public class Main {
 //			return;
 //		}
 		
-		KnowlegdeBase k = Parser.parseBc(fileName);
-		k.sature();
-		
-		/**
-		 * Quels sont les animaux cruels ?
-		 */
-		Rule r = new Rule();
-		ArrayList<Terme> t = new ArrayList<Terme>();
-		t.add(new Terme(false, "x"));
-		r.addAtome("cruel", new Atome(t));
-		System.out.println("Quels sont les animaux cruels ? " + k.requete(r));
-		
-
-		/**
-		 * Quels sont les animaux cruels et que mangent-ils ?
-		 */
-		
-		r = new Rule();
-		
-		t = new ArrayList<Terme>();
-		t.add(new Terme(false, "x"));
-		r.addAtome("cruel", new Atome(t));
-		t = new ArrayList<Terme>();
-		t.add(new Terme(false, "x"));
-		t.add(new Terme(false, "y"));
-		r.addAtome("mange", new Atome(t));
-		System.out.println("Quels sont les animaux cruels et que mangent-ils ? " + k.requete(r));
-		
+//		KnowlegdeBase k = Parser.parseBc(fileName);
+//		k.sature();
+//		
+//		/**
+//		 * Quels sont les animaux cruels ?
+//		 */
+//		Rule r = new Rule();
+//		ArrayList<Terme> t = new ArrayList<Terme>();
+//		t.add(new Terme(false, "x"));
+//		r.addAtome("cruel", new Atome(t));
+//		System.out.println("Quels sont les animaux cruels ? " + k.requete(r));
+//		
+//
+//		/**
+//		 * Quels sont les animaux cruels et que mangent-ils ?
+//		 */
+//		
+//		r = new Rule();
+//		
+//		t = new ArrayList<Terme>();
+//		t.add(new Terme(false, "x"));
+//		r.addAtome("cruel", new Atome(t));
+//		t = new ArrayList<Terme>();
+//		t.add(new Terme(false, "x"));
+//		t.add(new Terme(false, "y"));
+//		r.addAtome("mange", new Atome(t));
+//		System.out.println("Quels sont les animaux cruels et que mangent-ils ? " + k.requete(r));
+//		
 //		ArrayList<Terme> t1 = new ArrayList<Terme>();
 //		t1.add(new Terme(false, "x1"));
 //		t1.add(new Terme(false, "y1"));
@@ -62,6 +62,8 @@ public class Main {
 		
 //		Homomorphisme h = Parser.parseHomo(fileName);
 //		CSP csp = h.toCSP();
+		
+		
 	}
 
 }

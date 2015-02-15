@@ -49,10 +49,12 @@
   (let ([population (sort population (lambda (i j)
                                        (< (car i) (car j))))])
     (if (zero? (caar population))
-        (list (car population))
-        (let ([p (take population (/ population-size 2))])
+        (list (car population))        
+        (letrec ([p (take population (/ population-size 2))] [parents (get-parents p)])
           (append p (map (lambda (i)
-                           (crossover (cadr (car i)) (cadr (cadr i)) problem)) (get-parents p)))))))
+                           (crossover (cadr (car i)) (cadr (cadr i)) problem)) parents) 
+                  (map (lambda (i)
+                         (crossover (cadr (cadr i)) (cadr (car i)) problem)) parents))))))
 
 (define (solve i max-iterations population problem )
   (let ([p (next-generation population problem)])
@@ -64,13 +66,14 @@
 
 
 (define (main)
-         (letrec ([args (current-command-line-arguments)]
-         [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
-         [atom-number (car p)]
-         [clause-number (cadr p)]
-         [problem (caddr p)])
-           (set! population-size (string->number (vector-ref args 1)))
-           (set! mutate-factor (string->number (vector-ref args 2)))
-  (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
+  (letrec ([args (current-command-line-arguments)]
+           [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
+           [atom-number (car p)]
+           [clause-number (cadr p)]
+           [problem (caddr p)])
+    (set! population-size (string->number (vector-ref args 1)))
+    (set! mutate-factor (string->number (vector-ref args 2)))
+    (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
 
 (time (main))
+(displayln cpt)

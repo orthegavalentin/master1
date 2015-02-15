@@ -8,7 +8,7 @@ public class TP {
 
 	public static void main(String args[]) {
 		//Lire un CSP depuis un fichier
-		String fileName = "homo.txt";
+		String fileName = "out.txt";
 		CSP myProblem;
 		try {    
 			fileName = new java.io.File( "." ).getCanonicalPath()+"/"+fileName;
@@ -21,8 +21,9 @@ public class TP {
 		myProblem = Parser.parse(fileName);
 		System.out.println("\nRecherche d'une solution au probleme :\n" + myProblem);
 		Solver mySolver = new Solver(myProblem);
-		//HashMap<String,Object> mySolution = mySolver.searchSolution();
-		System.out.println(mySolver.searchAllSolutions());
+		HashMap<String,Object> mySolution = mySolver.searchSolution();
+		System.out.println(mySolution);
+		//System.out.println(mySolver.searchAllSolutions());
 		//if (mySolution == null) System.out.println("Pas de solution !");
 		//else System.out.println("Une solution est " + mySolution);
 	}

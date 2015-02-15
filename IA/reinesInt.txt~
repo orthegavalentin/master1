@@ -1,0 +1,7 @@
+(apply *(map add1(build-list n values)))
+(define(f n)(if(= n 1)1(* n(f(sub1 n)))))
+(define(f n)(apply *(build-list n add1)))
+(λ(n)(apply *(build-list n add1)))
+(λ(n)(apply *(map add1(range n))))
+(λ(n)(apply *(range 1 (add1 n))))
+(λ(n)(* n(apply *(range 1 n))))
