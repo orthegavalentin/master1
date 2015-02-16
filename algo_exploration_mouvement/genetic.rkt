@@ -70,8 +70,9 @@
            [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
            [atom-number (car p)]
            [clause-number (cadr p)]
+           [size (string->number (vector-ref args 1))]
            [problem (caddr p)])
-    (set! population-size (string->number (vector-ref args 1)))
+    (set! population-size (+ size (- 4 (modulo size 4))))
     (set! mutate-factor (string->number (vector-ref args 2)))
     (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
 
