@@ -178,6 +178,11 @@ void render_scene()
 	Point** pts2 = BezierCurveByBernstein(pts3, nbr, 10);
 	DrawCurve(pts2, 11);
 	glColor3f(1.0, 0, 0);
+
+	Point** pts4 = BezierCurveByCasteljau(pts3, nbr, 10);
+	DrawCurve(pts4, 10);
+	glColor3f(1.0, 1.0, 0);
+
 	DrawCurve(pts3, nbr);
 
 	//DrawCurve(HermiteCubicCurve(new Point(0, 0, 0), new Point(2, 0, 0), new Vector(1, 1, 0), new Vector(1, -1, 0), nbPts), nbPts);

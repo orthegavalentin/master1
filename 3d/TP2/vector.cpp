@@ -27,6 +27,13 @@ void Vector::normalize()
     this->setZ(this->getZ() / norme);
 }
 
+void Vector::mul(float u)
+{
+    this->setX(this->getX() * u);
+    this->setY(this->getY() * u);
+    this->setZ(this->getZ() * u);
+}
+
 double Vector::scalar(Vector *vector2)
 {
     return this->getX() * vector2->getX() + this->getY() * vector2->getY() + this->getZ() * vector2->getZ();

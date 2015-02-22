@@ -73,30 +73,33 @@ Point **BezierCurveByBernstein(Point **t, long nbPts, long nbU) {
 	return pts;
 }
 
+Point* step(Point **t, int nbPts, float u) {
+	if(nbPts == 1) {
+		return new Point(t[0]->getX(), t[0]->getY(), t[0]->getZ());
+	} else {
+		Point* pts[nbPts - 1];
+		for (int i = 0; i < nbPts - 1; ++i) {
+			Vector v(t[i+1], t[i]);
+			v.mul(u);
+			Point *p = new Point(v.getX() + t[i]->getX(),
+					v.getY() + t[i]->getY(),
+					v.getZ() + t[i]->getZ());
+			pts[i] = p;
+		}
+		return step(pts, nbPts - 1, u);
+	}
+}
+
 Point **BezierCurveByCasteljau(Point **t, long nbPts, long nbU) {
 	Point **pts = new Point*[nbU];
 
 	for (int j = 0; j < nbU; ++j)
 	{
-		float u = 1 / (float) nbU * (float) j;
-
-		float x = 0, y = 0, z = 0;
-
-		for (int i = 0; i < nbPts; ++i)
-		{
-			float b = (facto(nbPts) / (facto(i) * facto(nbPts - i))) * pow(u, i) * pow((1 - u), nbPts - i);
-			std::cout << b << std::endl;
-			x += b * t[i]->getX();
-			y += b * t[i]->getY();
-			z += b * t[i]->getZ();
-		}
-
-
-		pts[j] = new Point(x, y, z);
+		float u = (1.0f / (float) (nbU - 1))* (float) j;
+		pts[j] = step(t, nbPts, u);
 	}
 
 	return pts;
 }
-
 
 #endif
