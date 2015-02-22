@@ -5,7 +5,7 @@
 (define (make-clauses in)
   (let f ([data '()])
     (let ([line (read-line in)])
-      (if (string=? line "%")
+      (if (or (eof-object? line) (string=? line "%"))
           data
           (f (append data (list (map string->number (take (string-split line " ") 3)))))))))
 
