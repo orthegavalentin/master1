@@ -4,12 +4,14 @@
 #include <stdio.h>      
 #include <stdlib.h>     
 #include <math.h>
+#include <functional>
 
 #include "point.h"
 #include "vector.h"
 
 #include <iostream>
 #include <GL/glut.h>
+
 
 void DrawCurve(Point **pts, long nbPts) {
 	glBegin(GL_LINE_STRIP);
@@ -47,45 +49,18 @@ long facto(long n) {
 	return n * facto(n - 1);
 }
 
-Point **BezierCurveByBernstein(Point **t, long nbPts, long nbU) {
-	Point **pts = new Point*[nbU + 1];
-
-	for (int j = 0; j < nbU; ++j)
-	{
-		float u = 1 / (float) nbU * (float) j;
-
-		float x = 0, y = 0, z = 0;
-
-		for (int i = 0; i < nbPts; ++i)
-		{
-			float b = (facto(nbPts - 1) / (facto(i) * facto(nbPts - i - 1))) * pow(u, i) * pow((1 - u), nbPts - i - 1);
-			x += b * t[i]->getX();
-			y += b * t[i]->getY();
-			z += b * t[i]->getZ();
-		}
-
-		pts[j] = new Point(x, y, z);
-	}
-
-	pts[nbU] = new Point(t[nbPts - 1]->getX(), t[nbPts - 1]->getY(), t[nbPts - 1]->getZ());
-
-	return pts;
-}
-
-Point* step(Point **t, int nbPts, float u) {
+Point* step(Point **t, int nbPts, double u) {
 	if(nbPts == 1) {
-		return t[0];
+		return new Point(t[0]->getX(), t[0]->getY(), t[0]->getZ());
 	} else {
 		Point* pts[nbPts - 1];
 		for (int i = 0; i < nbPts - 1; ++i) {
-
+			Vector v(t[i+1], t[i]);
 			glColor3f(0.0, 1.0, 1.0);
 			glBegin(GL_LINES);
-			glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
-			glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
 			glEnd();
-
-			Vector v(t[i+1], t[i]);
 			v.mul(u);
 			Point *p = new Point(v.getX() + t[i]->getX(),
 				v.getY() + t[i]->getY(),
@@ -96,18 +71,59 @@ Point* step(Point **t, int nbPts, float u) {
 	}
 }
 
-Point **BezierCurveByCasteljau(Point **t, long nbPts, long nbU) {
+/*Point **BezierCurveByCasteljau(Point **t, long nbPts, long nbU) {
 	Point **pts = new Point*[nbU];
 
 	for (int j = 0; j < nbU; ++j)
 	{
 		float u = (1.0f / (float) (nbU - 1))* (float) j;
 		pts[j] = step(t, nbPts, u);
-		std::cout << pts[j] << std::endl;
 	}
 
 	return pts;
 }
+*/
+std::function<Point*(double)> bezierCurveByBernstein(Point** tab, long nControl) {
+
+	auto curbeB = [] (Point** tab, long nControl) -> std::function<Point*(double)>
+	{ return ([=] (double u) {
+
+		double n = nControl-1;
+
+		Point* p = new Point();
+		for (int i = 0; i <= n; ++i) {
+			double Bni = (facto(n) / (facto(i) * facto(n-i))) * pow(u, i) * pow(1-u, n-i);
+			p->setX(p->getX() + Bni*tab[i]->getX());
+			p->setY(p->getY() + Bni*tab[i]->getY());
+			p->setZ(p->getZ() + Bni*tab[i]->getZ());
+		}
+		return p;
+
+
+	}); };
+	auto f = curbeB(tab, nControl);
+	return f;
+}
+
+std::function<Point*(double)> bezierCurveByCasteljau(Point** tab, long nControl) {
+
+	auto curbeB = [] (Point** pts, long nControl) -> std::function<Point*(double)>
+	{
+		return ([=] (double u) {
+			return step(pts, nControl, u);
+		});
+	};
+	auto f = curbeB(tab, nControl);
+	return f;
+}
+
+Point** discretiser(std::function<Point*(double)> f, int nbU) {
+	Point** pts = new Point*[nbU];
+	for (int i = 0; i < nbU; ++i) {
+		double u = 1.0/(nbU-1) * (double) i;
+		pts[i] = f(u);
+	}
+	return pts;
+}
 
 #endif
-
