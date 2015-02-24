@@ -2,7 +2,7 @@
 (require racket/date)
 (require net/url)
 
-(define days (hash "Monday," 0 "Tuesday," 1 "Wednesday," 2 "Thursday," 3 "Friday," 4 "Saturday," 5 "Sunday," -1))
+(define days (hash "Monday," 0 "Tuesday," 1 "Wednesday," 2 "Thursday," 3 "Friday," 4 "Saturday," -2 "Sunday," -1))
 (define subjects (hash "FMIN215\r" "SUMMARY:Algorithmique Géométrique\r"
                        "GMIN20A\r" "SUMMARY:Algorithmique d'exploration et de mouvement\r"
                        "GMIN212\r" "SUMMARY:Modélisation et programmation\r"
