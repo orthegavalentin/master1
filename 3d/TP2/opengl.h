@@ -65,7 +65,7 @@ Point **BezierCurveByBernstein(Point **t, long nbPts, long nbU) {
 		}
 
 		pts[j] = new Point(x, y, z);
-	}
+	}	
 
 	pts[nbU] = new Point(t[nbPts - 1]->getX(), t[nbPts - 1]->getY(), t[nbPts - 1]->getZ());
 
