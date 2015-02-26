@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
 	colorToGrey(ImgIn, ImgOut, lignes, colonnes);
 	histo(ImgOut, lignes, colonnes);
-	seuillage(ImgOut, seuil, lignes, colonnes, 185);
+	seuillage(ImgOut, seuil, lignes, colonnes, 100);
 
 	ecrire_image_pgm(out, ImgOut,  lignes, colonnes);
 	ecrire_image_pgm(out1, seuil,  lignes, colonnes);

@@ -253,3 +253,16 @@
 252 0
 253 0
 254 0
+(λ(n)(apply *(range 1(add1 n))))
+
+(define(p n)(exact->inexact(* 2(apply *(build-list n(λ(x)((λ(i)(/ i(- i 1)))(* 4(expt(add1 x)2)))))))))
+((λ(n)(exact->inexact(* 2(apply *(build-list n(λ(x)((λ(i)(/ i(- i 1)))(* 4(expt(add1 x)2)))))))))80000)
+((λ(n)(* 2(apply *(build-list n(λ(x)((λ(i)(exact->inexact(/ i(- i 1))))(* 4(expt(add1 x)2))))))))295976)
+((λ(n)(* 2(apply *(build-list n(λ(x)((λ(i)(/ i(- i 1)))(* 4.0(expt(+ x 1)2))))))))295976)
+(λ(n)(* 2(apply *(build-list n(λ(x)((λ(i)(/ i(- i 1)))(* 4.0(expt(+ x 1)2))))))))
+
+(add1 x)
+
+
+(define(p n)(exact->inexact(* 2(apply *(build-list n(λ(x)(let([x(* 4(expt(add1 x)2))])(/ x(- x 1)))))))))
+((λ(n)(exact->inexact(* 2(apply *(build-list n(λ(x)(let([x(* 4(expt(add1 x)2))])(/ x(- x 1)))))))))80000)

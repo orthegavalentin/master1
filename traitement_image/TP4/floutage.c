@@ -8,22 +8,39 @@
 void flouter(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 	int i;
+	int strength = 5;
 
 	for (i=0; i < lignes * colonnes * 3; i += 3) {
-		out[i] = (in[coul_indexN(i, lignes, colonnes)] + in[coul_indexS(i, lignes, colonnes)] + in[coul_indexE(i, lignes, colonnes)] + 
-				 in[coul_indexW(i, lignes, colonnes)] + in[coul_indexNW(i, lignes, colonnes)] + in[coul_indexNE(i, lignes, colonnes)] + 
-				 in[coul_indexSW(i, lignes, colonnes)] + in[coul_indexSE(i, lignes, colonnes)] + in[i]) / 9;
-
-		out[i+1] = (in[coul_indexN(i+1, lignes, colonnes)] + in[coul_indexS(i+1, lignes, colonnes)] + in[coul_indexE(i+1, lignes, colonnes)] + 
-				 in[coul_indexW(i+1, lignes, colonnes)] + in[coul_indexNW(i+1, lignes, colonnes)] + in[coul_indexNE(i+1, lignes, colonnes)] + 
-				 in[coul_indexSW(i+1, lignes, colonnes)] + in[coul_indexSE(i+1, lignes, colonnes)] + in[i+1]) / 9;
-
-		out[i+2] = (in[coul_indexN(i+2, lignes, colonnes)] + in[coul_indexS(i+1, lignes, colonnes)] + in[coul_indexE(i+2, lignes, colonnes)] + 
-				 in[coul_indexW(i+2, lignes, colonnes)] + in[coul_indexNW(i+2, lignes, colonnes)] + in[coul_indexNE(i+2, lignes, colonnes)] + 
-				 in[coul_indexSW(i+2, lignes, colonnes)] + in[coul_indexSE(i+2, lignes, colonnes)] + in[i+2]) / 9;
-
-
+		out[i] = getAvgOfNeighbors(in, lignes, colonnes, i, strength);
+		out[i+1] = getAvgOfNeighbors(in, lignes, colonnes, i+1, strength);
+		out[i+2] = getAvgOfNeighbors(in, lignes, colonnes, i+2, strength);
 	}
+}
+
+int getAvgOfNeighbors(OCTET *in, int lignes, int colonnes, int index, int nbN) {
+	nbN = (nbN % 2 == 1)?nbN+1:nbN;
+
+	int topLeft = index;
+	int i, j, iTemp;
+	int sum = 0;
+
+	for (i = 0; i < nbN / 2; ++i) {
+		topLeft = coul_indexW(topLeft, lignes, colonnes);	
+	}
+
+	for (i = 0; i < nbN / 2; ++i) {
+		topLeft = coul_indexN(topLeft, lignes, colonnes);	
+	}
+
+	for (i = 0; i < nbN; ++i) {
+		iTemp = topLeft;
+		for (j = 0; j < nbN; ++j) {
+			sum += in[iTemp];
+			iTemp = coul_indexE(iTemp, lignes, colonnes);
+		}
+		topLeft = coul_indexS(topLeft, lignes, colonnes);
+	}
+	return sum / (nbN * nbN);
 }
 
 int main(int argc, char* argv[])
