@@ -130,3 +130,29 @@ void histo(OCTET *in, int lignes, int colonnes) {
 		printf("%d %d\n", i, histo[i]);
 	}
 }
+
+int getAvgOfNeighbors(OCTET *in, int lignes, int colonnes, int index, int nbN) {
+	nbN = (nbN % 2 == 1)?nbN+1:nbN;
+
+	int topLeft = index;
+	int i, j, iTemp;
+	int sum = 0;
+
+	for (i = 0; i < nbN / 2; ++i) {
+		topLeft = coul_indexW(topLeft, lignes, colonnes);	
+	}
+
+	for (i = 0; i < nbN / 2; ++i) {
+		topLeft = coul_indexN(topLeft, lignes, colonnes);	
+	}
+
+	for (i = 0; i < nbN; ++i) {
+		iTemp = topLeft;
+		for (j = 0; j < nbN; ++j) {
+			sum += in[iTemp];
+			iTemp = coul_indexE(iTemp, lignes, colonnes);
+		}
+		topLeft = coul_indexS(topLeft, lignes, colonnes);
+	}
+	return sum / (nbN * nbN);
+}
