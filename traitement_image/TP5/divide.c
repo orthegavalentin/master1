@@ -4,6 +4,7 @@
 #include "math.h"
 #include "../lib_c/utils.h"
 
+int seuil = 50;
 
 struct region {
 	OCTET* data;
@@ -13,96 +14,125 @@ struct region {
 	struct region *c3;
 	struct region *c4;
 	int startIndex;
+	int avg;
+	int rec;
 };
 
 void init(OCTET* in, int size, struct region* r, int startIndex) {
 	r->size = size;
 	r->startIndex = startIndex;
 
-	allocation_tableau(r->data, OCTET, size);
-	int i;
-
-	for (i = 0; i < size; ++i) {
-		r->data[i] = in[i];
-	}
+	r->data = in;
 
 	r->c1 = NULL;
+	r->c2 = NULL;
+	r->c3 = NULL;
+	r->c4 = NULL;
+	r->rec = 1;
 }
 
-void sub_array(OCTET* in, int start, int end, OCTET* out) {
-	int i, j, k = 0;
-	int size = sqrt(end - start);
+int esperance(struct region *r) {
+	int variance = 0;
+	int i, j;
 
-	for (i = 0; i < size; ++i) {
-		for (j = start+i*size; j < (i + 1) * size + start; ++j) {
-			out[k++] = in[j];
+	int side = sqrt(r->size);
+	int avg = 0;
+
+	for (i = 0; i < side; ++i) {
+		for (j = 0; j < side; ++j) {
+			avg += r->data[r->startIndex + i * (2 * side * r->rec) + j];
 		}
+	}
+
+	avg /= r->size;
+
+	r->avg = avg;
+
+	for (i = 0; i < side; ++i) {
+		for (j = 0; j < side; ++j) {
+			variance += pow(r->data[r->startIndex + i * (2 * side * r->rec) + j] - avg, 2);
+		}
+	}
+	return (int) sqrt(variance / r->size);
+}
+
+void sub_array(int index, int size, int *startIndex, int rec) {
+	int i, j, l, k = 0;
+
+	int side = sqrt(size);
+	switch(index) {
+		case 0 : *startIndex = 0; break;
+		case 1 : *startIndex = side; break;
+		case 2 : *startIndex = 2 * size * rec; break;
+		case 3 : *startIndex = 2 * size * rec + side; break;
 	}
 }
 
 void split(struct region* r) {
-	struct region *c1 = malloc(sizeof(struct region));
-	struct region *c2 = malloc(sizeof(struct region));
-	struct region *c3 = malloc(sizeof(struct region));
-	struct region *c4 = malloc(sizeof(struct region));
+	if(r->size > 4) {
+		struct region *c1 = malloc(sizeof(struct region));
+		struct region *c2 = malloc(sizeof(struct region));
+		struct region *c3 = malloc(sizeof(struct region));
+		struct region *c4 = malloc(sizeof(struct region));
 
-	OCTET o[r->size / 4];
 
+		int startIndex;
+		sub_array(0, r->size / 4, &startIndex, r->rec);
+		init(r->data, r->size / 4, c1, r->startIndex + startIndex);
+		c1->rec = r->rec * 2;
 
-	sub_array(r->data, 0, r->size / 4, o);
-	init(o, r->size / 4, c1, r->startIndex);
+		sub_array(1, r->size / 4, &startIndex, r->rec);
+		init(r->data, r->size / 4, c2, r->startIndex + startIndex);
+		c2->rec = r->rec * 2;
 
-	printf("data : %d\n", r->data[65536]);
-	sub_array(r->data, r->size / 4, 2 * (r->size / 4), o);
-	init(o, r->size / 4, c2, r->startIndex + r->size / 4);
+		sub_array(2, r->size / 4, &startIndex, r->rec);
+		init(r->data, r->size / 4, c3, r->startIndex + startIndex);
+		c3->rec = r->rec * 2;
 
-	sub_array(r->data, 2 * (r->size / 4), 3 * (r->size / 4), o);
-	init(o, r->size / 4, c3, r->startIndex + 2 * (r->size / 4));
+		sub_array(3, r->size / 4, &startIndex, r->rec);
+		init(r->data, r->size / 4, c4, r->startIndex + startIndex);
+		c4->rec = r->rec * 2;
 
-	sub_array(r->data, 3 * (r->size / 4), r->size, o);
-	init(o, r->size / 4, c4, r->startIndex + 3 * (r->size / 4));
+		c1->size = r->size / 4;
+		c2->size = r->size / 4;
+		c3->size = r->size / 4;
+		c4->size = r->size / 4;
 
-	c1->size = r->size / 4;
-	c2->size = r->size / 4;
-	c3->size = r->size / 4;
-	c4->size = r->size / 4;
+		c1->data = r->data; r->c1 = c1; 
+		c2->data = r->data; r->c2 = c2;
+		c3->data = r->data; r->c3 = c3;
+		c4->data = r->data; r->c4 = c4;
 
-	r->c1 = c1;
-	r->c2 = c2;
-	r->c3 = c3;
-	r->c4 = c4;
-
-	printf("start of c1 : %d\n", c1->startIndex);
-	printf("start of c2 : %d\n", c2->startIndex);
-	printf("start of c3 : %d\n", c3->startIndex);
-	printf("start of c4 : %d\n", c4->startIndex);
-
-	free(r->data);
+		if(esperance(c1) > seuil) {
+			split(c1);
+		}
+		if(esperance(c2) > seuil) {
+			split(c2);
+		}
+		if(esperance(c3) > seuil) {
+			split(c3);
+		}
+		if(esperance(c4) > seuil) {
+			split(c4);
+		}
+	}
 }
 
 void merge(struct region* r, OCTET* in) {
 	int i;
 
 	if(r->c1 == NULL) {
-		printf("merge with start = %d\n", r->startIndex);
 		int avg = 0;
 
-		int j, k = 0;
-		int size = sqrt(r->size);
+		int j, l, k = 0;
+		int side = sqrt(r->size);
 
-		for (i = 0; i < r->size; ++i) {
-			avg += r->data[i];
-		}
-
-		avg /= r->size;
-
-
-		for (i = 0; i < size; ++i) {
-			for (j = r->startIndex+i*size; j < (i + 1) * size + r->startIndex; ++j) {
-				in[j] = avg;
+		for (i = 0; i < side; ++i) {
+			for (j = 0; j < side; ++j) {
+				l = r->startIndex + i * 2 * side * (r->rec / 2) + j;
+				in[l] = r->avg;
 			}
 		}
-		printf("%d\n", j);
 	} else {
 		merge(r->c1, in);
 		merge(r->c2, in);
@@ -118,10 +148,12 @@ int main(int argc, char* argv[])
 
 	int lignes, colonnes, nTaille, S;
 
-	if (argc == 1) {
+	if (argc == 2) {
 		sscanf (out, "%s", cNomImgLue);
-	} else if (argc == 2) {
+		sscanf (argv[2], "%d", &seuil);
+	} else if (argc == 3) {
 		sscanf (argv[1],"%s",cNomImgLue);
+		sscanf (argv[2], "%d", &seuil);
 	} else {
 		printf("to many arguments");
 	}
@@ -135,10 +167,13 @@ int main(int argc, char* argv[])
 	lire_image_pgm(cNomImgLue, ImgIn, lignes * colonnes);
 	allocation_tableau(ImgOut, OCTET, nTaille);
 
-	printf("size : %d\n", nTaille);
+	//printf("size : %d\n", nTaille);
 	struct region root;
+	//printf("before init\n");
 	init(ImgIn, lignes * colonnes, &root, 0);
+	//printf("after init\n");
 	split(&root);
+	//printf("after split\n");
 	merge(&root, ImgOut);
 
 	ecrire_image_pgm(out, ImgOut, lignes, colonnes);
