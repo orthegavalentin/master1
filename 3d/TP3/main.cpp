@@ -56,6 +56,14 @@ Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h"
 
 // Touche echap (Esc) permet de sortir du programme
 #define KEY_ESC 27
+#define LEFT 97
+#define UP 233
+#define RIGHT 105
+#define DOWN 117
+#define PREVIOUS 108
+#define NEXT 106
+
+int selected;
 
 
 // Entêtes de fonctions
@@ -105,8 +113,18 @@ GLvoid initGL()
 
 // Initialisation de la scene. Peut servir à stocker des variables de votre programme
 // à initialiser
+int nbr = 5;
+Point** pts3;
 void init_scene()
 {
+	selected = 0;
+	
+	pts3 = new Point*[nbr];
+	pts3[0] = new Point(0,0,0);
+	pts3[1] = new Point(1,2,0);
+	pts3[2] = new Point(3,3,0);
+	pts3[3] = new Point(2,2,0);
+	pts3[4] = new Point(2,3,0);
 }
 
 // fonction de call-back pour l´affichage dans la fenêtre
@@ -141,6 +159,7 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
 
   // toutes les transformations suivantes s´appliquent au modèle de vue 
 	glMatrixMode(GL_MODELVIEW);
+
 }
 
 // fonction de call-back pour la gestion des événements clavier
@@ -152,10 +171,35 @@ GLvoid window_key(unsigned char key, int x, int y)
 		exit(1);                    
 		break; 
 
+		case UP:
+		pts3[selected]->setY(pts3[selected]->getY() + 1);
+		break;
+
+		case DOWN:
+		pts3[selected]->setY(pts3[selected]->getY() - 1);
+		break;
+
+		case LEFT:
+		pts3[selected]->setX(pts3[selected]->getX() - 1);
+		break;
+
+		case RIGHT:
+		pts3[selected]->setX(pts3[selected]->getX() + 1);
+		break;
+
+		case NEXT:
+		if(selected < nbr - 1) selected++;
+		break;
+
+		case PREVIOUS:
+		if(selected > 0) selected--;
+		break;
+
 		default:
 		printf ("La touche %d n´est pas active.\n", key);
 		break;
-	}     
+	}   
+	render_scene();
 }
 
 
@@ -166,25 +210,32 @@ GLvoid window_key(unsigned char key, int x, int y)
 void render_scene()
 {
 //Définition de la couleur
-	glColor3f(1.0, 1.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int nbr = 5;
-	Point** pts3 = new Point*[nbr];
-	pts3[0] = new Point(0,0,0);
-	pts3[1] = new Point(1,2,0);
-	pts3[2] = new Point(3,3,0);
-	pts3[3] = new Point(2,2,0);
-	pts3[4] = new Point(2,3,0);
+	for (int i = 0; i < nbr; ++i)
+	{
+		std::cout << pts3[i] << std::endl;
+	}
+
+	glColor3f(1.0, 1.0, 1.0);
+	std::cout << selected << std::endl;
 
 	Point** pts2 = discretiser(bezierCurveByBernstein(pts3, nbr), 10);
 	DrawCurve(pts2, 10);
 
 	Point** pts4 = discretiser(bezierCurveByCasteljau(pts3, nbr), 10);
 	glColor3f(1.0, 0, 0);
-	//DrawCurve(pts4, 10);
+	DrawCurve(pts4, 10);
 	glColor3f(1.0, 1.0, 0);
 
 	DrawCurve(pts3, nbr);
 
-	DrawCurve(HermiteCubicCurve(new Point(0, 0, 0), new Point(2, 0, 0), new Vector(1, 1, 0), new Vector(1, -1, 0), 20), 20);
+	glColor3f(0.0, 1.0, 0);
+	glPointSize(10);
+	glBegin(GL_POINTS);
+	glVertex3f(pts3[selected]->getX(), pts3[selected]->getY(), pts3[selected]->getZ());
+	glEnd();
+	glPointSize(1);
+
+	glFlush();
 }
