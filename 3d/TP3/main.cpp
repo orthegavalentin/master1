@@ -62,9 +62,10 @@ Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h"
 #define DOWN 117
 #define PREVIOUS 108
 #define NEXT 106
+#define SWITCH 32
 
 int selected;
-
+int curve;
 
 // Entêtes de fonctions
 void init_scene();
@@ -115,9 +116,11 @@ GLvoid initGL()
 // à initialiser
 int nbr = 5;
 Point** pts3;
+Point** pts0;
 void init_scene()
 {
 	selected = 0;
+	curve = 1;
 	
 	pts3 = new Point*[nbr];
 	pts3[0] = new Point(0,0,0);
@@ -125,6 +128,13 @@ void init_scene()
 	pts3[2] = new Point(3,3,0);
 	pts3[3] = new Point(2,2,0);
 	pts3[4] = new Point(2,3,0);
+
+	pts0 = new Point*[nbr];
+	pts0[0] = new Point(2,0,0);
+	pts0[1] = new Point(1,5,0);
+	pts0[2] = new Point(1,2,0);
+	pts0[3] = new Point(1,4,0);
+	pts0[4] = new Point(2,1,0);
 }
 
 // fonction de call-back pour l´affichage dans la fenêtre
@@ -154,7 +164,7 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
   // ici, vous verrez pendant le cours sur les projections qu'en modifiant les valeurs, il est
   // possible de changer la taille de l'objet dans la fenêtre. Augmentez ces valeurs si l'objet est 
   // de trop grosse taille par rapport à la fenêtre.
-	int size = 5;
+	int size = 20;
 	glOrtho(0, size, 0, size, -2, 2);
 
   // toutes les transformations suivantes s´appliquent au modèle de vue 
@@ -166,25 +176,31 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
 
 GLvoid window_key(unsigned char key, int x, int y) 
 {  
+	Point** p = (curve > 0)?pts3:pts0;
 	switch (key) {    
 		case KEY_ESC:  
 		exit(1);                    
 		break; 
 
+		case SWITCH:
+		curve *= -1;
+		selected = 0;
+		break;
+
 		case UP:
-		pts3[selected]->setY(pts3[selected]->getY() + 1);
+		p[selected]->setY(p[selected]->getY() + 1);
 		break;
 
 		case DOWN:
-		pts3[selected]->setY(pts3[selected]->getY() - 1);
+		p[selected]->setY(p[selected]->getY() - 1);
 		break;
 
 		case LEFT:
-		pts3[selected]->setX(pts3[selected]->getX() - 1);
+		p[selected]->setX(p[selected]->getX() - 1);
 		break;
 
 		case RIGHT:
-		pts3[selected]->setX(pts3[selected]->getX() + 1);
+		p[selected]->setX(p[selected]->getX() + 1);
 		break;
 
 		case NEXT:
@@ -221,20 +237,34 @@ void render_scene()
 	std::cout << selected << std::endl;
 
 	Point** pts2 = discretiser(bezierCurveByBernstein(pts3, nbr), 10);
-	DrawCurve(pts2, 10);
+	//DrawCurve(pts2, 10);
 
 	Point** pts4 = discretiser(bezierCurveByCasteljau(pts3, nbr), 10);
 	glColor3f(1.0, 0, 0);
-	DrawCurve(pts4, 10);
+	//DrawCurve(pts4, 10);
 	glColor3f(1.0, 1.0, 0);
 
 	DrawCurve(pts3, nbr);
+	glColor3f(1.0, 0.0, 0);
+	DrawCurve(pts0, nbr);
 
 	glColor3f(0.0, 1.0, 0);
 	glPointSize(10);
 	glBegin(GL_POINTS);
-	glVertex3f(pts3[selected]->getX(), pts3[selected]->getY(), pts3[selected]->getZ());
+	if(curve > 0)
+		glVertex3f(pts3[selected]->getX(), pts3[selected]->getY(), pts3[selected]->getZ());
+	else
+		glVertex3f(pts0[selected]->getX(), pts0[selected]->getY(), pts0[selected]->getZ());
 	glEnd();
+	glPointSize(1);
+
+	glPointSize(3);
+	Point*** pts5 = surfaceReglee(
+		discretiser(bezierCurveByCasteljau(pts3, nbr), 100), 100,
+		discretiser(bezierCurveByCasteljau(pts0, nbr), 100), 100);
+
+	drawSurface(pts5, 100, 100);
+
 	glPointSize(1);
 
 	glFlush();

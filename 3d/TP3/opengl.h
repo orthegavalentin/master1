@@ -21,6 +21,16 @@ void DrawCurve(Point **pts, long nbPts) {
 	glEnd();
 }
 
+void drawSurface(Point*** pts, long nbu, long nbv) {
+	glBegin(GL_POINTS);
+	for (int i = 0; i < nbu; ++i) {
+		for (int j = 0; j < nbv; ++j) {
+			glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+		}
+	}
+	glEnd();
+}
+
 Point **HermiteCubicCurve(Point *p0, Point *p1, Vector *v0, Vector *v1, long nbU) {
 
 	Point **pts = new Point*[nbU];
@@ -41,7 +51,6 @@ Point **HermiteCubicCurve(Point *p0, Point *p1, Vector *v0, Vector *v1, long nbU
 	return pts;
 }
 
-
 long facto(long n) {
 	if(n == 0) {
 		return 1;
@@ -58,8 +67,8 @@ Point* step(Point **t, int nbPts, double u) {
 			Vector v(t[i+1], t[i]);
 			glColor3f(0.0, 1.0, 1.0);
 			glBegin(GL_LINES);
-				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
-				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+				//glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+				//glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
 			glEnd();
 			v.mul(u);
 			Point *p = new Point(v.getX() + t[i]->getX(),
@@ -71,18 +80,6 @@ Point* step(Point **t, int nbPts, double u) {
 	}
 }
 
-/*Point **BezierCurveByCasteljau(Point **t, long nbPts, long nbU) {
-	Point **pts = new Point*[nbU];
-
-	for (int j = 0; j < nbU; ++j)
-	{
-		float u = (1.0f / (float) (nbU - 1))* (float) j;
-		pts[j] = step(t, nbPts, u);
-	}
-
-	return pts;
-}
-*/
 std::function<Point*(double)> bezierCurveByBernstein(Point** tab, long nControl) {
 
 	auto curbeB = [] (Point** tab, long nControl) -> std::function<Point*(double)>
@@ -122,6 +119,20 @@ Point** discretiser(std::function<Point*(double)> f, int nbU) {
 	for (int i = 0; i < nbU; ++i) {
 		double u = 1.0/(nbU-1) * (double) i;
 		pts[i] = f(u);
+	}
+	return pts;
+}
+
+Point ***surfaceReglee(Point** c1, int nbu, Point** c2, int nbv) {
+	Point *** pts = new Point**[nbu];
+	for (int i = 0; i < nbu; ++i) {
+		pts[i] = new Point*[nbv];
+		for (int j = 0; j < nbv; ++j) {
+			Point* p = new Point(c1[i]->getX() + c2[j]->getX(),
+								 c1[i]->getY() + c2[j]->getY(),
+								 c1[i]->getZ() + c2[j]->getZ());
+			pts[i][j] = p;
+		}
 	}
 	return pts;
 }
