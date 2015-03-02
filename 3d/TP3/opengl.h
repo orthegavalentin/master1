@@ -68,6 +68,15 @@ Point* step(Point **t, int nbPts, double u) {
 		Point* pts[nbPts - 1];
 		for (int i = 0; i < nbPts - 1; ++i) {
 			Vector v(t[i+1], t[i]);
+			if(n == 1) {
+				glColor3f(1.0, 1.0, 1.00);
+				glPointSize(10);
+				glBegin(GL_POINTS);
+				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+				glEnd();
+				glPointSize(1);
+			}
 			if(n == 6) {
 				glColor3f(0.0, 1.0, 0.0);
 				glBegin(GL_LINES);
