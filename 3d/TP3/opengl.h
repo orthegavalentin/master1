@@ -68,8 +68,8 @@ Point* step(Point **t, int nbPts, double u) {
 		Point* pts[nbPts - 1];
 		for (int i = 0; i < nbPts - 1; ++i) {
 			Vector v(t[i+1], t[i]);
-			if(n > 6 && n < 15) {
-				glColor3f(0.0, 1.0, 1.0);
+			if(n == 6) {
+				glColor3f(0.0, 1.0, 0.0);
 				glBegin(GL_LINES);
 				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
 				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
@@ -210,6 +210,24 @@ Point ***surfaceCasteljau(Point** c1, long nb1, long nbu, Point** c2, long nb2, 
 			}
 			std::cout << std::endl;
 			discretiser(bezierCurveByCasteljau(temp, nb1), nbu);
+		}
+	}
+
+	for (int i = 0; i < nb2; ++i)
+	{
+		for (int j = 0; j < nb1; ++j)
+		{
+			n = 0;
+			Point **temp = new Point*[nb2];
+			for (int k = 0; k < nb2; ++k)
+			{
+				temp[k] = new Point(c2[k]->getX() + c1[j]->getX(), 
+					c2[k]->getY() + c1[j]->getY(), 
+					c2[k]->getZ() + c1[j]->getZ());
+				std::cout << temp[k] << std::endl;
+			}
+			std::cout << std::endl;
+			discretiser(bezierCurveByCasteljau(temp, nb2), nbv);
 		}
 	}
 
