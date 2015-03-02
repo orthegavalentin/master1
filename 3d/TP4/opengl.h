@@ -253,5 +253,22 @@ Point ***surfaceCasteljau(Point** c1, long nb1, long nbu, Point** c2, long nb2, 
 	return t;
 }
 
+Point*** cone(Point* origin, int radius, int height, int meridians) {
+	Point*** p = new Point**[2];
+
+	p[0] = new Point*[meridians];
+	for (int i = 0; i < meridians; ++i) {
+		double angle = (M_PI / meridians) * i;
+		p[0][i] = new Point(origin->getX() + radius, origin->getY(), origin->getZ());
+	}
+
+	p[1] = new Point*[meridians];
+	for (int i = 0; i < meridians; ++i) {
+		p[1][i] = new Point(p[0][i]->getX(), p[0][i]->getY() + height, p[0][i]->getZ() + height);
+	}
+
+	return p;
+}
+
 
 #endif
