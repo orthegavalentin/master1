@@ -34,6 +34,12 @@ void Vector::mul(float u)
     this->setZ(this->getZ() * u);
 }
 
+void Vector::add(Vector* p) {
+    this->setX(this->getX() + p->getX());
+    this->setY(this->getY() + p->getY());
+    this->setZ(this->getZ() + p->getZ());
+}
+
 double Vector::scalar(Vector *vector2)
 {
     return this->getX() * vector2->getX() + this->getY() * vector2->getY() + this->getZ() * vector2->getZ();

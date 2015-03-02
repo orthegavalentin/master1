@@ -228,22 +228,7 @@ void render_scene()
 //Définition de la couleur
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (int i = 0; i < nbr; ++i)
-	{
-		std::cout << pts3[i] << std::endl;
-	}
-
-	glColor3f(1.0, 1.0, 1.0);
-	std::cout << selected << std::endl;
-
-	Point** pts2 = discretiser(bezierCurveByBernstein(pts3, nbr), 10);
-	//DrawCurve(pts2, 10);
-
-	Point** pts4 = discretiser(bezierCurveByCasteljau(pts3, nbr), 10);
-	glColor3f(1.0, 0, 0);
-	//DrawCurve(pts4, 10);
 	glColor3f(1.0, 1.0, 0);
-
 	DrawCurve(pts3, nbr);
 	glColor3f(1.0, 0.0, 0);
 	DrawCurve(pts0, nbr);
@@ -260,12 +245,16 @@ void render_scene()
 
 	glPointSize(3);
 	Point*** pts5 = surfaceReglee(
-		discretiser(bezierCurveByCasteljau(pts3, nbr), 100), 100,
-		discretiser(bezierCurveByCasteljau(pts0, nbr), 100), 100);
-
-	drawSurface(pts5, 100, 100);
+		discretiser(bezierCurveByBernstein(pts3, nbr), 100), 100,
+		discretiser(bezierCurveByBernstein(pts0, nbr), 100), 100);
+	Point*** pts6 = surfaceCasteljau(pts3, nbr, 100, pts0, nbr, 100);
+	glColor3f(1.0, 0.0, 0);
+	drawSurface(pts6, 100, 100);
 
 	glPointSize(1);
 
 	glFlush();
+
+	delete (pts5);
+	//delete (pts6);
 }

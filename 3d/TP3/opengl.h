@@ -12,6 +12,8 @@
 #include <iostream>
 #include <GL/glut.h>
 
+int n = 0;
+
 
 void DrawCurve(Point **pts, long nbPts) {
 	glBegin(GL_LINE_STRIP);
@@ -59,17 +61,20 @@ long facto(long n) {
 }
 
 Point* step(Point **t, int nbPts, double u) {
+	n++;
 	if(nbPts == 1) {
-		return new Point(t[0]->getX(), t[0]->getY(), t[0]->getZ());
+		return t[0];
 	} else {
 		Point* pts[nbPts - 1];
 		for (int i = 0; i < nbPts - 1; ++i) {
 			Vector v(t[i+1], t[i]);
-			glColor3f(0.0, 1.0, 1.0);
-			glBegin(GL_LINES);
-				//glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
-				//glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
-			glEnd();
+			if(n > 6 && n < 15) {
+				glColor3f(0.0, 1.0, 1.0);
+				glBegin(GL_LINES);
+				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+				glEnd();
+			}
 			v.mul(u);
 			Point *p = new Point(v.getX() + t[i]->getX(),
 				v.getY() + t[i]->getY(),
@@ -96,7 +101,6 @@ std::function<Point*(double)> bezierCurveByBernstein(Point** tab, long nControl)
 		}
 		return p;
 
-
 	}); };
 	auto f = curbeB(tab, nControl);
 	return f;
@@ -114,7 +118,7 @@ std::function<Point*(double)> bezierCurveByCasteljau(Point** tab, long nControl)
 	return f;
 }
 
-Point** discretiser(std::function<Point*(double)> f, int nbU) {
+Point **discretiser(std::function<Point*(double)> f, int nbU) {
 	Point** pts = new Point*[nbU];
 	for (int i = 0; i < nbU; ++i) {
 		double u = 1.0/(nbU-1) * (double) i;
@@ -129,12 +133,102 @@ Point ***surfaceReglee(Point** c1, int nbu, Point** c2, int nbv) {
 		pts[i] = new Point*[nbv];
 		for (int j = 0; j < nbv; ++j) {
 			Point* p = new Point(c1[i]->getX() + c2[j]->getX(),
-								 c1[i]->getY() + c2[j]->getY(),
-								 c1[i]->getZ() + c2[j]->getZ());
+				c1[i]->getY() + c2[j]->getY(),
+				c1[i]->getZ() + c2[j]->getZ());
 			pts[i][j] = p;
 		}
 	}
 	return pts;
 }
+
+
+Point ***discretiserDeux(std::function<Point*(double, double)> f, int nbu, int nbv) {
+	Point ***pts = new Point**[nbu];
+	for (int i = 0; i < nbu; ++i) {
+		double u = 1.0/(nbu-1) * (double) i;
+		pts[i] = new Point*[nbv];
+		for (int j = 0; j < nbv; ++j) {
+			double v = 1.0/(nbv-1) * (double) j;
+			pts[i][j] = f(u, v);
+		}
+	}
+	return pts;
+}
+
+Point* stepDeux(Point **c1, int n1, double u, Point **c2, int n2, double v) {
+	if(n1 == 1) {
+		return c1[0];
+	} else {
+		Point* pts[n1 - 1];
+		for (int i = 0; i < n1 - 1; ++i) {
+			Vector vecu(c1[i+1], c1[i]);
+			vecu.mul(u);
+
+			for (int j = 0; j < n2 - 1; ++j) {
+				Vector vecv(c2[j+1], c2[j]);
+				vecv.mul(v);
+				Vector out(vecu.getX() + vecv.getX(),
+					vecu.getY() + vecv.getY(),
+					vecu.getZ() + vecv.getZ());
+				Point *p = new Point(out.getX() + c1[i]->getX(),
+					out.getY() + c1[i]->getY(),
+					out.getZ() + c1[i]->getZ());
+				pts[i] = p;
+			}
+		}
+		return stepDeux(pts, n1 - 1, u, c2, n2, v);
+	}
+}
+
+std::function<Point*(double, double)> bezierSurfaceByCasteljau(Point** c1, long n1, Point** c2, long n2) {
+
+	auto curbeB = [] (Point** c1, long n1, Point ** c2, long n2) -> std::function<Point*(double, double)>
+	{
+		return ([=] (double u, double v) {
+			return stepDeux(c1, n1, u, c2, n2, v);
+			
+		});
+	};
+	auto f = curbeB(c1, n1, c2, n2);
+	return f;
+}
+
+Point ***surfaceCasteljau(Point** c1, long nb1, long nbu, Point** c2, long nb2, long nbv) {
+
+	for (int i = 0; i < nb1; ++i)
+	{
+		for (int j = 0; j < nb2; ++j)
+		{
+			n = 0;
+			Point **temp = new Point*[nb1];
+			for (int k = 0; k < nb1; ++k)
+			{
+				temp[k] = new Point(c1[k]->getX() + c2[j]->getX(), 
+					c1[k]->getY() + c2[j]->getY(), 
+					c1[k]->getZ() + c2[j]->getZ());
+				std::cout << temp[k] << std::endl;
+			}
+			std::cout << std::endl;
+			discretiser(bezierCurveByCasteljau(temp, nb1), nbu);
+		}
+	}
+
+	Point **p = discretiser(bezierCurveByCasteljau(c1, nb1), nbu);
+	Point **q = discretiser(bezierCurveByCasteljau(c2, nb2), nbv);
+
+	Point*** t = new Point**[nbu];
+	for (int i = 0; i < nbu; ++i)
+	{
+		t[i] = new Point*[nbv];
+		for (int j = 0; j < nbv; ++j)
+		{
+			t[i][j] = new Point(p[i]->getX() + q[j]->getX(), 
+				p[i]->getY() + q[j]->getY(), 
+				p[i]->getZ() + q[j]->getZ());
+		}
+	}
+	return t;
+}
+
 
 #endif

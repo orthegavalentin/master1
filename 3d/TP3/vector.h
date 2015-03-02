@@ -17,6 +17,7 @@ public:
     double scalar(Vector* vector2);
     Vector *vectoriel (Vector *vector2);
     double getAngle(Vector* vector2);
+    void add(Vector*);
 
 };
 
