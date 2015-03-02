@@ -243,13 +243,14 @@ void render_scene()
 	glEnd();
 	glPointSize(1);
 
+	int n = 20;
 	glPointSize(3);
 	Point*** pts5 = surfaceReglee(
-		discretiser(bezierCurveByBernstein(pts3, nbr), 100), 100,
-		discretiser(bezierCurveByBernstein(pts0, nbr), 100), 100);
-	Point*** pts6 = surfaceCasteljau(pts3, nbr, 100, pts0, nbr, 100);
+		discretiser(bezierCurveByBernstein(pts3, nbr), n), n,
+		discretiser(bezierCurveByBernstein(pts0, nbr), n), n);
+	Point*** pts6 = surfaceCasteljau(pts3, nbr, n, pts0, nbr, n);
 	glColor3f(1.0, 0.0, 0);
-	drawSurface(pts6, 100, 100);
+	drawSurface(pts6, n, n);
 
 	glPointSize(1);
 

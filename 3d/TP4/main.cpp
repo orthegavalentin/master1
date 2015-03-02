@@ -67,6 +67,12 @@ Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h"
 int selected;
 int curve;
 
+GLint winWidth=WIDTH, winHeight=HEIGHT;
+GLfloat eyeX=0.0, eyeY=0.0, eyeZ=2.0;
+GLfloat theta=270.0, phi=180.0;
+GLfloat upX=10.0, upY=10.0, upZ=10.0;
+GLfloat r=2.0;
+
 // Entêtes de fonctions
 void init_scene();
 void render_scene();
@@ -74,7 +80,7 @@ GLvoid initGL();
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height); 
 GLvoid window_key(unsigned char key, int x, int y); 
-
+void onMouseMove(int x, int y) ;
 
 int main(int argc, char **argv) 
 {  
@@ -91,6 +97,7 @@ int main(int argc, char **argv)
   // initialisation de OpenGL et de la scène
 	initGL();  
 	init_scene();
+	glutPassiveMotionFunc(&onMouseMove);
 
   // choix des procédures de callback pour 
   // le tracé graphique
@@ -109,7 +116,37 @@ int main(int argc, char **argv)
 // initialisation du fond de la fenêtre graphique : noir opaque
 GLvoid initGL() 
 {
-	glClearColor(RED, GREEN, BLUE, ALPHA);        
+	glClearColor(RED, GREEN, BLUE, ALPHA);    
+	glEnable(GL_DEPTH_TEST);        
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glFrustum(-1,1,-1,1,.6,300);           
+}
+
+void eyePosition( void ) {
+	eyeX = r * sin(theta*0.0174532) * sin(phi*0.0174532);
+	eyeY = r * cos(theta*0.0174532);
+	eyeZ = r * sin(theta*0.0174532) * cos(phi*0.0174532);
+	GLfloat dt=1.0;
+	GLfloat eyeXtemp = r * sin(theta*0.0174532-dt) * sin(phi*0.0174532);
+	GLfloat eyeYtemp = r * cos(theta*0.0174532-dt);
+	GLfloat eyeZtemp = r * sin(theta*0.0174532-dt) * cos(phi*0.0174532); 
+
+	upX=eyeXtemp-eyeX;
+	upY=eyeYtemp-eyeY;
+	upZ=eyeZtemp-eyeZ;
+
+	glutPostRedisplay();
+}
+
+void onMouseMove(int x, int y) { 
+// Mouse point to angle conversion
+   theta = (360.0/(double)winHeight)*(double)y*1.0; //3.0 rotations possible
+   phi = (360.0/(double)winWidth)*(double)x*1.0; 
+// Restrict the angles within 0~360 deg (optional)
+   if(theta > 360)theta = fmod((double)theta,360.0);
+   if(phi > 360)phi = fmod((double)phi,360.0);
+   eyePosition();
 }
 
 // Initialisation de la scene. Peut servir à stocker des variables de votre programme
@@ -144,6 +181,15 @@ GLvoid window_display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
+	glMatrixMode(GL_MODELVIEW);        // set to Model View before drawing
+	glLoadIdentity();
+	gluLookAt(eyeX,eyeY,eyeZ,0,0,0,upX, upY, upZ);
+
+	// glRotatef(0.1f, upX, upY, upZ);/* orbit the Y axis */
+	render_scene();
+	glutSwapBuffers();
+	glFlush();
+
   // C'est l'endroit où l'on peut dessiner. On peut aussi faire appel
   // à une fonction (render_scene() ici) qui contient les informations 
   // que l'on veut dessiner
@@ -165,7 +211,7 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
   // possible de changer la taille de l'objet dans la fenêtre. Augmentez ces valeurs si l'objet est 
   // de trop grosse taille par rapport à la fenêtre.
 	int size = 20;
-	glOrtho(0, size, 0, size, -2, 2);
+	glOrtho(-size, size, -size, size, -20, 20);
 
   // toutes les transformations suivantes s´appliquent au modèle de vue 
 	glMatrixMode(GL_MODELVIEW);
@@ -253,50 +299,9 @@ void render_scene()
 
 	// glPointSize(1);
 
-	Point*** c = cone(new Point(2, 2, 0), 10, 5, 10);
+	Point*** c = cylindre(new Point(0, 0, 0), 10, 20, 10);
 
 	drawSurface(c, 2, 10);
 
 	glFlush();
-}
-
-double camera_angle_h = 0;
-double camera_angle_v = 0;
-
-int drag_x_origin;
-int drag_y_origin;
-int dragging = 0;
-
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    gluLookAt(0.0, 0.0, 25.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    glRotated(camera_angle_v, 1.0, 0.0, 0.0);
-    glRotated(camera_angle_h, 0.0, 1.0, 0.0);
-
-    render_scene();
-
-    glFlush();
-    glutSwapBuffers();
-}
-
-void mouse_click(int button, int state, int x, int y) {
-    if(button == GLUT_LEFT_BUTTON) {
-        if(state == GLUT_DOWN) {
-            dragging = 1;
-            drag_x_origin = x;
-            drag_y_origin = y;
-        }
-        else
-            dragging = 0;
-    }
-}
-
-void mouse_move(int x, int y) {
-    if(dragging) {
-        camera_angle_v += (y - drag_y_origin)*0.3;
-        camera_angle_h += (x - drag_x_origin)*0.3;
-        drag_x_origin = x;
-        drag_y_origin = y;
-    }
 }
