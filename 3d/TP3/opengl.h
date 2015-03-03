@@ -24,13 +24,18 @@ void DrawCurve(Point **pts, long nbPts) {
 }
 
 void drawSurface(Point*** pts, long nbu, long nbv) {
-	glBegin(GL_POINTS);
-	for (int i = 0; i < nbu; ++i) {
-		for (int j = 0; j < nbv; ++j) {
-			glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+	for (int i = 0; i < nbu-1; ++i) {
+		for (int j = 0; j < nbv-1; ++j) {
+			glBegin(GL_LINES);
+				glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+				glVertex3f(pts[i+1][j]->getX(), pts[i+1][j]->getY(), pts[i+1][j]->getZ());
+			glEnd();	
+			glBegin(GL_LINES);
+				glVertex3f(pts[i+1][j]->getX(), pts[i+1][j]->getY(), pts[i+1][j]->getZ());
+				glVertex3f(pts[i+1][j+1]->getX(), pts[i+1][j+1]->getY(), pts[i+1][j+1]->getZ());
+			glEnd();
 		}
 	}
-	glEnd();
 }
 
 Point **HermiteCubicCurve(Point *p0, Point *p1, Vector *v0, Vector *v1, long nbU) {
@@ -77,7 +82,7 @@ Point* step(Point **t, int nbPts, double u) {
 				glEnd();
 				glPointSize(1);
 			}
-			if(n > 6 && n < 8) {
+			if(n > 6 && n < 18) {
 				glColor3f(0.0, 1.0, 0.0);
 				glBegin(GL_LINES);
 				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());

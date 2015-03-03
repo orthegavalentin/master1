@@ -24,13 +24,34 @@ void DrawCurve(Point **pts, long nbPts) {
 }
 
 void drawSurface(Point*** pts, long nbu, long nbv) {
-	glBegin(GL_POINTS);
-	for (int i = 0; i < nbu; ++i) {
-		for (int j = 0; j < nbv; ++j) {
+	for (int i = 0; i < nbu-1; ++i) {
+		for (int j = 0; j < nbv-1; ++j) {
+			glColor4f(1.0 / (float) i, 0.0 / (float) i, 1.0 / (float) i, 0.5f);
+
+			glBegin(GL_QUADS);
 			glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+			glVertex3f(pts[i+1][j]->getX(), pts[i+1][j]->getY(), pts[i+1][j]->getZ());
+			glVertex3f(pts[i+1][j+1]->getX(), pts[i+1][j+1]->getY(), pts[i+1][j+1]->getZ());
+			glVertex3f(pts[i][j+1]->getX(), pts[i][j+1]->getY(), pts[i][j+1]->getZ());
+			glEnd();
+
+			glColor4f(1.0, 0.0, 0, 0.5f);
+			glLineWidth(10);
+			glBegin(GL_LINES);
+			glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+			glVertex3f(pts[i+1][j]->getX(), pts[i+1][j]->getY(), pts[i+1][j]->getZ());
+			glEnd();	
 		}
 	}
+	glColor4f(1.0 / (float) 1, 1.0 / (float) 1, 1.0 / (float) 1, 0.5f);
+
+	glBegin(GL_QUADS);
+	glVertex3f(pts[0][0]->getX(), pts[0][0]->getY(), pts[0][0]->getZ());
+	glVertex3f(pts[nbu-1][0]->getX(), pts[nbu-1][0]->getY(), pts[nbu-1][0]->getZ());
+	glVertex3f(pts[nbu - 1][nbv-1]->getX(), pts[nbu-1][nbv-1]->getY(), pts[nbu-1][nbv-1]->getZ());
+	glVertex3f(pts[0][nbv-1]->getX(), pts[0][nbv-1]->getY(), pts[0][nbv-1]->getZ());
 	glEnd();
+
 }
 
 Point **HermiteCubicCurve(Point *p0, Point *p1, Vector *v0, Vector *v1, long nbU) {
@@ -68,22 +89,22 @@ Point* step(Point **t, int nbPts, double u) {
 		Point* pts[nbPts - 1];
 		for (int i = 0; i < nbPts - 1; ++i) {
 			Vector v(t[i+1], t[i]);
-			if(n == 1) {
-				glColor3f(1.0, 1.0, 1.00);
-				glPointSize(10);
-				glBegin(GL_POINTS);
-				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
-				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
-				glEnd();
-				glPointSize(1);
-			}
-			if(n > 6 && n < 8) {
-				glColor3f(0.0, 1.0, 0.0);
-				glBegin(GL_LINES);
-				glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
-				glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
-				glEnd();
-			}
+			// if(n == 1) {
+			glColor3f(1.0, 1.0, 1.0);
+			glPointSize(10);
+			glBegin(GL_POINTS);
+			glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+			glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+			glEnd();
+			glPointSize(1);
+			// }
+			// if(n > 6 && n < 8) {
+			// 	glColor3f(0.0, 1.0, 0.0);
+			// 	glBegin(GL_LINES);
+			// 	glVertex3f(t[i]->getX(), t[i]->getY(), t[i]->getZ());
+			// 	glVertex3f(t[i+1]->getX(), t[i+1]->getY(), t[i+1]->getZ());
+			// 	glEnd();
+			// }
 			v.mul(u);
 			Point *p = new Point(v.getX() + t[i]->getX(),
 				v.getY() + t[i]->getY(),
@@ -253,22 +274,38 @@ Point ***surfaceCasteljau(Point** c1, long nb1, long nbu, Point** c2, long nb2, 
 	return t;
 }
 
-Point*** cone(Point* origin, int radius, int height, int meridians) {
+Point*** cylindre(Point* origin, int radius, int height, int meridians) {
 	Point*** p = new Point**[2];
 
-	p[0] = new Point*[meridians];
-	for (int i = 0; i < meridians; ++i) {
-		double angle = (M_PI / (double) meridians) * i;
-		p[0][i] = new Point(origin->getX() + radius, origin->getY(), origin->getZ());
+	p[0] = new Point*[meridians+1];
+	for (int i = 0; i < meridians+1; ++i) {
+		double angle = (2 * M_PI * i) / meridians;
+		p[0][i] = new Point(origin->getX() + radius*cos(angle), origin->getY() + radius*sin(angle), origin->getZ());
 	}
 
-	p[1] = new Point*[meridians];
-	for (int i = 0; i < meridians; ++i) {
-		p[1][i] = new Point(p[0][i]->getX(), p[0][i]->getY() + height, p[0][i]->getZ() + height);
+	p[1] = new Point*[meridians+1];
+	for (int i = 0; i < meridians+1; ++i) {
+		p[1][i] = new Point(p[0][i]->getX(), p[0][i]->getY(), p[0][i]->getZ() + height);
 	}
 
 	return p;
 }
 
+Point*** cone(Point* origin, int radius, int height, int meridians) {
+	Point*** p = new Point**[2];
+
+	p[0] = new Point*[meridians+1];
+	for (int i = 0; i < meridians+1; ++i) {
+		double angle = (2 * M_PI * i) / meridians;
+		p[0][i] = new Point(origin->getX() + radius*cos(angle), origin->getY() + radius*sin(angle), origin->getZ());
+	}
+
+	p[1] = new Point*[meridians+1];
+	for (int i = 0; i < meridians+1; ++i) {
+		p[1][i] = new Point(origin->getX(), origin->getY(), origin->getZ() + height);
+	}
+
+	return p;
+}
 
 #endif
