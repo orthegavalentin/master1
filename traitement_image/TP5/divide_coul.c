@@ -21,16 +21,13 @@ struct region {
 void init(OCTET* in, int size, struct region* r, int startIndex) {
 	r->size = size;
 	r->startIndex = startIndex;
-
 	r->data = in;
-
 	r->c1 = NULL;
 	r->c2 = NULL;
 	r->c3 = NULL;
 	r->c4 = NULL;
-	r->rec = 1;
-
-	r->avgr = 0;
+	r->rec = 1;	
+r->avgr = 0;
 	r->avgg = 0;
 	r->avgb = 0;
 }

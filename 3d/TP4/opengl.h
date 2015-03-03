@@ -185,7 +185,7 @@ Point* stepDeux(Point **c1, int n1, double u, Point **c2, int n2, double v) {
 				pts[i] = p;
 			}
 		}
-		return stepDeux(pts, n1 - 1, u, c2, n2, v);
+	return stepDeux(pts, n1 - 1, u, c2, n2, v);
 	}
 }
 
@@ -258,7 +258,7 @@ Point*** cone(Point* origin, int radius, int height, int meridians) {
 
 	p[0] = new Point*[meridians];
 	for (int i = 0; i < meridians; ++i) {
-		double angle = (M_PI / meridians) * i;
+		double angle = (M_PI / (double) meridians) * i;
 		p[0][i] = new Point(origin->getX() + radius, origin->getY(), origin->getZ());
 	}
 
