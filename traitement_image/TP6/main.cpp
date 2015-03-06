@@ -9,5 +9,5 @@ int main() {
 	std::cout << "max : " << r->getMaxValue() << std::endl;
 
 	std::cout << "at 200 200 20 : " << r->getValue(200, 200, 20) << std::endl;
-	r->ex("out.0.raw");
+	r->flatten("out.0.raw");
 }

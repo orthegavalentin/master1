@@ -10,11 +10,9 @@ using namespace std;
 class RawReader {
 private:
 	std::vector<unsigned short*> data;
-
 	int sizeX;
 	int sizeY;
 	int sizeZ;
-
 	void load(std::string path);
 
 public:
@@ -22,14 +20,13 @@ public:
 	RawReader(std::string path, int sizeX, int sizeY, int sizeZ);
 	unsigned short getMinValue();
 	unsigned short getMaxValue();
-	void ex(std::string path);
+	void flatten(std::string path);
 };
 
 RawReader::RawReader(std::string path, int sizeX, int sizeY, int sizeZ) {
 	this->sizeX = sizeX;
 	this->sizeY = sizeY;
 	this->sizeZ = sizeZ;
-
 	this->load(path);
 }
 
@@ -39,12 +36,9 @@ unsigned short RawReader::getValue(int i, int j, int k) {
 
 unsigned short RawReader::getMinValue() {
 	unsigned short mini = 65000;
-	for (int i = 0; i < sizeX; ++i)
-	{
-		for (int j = 0; j < sizeY; ++j)
-		{
-			for (int k = 0; k < sizeZ; ++k)
-			{
+	for (int i = 0; i < sizeX; ++i) {
+		for (int j = 0; j < sizeY; ++j) {
+			for (int k = 0; k < sizeZ; ++k) {
 				mini = min(getValue(i, j, k), mini);
 			}
 		}
@@ -54,12 +48,9 @@ unsigned short RawReader::getMinValue() {
 
 unsigned short RawReader::getMaxValue() {
 	unsigned short maxi = 0;
-	for (int i = 0; i < sizeX; ++i)
-	{
-		for (int j = 0; j < sizeY; ++j)
-		{
-			for (int k = 0; k < sizeZ; ++k)
-			{
+	for (int i = 0; i < sizeX; ++i) {
+		for (int j = 0; j < sizeY; ++j) {
+			for (int k = 0; k < sizeZ; ++k) {
 				maxi = max(getValue(i, j, k), maxi);
 			}
 		}
@@ -87,20 +78,17 @@ void RawReader::load(std::string path) {
 	}
 }
 
-void RawReader::ex(std::string path) {
+void RawReader::flatten(std::string path) {
 	std::ofstream f (path.c_str(), ios::out | ios::binary);
 	unsigned long long * out = new unsigned long long [sizeX * sizeY];
 
-	for (int j = 0; j < sizeZ; ++j)
-	{
-		for (int i = 0; i < sizeX * sizeY; ++i)
-		{
+	for (int j = 0; j < sizeZ; ++j) {
+		for (int i = 0; i < sizeX * sizeY; ++i) {
 			out[i] += data[j][i];
 		}
 	}
 
-	for (int i = 0; i < sizeX * sizeY; ++i)
-	{
+	for (int i = 0; i < sizeX * sizeY; ++i) {
 		out[i] = out[i] / sizeZ;
 		f.write ((char*)&out[i], sizeof (unsigned short));
 	}
