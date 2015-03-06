@@ -3,11 +3,11 @@
 
 
 int main() {
-	RawReader *r = new RawReader("/auto_home/nlephilippe/Téléchargements/BRAINIX/brainix.256x256x100.0.9375x0.9375x1.5.img",
-		256, 256, 100);
+	RawReader *r = new RawReader("/auto_home/nlephilippe/Téléchargements/WHATISIT/whatisit.301x324x56.1.1.1.4.img",
+		301, 324, 56);
 	std::cout << "min : " << r->getMinValue() << std::endl;
 	std::cout << "max : " << r->getMaxValue() << std::endl;
 
 	std::cout << "at 200 200 20 : " << r->getValue(200, 200, 20) << std::endl;
-	
+	r->ex("out.0.raw");
 }

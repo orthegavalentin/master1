@@ -22,6 +22,7 @@ public:
 	RawReader(std::string path, int sizeX, int sizeY, int sizeZ);
 	unsigned short getMinValue();
 	unsigned short getMaxValue();
+	void ex(std::string path);
 };
 
 RawReader::RawReader(std::string path, int sizeX, int sizeY, int sizeZ) {
@@ -84,4 +85,25 @@ void RawReader::load(std::string path) {
 			img = new unsigned short [sizeX*sizeY];
 		}
 	}
+}
+
+void RawReader::ex(std::string path) {
+	std::ofstream f (path.c_str(), ios::out | ios::binary);
+	unsigned long long * out = new unsigned long long [sizeX * sizeY];
+
+	for (int j = 0; j < sizeZ; ++j)
+	{
+		for (int i = 0; i < sizeX * sizeY; ++i)
+		{
+			out[i] += data[j][i];
+		}
+	}
+
+	for (int i = 0; i < sizeX * sizeY; ++i)
+	{
+		out[i] = out[i] / sizeZ;
+		f.write ((char*)&out[i], sizeof (unsigned short));
+	}
+
+	f.close();
 }
