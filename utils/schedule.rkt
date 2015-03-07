@@ -3,14 +3,14 @@
 (require net/url)
 
 (define days (hash "Monday," 0 "Tuesday," 1 "Wednesday," 2 "Thursday," 3 "Friday," 4 "Saturday," -2 "Sunday," -1))
-(define subjects (hash "FMIN215\r" "SUMMARY:Algorithmique Géométrique\r"
-                       "GMIN20A\r" "SUMMARY:Algorithmique d'exploration et de mouvement\r"
-                       "GMIN212\r" "SUMMARY:Modélisation et programmation\r"
-                       "GMIN215\r" "SUMMARY:Analyse et traitement d'images\r"
-                       "GMIN21C\r" "SUMMARY:Conduite de projets\r"))
+(define subjects (hash "SUMMARY:FMIN215\r" "SUMMARY:FMIN215 : Algorithmique Géométrique\r"
+                       "SUMMARY:GMIN20A\r" "SUMMARY:GMIN20A : Algorithmique d'exploration et de mouvement\r"
+                       "SUMMARY:GMIN212\r" "SUMMARY:GMIN212 : Modélisation et programmation\r"
+                       "SUMMARY:GMIN215\r" "SUMMARY:GMIN215 : Analyse et traitement d'images\r"
+                       "SUMMARY:GMIN21C\r" "SUMMARY:GMIN21C : Conduite de projets\r"))
 
 #|Proxy pour la fac|#
-(current-proxy-servers '(("http" "162.38.218.204" 3128)))
+;(current-proxy-servers '(("http" "162.38.218.204" 3128)))
 
 (define (add-days-to-date d n)
   (date-display-format 'iso-8601)
@@ -39,11 +39,7 @@
         (if (eof-object? data)
             (close-output-port out)
             (begin
-              (write-string
-               (if (string=? (substring data 0 7) "SUMMARY")
-                   (hash-ref subjects (cadr (string-split data ":")) data)
-                   data)
-               out)
+              (write-string (hash-ref subjects data data) out)
               (f)))))))
 
 (create-new-schedule)
