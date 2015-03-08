@@ -63,9 +63,13 @@ Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h"
 #define PREVIOUS 108
 #define NEXT 106
 #define SWITCH 32
+#define PLUS 43
+#define MINUS 45
+#define ENTER 13
 
 int selected;
 int curve;
+int par;
 
 GLint winWidth=WIDTH, winHeight=HEIGHT;
 GLfloat eyeX=0.0, eyeY=0.0, eyeZ=2.0;
@@ -154,10 +158,14 @@ void onMouseMove(int x, int y) {
 int nbr = 5;
 Point** pts3;
 Point** pts0;
+Point* orig;
+int meridians;
+int parallels;
 void init_scene()
 {
 	selected = 0;
 	curve = 1;
+	par = 1;
 	
 	pts3 = new Point*[nbr];
 	pts3[0] = new Point(0,0,0);
@@ -172,6 +180,9 @@ void init_scene()
 	pts0[2] = new Point(1,2,0);
 	pts0[3] = new Point(1,4,0);
 	pts0[4] = new Point(2,1,0);
+	orig = new Point(0, 0, 0);
+	parallels = 10;
+	meridians = 10;
 }
 
 // fonction de call-back pour l´affichage dans la fenêtre
@@ -223,6 +234,8 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
 GLvoid window_key(unsigned char key, int x, int y) 
 {  
 	Point** p = (curve > 0)?pts3:pts0;
+	int* sel = (par > 0)?&parallels:&meridians;
+
 	switch (key) {    
 		case KEY_ESC:  
 		exit(1);                    
@@ -255,6 +268,18 @@ GLvoid window_key(unsigned char key, int x, int y)
 
 		case PREVIOUS:
 		if(selected > 0) selected--;
+		break;
+
+		case ENTER:
+		par *= -1;
+		break;
+
+		case PLUS:
+		(*sel)++;
+		break;
+
+		case MINUS:
+		(*sel)--;
 		break;
 
 		default:
@@ -299,9 +324,13 @@ void render_scene()
 
 	// glPointSize(1);
 
-	Point*** c = cylindre(new Point(0, 0, 0), 10, 20, 10);
+	// Point*** c = cylindre(new Point(0, 0, 0), 10, 10, 4);
 
-	drawSurface(c, 2, 10);
+	// drawSurface(c, 2, 4);
+
+	Point*** c = sphere(orig, 10, meridians, parallels);
+	drawSurfaceDots(c, meridians, parallels);
+	free(c);
 
 	glFlush();
 }

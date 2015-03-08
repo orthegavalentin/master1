@@ -54,6 +54,17 @@ void drawSurface(Point*** pts, long nbu, long nbv) {
 
 }
 
+void drawSurfaceDots(Point*** pts, long nbu, long nbv) {
+	glLineWidth(10);
+	glBegin(GL_POINTS);
+	for (int i = 0; i < nbu; ++i) {
+		for (int j = 0; j < nbv; ++j) {
+			glVertex3f(pts[i][j]->getX(), pts[i][j]->getY(), pts[i][j]->getZ());
+		}
+	}
+	glEnd();
+}
+
 Point **HermiteCubicCurve(Point *p0, Point *p1, Vector *v0, Vector *v1, long nbU) {
 
 	Point **pts = new Point*[nbU];
@@ -206,7 +217,7 @@ Point* stepDeux(Point **c1, int n1, double u, Point **c2, int n2, double v) {
 				pts[i] = p;
 			}
 		}
-	return stepDeux(pts, n1 - 1, u, c2, n2, v);
+		return stepDeux(pts, n1 - 1, u, c2, n2, v);
 	}
 }
 
@@ -305,6 +316,23 @@ Point*** cone(Point* origin, int radius, int height, int meridians) {
 		p[1][i] = new Point(origin->getX(), origin->getY(), origin->getZ() + height);
 	}
 
+	return p;
+}
+
+Point*** sphere(Point* origin, int radius, int meridians, int parallels) {
+	Point*** p = new Point**[meridians];
+	for (int i = 0; i < meridians; ++i) {
+		p[i] = new Point*[parallels];
+		double teta = (360.0 / (double) meridians) * (double) i;
+		for (int j = 0; j < parallels; ++j) {
+			double phi = (360.0 / (double) parallels) * (double) j;
+
+			double x = radius * sin(phi) * cos(teta);
+			double y = radius * sin(phi) * sin(teta);
+			double z = radius * cos(phi);
+			p[i][j] = new Point(x, y, z);
+		}
+	}
 	return p;
 }
 
