@@ -323,9 +323,26 @@ Point*** sphere(Point* origin, int radius, int meridians, int parallels) {
 	Point*** p = new Point**[meridians];
 	for (int i = 0; i < meridians; ++i) {
 		p[i] = new Point*[parallels];
-		double teta = (360.0 / (double) meridians) * (double) i;
+		double teta = (2 * M_PI * i) / meridians;
 		for (int j = 0; j < parallels; ++j) {
-			double phi = (360.0 / (double) parallels) * (double) j;
+			double phi = (2 * M_PI * j) / parallels;
+
+			double x = radius * sin(phi) * cos(teta);
+			double y = radius * sin(phi) * sin(teta);
+			double z = radius * cos(phi);
+			p[i][j] = new Point(x, y, z);
+		}
+	}
+	return p;
+}
+
+Point*** cool(Point* origin, int radius, int meridians, int parallels) {
+	Point*** p = new Point**[meridians];
+	for (int i = 0; i < meridians; ++i) {
+		p[i] = new Point*[parallels];
+		double teta = (2 * M_PI * i) / meridians;
+		for (int j = 0; j < parallels; ++j) {
+			double phi = (2 * M_PI * i) / parallels;
 
 			double x = radius * sin(phi) * cos(teta);
 			double y = radius * sin(phi) * sin(teta);
