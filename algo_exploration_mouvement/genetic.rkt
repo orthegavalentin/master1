@@ -64,7 +64,6 @@
             (car p)
             (solve (add1 i) max-iterations p problem)))))
 
-
 (define (main)
   (letrec ([args (current-command-line-arguments)]
            [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
