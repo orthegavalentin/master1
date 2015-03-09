@@ -300,9 +300,16 @@ void render_scene()
 //Définition de la couleur
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Voxel *v = new Voxel(orig, 5);
-	v->draw();
-	// free(v);
+	// Voxel *v = new Voxel(orig, 5);
+	// v->draw();
+	// // free(v);
+
+	glColor3f(1.0, 1.0, 1.0);
+	Point*** c = sphere(orig, 10, meridians, parallels);
+	drawSurfaceQuads(c, meridians, parallels);
+	free(c);
+	glColor3f(1.0, 0.0, 0.0);
+	displaySphereVolumic(orig, 10, 3, 0);
 
 	glFlush();
 }

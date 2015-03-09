@@ -5,17 +5,17 @@
 
 class Voxel {
 public:
-	Voxel(Point* orig, int size);
+	Voxel(Point* orig, double size);
 	void draw();
 
 private:
 	Point*** sommets;
-	int size;
+	double size;
 	Point* orig;
 };
 
 //orig = bas gauche front
-Voxel::Voxel(Point* orig, int size) {
+Voxel::Voxel(Point* orig, double size) {
 	sommets = new Point**[2];
 	for (int i = 0; i < 2; ++i) {
 		sommets[i] = new Point*[4];
@@ -52,6 +52,28 @@ void Voxel::draw() {
 		}	
 	}
 	glEnd();
+}
+
+void displaySphereVolumic(Point* orig, double rayon, double resolution, double step) {
+	double size = ((M_PI / 2) * sqrt(2) * rayon / 2.0);
+	Voxel v(orig, size);
+	v.draw();
+	if(step < resolution) {
+		step++;
+		displaySphereVolumic(new Point(orig->getX() + rayon - rayon / 4, orig->getY(), + orig->getZ()), rayon / 4, resolution, step);
+
+		for (int i = 1; i < 4; ++i)
+		{
+			double m = (i % 2) * rayon / 4; if(i == 1) m *= -1;
+			std::cout << m << std::endl;
+
+			for (int j = 1; j < 4; ++j)
+			{
+				double n = (i % 2) * rayon / 4; if(i == 1) n *= -1;
+				displaySphereVolumic(new Point(orig->getX() + rayon - rayon / 4, orig->getY() + m, + orig->getZ() + n), rayon / 4, resolution, step);
+			}
+		}
+	}
 }
 
 #endif
