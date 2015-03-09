@@ -19,10 +19,11 @@
         (f (append p (list (generate-random-solution individual-size problem))) (add1 i)))))
 
 (define (satisfiable? clause solution)
-  (if (< 0 (apply + (map (lambda (i)
-                           (letrec ([val (vector-ref solution (- (abs i) 1))] [x (if (= val 1) 1 -1)])
-                             (set! cpt (add1 cpt))
-                             (if (< 0 (* i x)) 1 0))) clause))) #t #f))
+  (ormap (lambda (i)
+           (let* ([val (vector-ref solution (- (abs i) 1))]
+                  [x (if (= val 1) 1 -1)])
+             (set! cpt (add1 cpt))
+             (> 0 (* i x)))) clause))
 
 (define (cost problem solution)
   (if (= 0 (vector-length solution)) 0 
@@ -50,7 +51,7 @@
                                        (< (car i) (car j))))])
     (if (zero? (caar population))
         (list (car population))        
-        (letrec ([p (take population (/ population-size 2))] [parents (get-parents p)])
+        (let* ([p (take population (/ population-size 2))] [parents (get-parents p)])
           (append p (map (lambda (i)
                            (crossover (cadr (car i)) (cadr (cadr i)) problem)) parents) 
                   (map (lambda (i)
@@ -65,12 +66,12 @@
             (solve (add1 i) max-iterations p problem)))))
 
 (define (main)
-  (letrec ([args (current-command-line-arguments)]
-           [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
-           [atom-number (car p)]
-           [clause-number (cadr p)]
-           [size (string->number (vector-ref args 1))]
-           [problem (caddr p)])
+  (let* ([args (current-command-line-arguments)]
+         [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
+         [atom-number (car p)]
+         [clause-number (cadr p)]
+         [size (string->number (vector-ref args 1))]
+         [problem (caddr p)])
     (set! population-size (+ size (- 4 (modulo size 4))))
     (set! mutate-factor (string->number (vector-ref args 2)))
     (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
