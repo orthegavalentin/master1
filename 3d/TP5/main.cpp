@@ -32,6 +32,7 @@ int main() {
 #include <math.h>
 
 #include "opengl.h"
+#include "Voxel.h"
 
 #include <iostream>
 
@@ -299,38 +300,9 @@ void render_scene()
 //Définition de la couleur
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// glColor3f(1.0, 1.0, 0);
-	// DrawCurve(pts3, nbr);
-	// glColor3f(1.0, 0.0, 0);
-	// DrawCurve(pts0, nbr);
-
-	// glColor3f(0.0, 1.0, 0);
-	// glPointSize(10);
-	// glBegin(GL_POINTS);
-	// if(curve > 0)
-	// 	glVertex3f(pts3[selected]->getX(), pts3[selected]->getY(), pts3[selected]->getZ());
-	// else
-	// 	glVertex3f(pts0[selected]->getX(), pts0[selected]->getY(), pts0[selected]->getZ());
-	// glEnd();
-	// glPointSize(1);
-
-	// glPointSize(3);
-	// Point*** pts5 = surfaceReglee(
-	// 	discretiser(bezierCurveByBernstein(pts3, nbr), 100), 100,
-	// 	discretiser(bezierCurveByBernstein(pts0, nbr), 100), 100);
-	// Point*** pts6 = surfaceCasteljau(pts3, nbr, 100, pts0, nbr, 100);
-	// glColor3f(1.0, 0.0, 0);
-	// drawSurface(pts6, 100, 100);
-
-	// glPointSize(1);
-
-	// Point*** c = cylindre(new Point(0, 0, 0), 10, 10, 4);
-
-	// drawSurface(c, 2, 4);
-
-	Point*** c = sphere(orig, 10, meridians, parallels);
-	drawSurfaceQuads(c, meridians, parallels);
-	free(c);
+	Voxel *v = new Voxel(orig, 5);
+	v->draw();
+	// free(v);
 
 	glFlush();
 }

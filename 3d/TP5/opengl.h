@@ -1,5 +1,5 @@
 #ifndef OGL_H
-#define OGLH
+#define OGL_H
 
 #include <stdio.h>      
 #include <stdlib.h>     
