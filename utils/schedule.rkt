@@ -10,7 +10,7 @@
                        "SUMMARY:GMIN21C\r" "SUMMARY:GMIN21C : Conduite de projets\r"))
 
 #|Proxy pour la fac|#
-;(current-proxy-servers '(("http" "162.38.218.204" 3128)))
+(current-proxy-servers '(("http" "162.38.218.204" 3128)))
 
 (define (add-days-to-date d n)
   (date-display-format 'iso-8601)

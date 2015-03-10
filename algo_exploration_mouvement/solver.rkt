@@ -7,10 +7,11 @@
   (if (= i 1) 0 1))
 
 (define (satisfiable? clause solution)
-  (if (< 0 (apply + (map (lambda (i)
-                           (letrec ([val (vector-ref solution (- (abs i) 1))] [x (if (= val 1) 1 -1)])
-                             (set! cpt (add1 cpt))
-                             (if (< 0 (* i x)) 1 0))) clause))) #t #f))
+  (ormap (lambda (i)
+           (let* ([val (vector-ref solution (- (abs i) 1))]
+                  [x (if (= val 1) 1 -1)])
+             (set! cpt (add1 cpt))
+             (> 0 (* i x)))) clause))
 
 (define (generate-random-solution size)
   (build-vector size (lambda (i) (random 2))))
