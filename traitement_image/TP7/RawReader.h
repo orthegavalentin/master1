@@ -39,16 +39,14 @@ public:
 
 class Triangle {
 public:
-	Vector *orig;
 	Vector *v1;
 	Vector *v2;
 	Vector *v3;
 
-	Triangle(Vector* orig, double x, double y, double z) {
-		this->orig = orig;
-		this->v1 = new Vector(orig->x, orig->z, orig->z); v1->add(x, 0, 0);
-		this->v2 = new Vector(orig->x, orig->z, orig->z); v2->add(0, y, 0);
-		this->v3 = new Vector(orig->x, orig->z, orig->z); v3->add(0, 0, z);
+	Triangle(Vector* orig, Vector* x, Vector* y, Vector* z) {
+		this->v1 = new Vector(orig->x, orig->y, orig->z); v1->add(x->x, x->y, x->z);
+		this->v2 = new Vector(orig->x, orig->y, orig->z); v2->add(y->x, y->y, y->z);
+		this->v3 = new Vector(orig->x, orig->y, orig->z); v3->add(z->x, z->y, z->z);
 	}
 
 	std::string toString() {
@@ -220,38 +218,57 @@ void RawReader::marchingCubes(double vWidth, double vHeight, double vDepth, unsi
 	for (int i = 1; i < sizeX - 1; ++i) {
 		for (int j = 1; j < sizeY - 1; ++j) {
 			for (int k = 1; k < sizeZ - 1; ++k) {
+
 				if(getValue(i, j, k) > threshold) {
 
 					if(getValue(i + 1, j, k) < threshold) {
 						Vector orig((i + 1) * vWidth, j * vHeight, k * vDepth);
-						Triangle t1(&orig, 0, vHeight, vDepth);
+						Vector v1(0, 0, vDepth);
+						Vector v2(0, vHeight, vDepth);
+						Vector v3(0, vHeight, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 
 					if(getValue(i - 1, j, k) < threshold) {
 						Vector orig((i - 1) * vWidth, j * vHeight, k * vDepth);
-						Triangle t1(&orig, 0, vHeight, vDepth);
+						Vector v1(0, 0, vDepth);
+						Vector v2(0, vHeight, vDepth);
+						Vector v3(0, vHeight, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 
 					if(getValue(i, j + 1, k) < threshold) {
 						Vector orig(i * vWidth, (j + 1) * vHeight, k * vDepth);
-						Triangle t1(&orig, vWidth, 0, vDepth);
+						Vector v1(0, 0, vDepth);
+						Vector v2(vWidth, 0, vDepth);
+						Vector v3(vWidth, 0, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 					if(getValue(i, j - 1, k) < threshold) {
 						Vector orig(i * vWidth, (j - 1) * vHeight, k * vDepth);
-						Triangle t1(&orig, vWidth, 0, vDepth);
+						Vector v1(0, 0, vDepth);
+						Vector v2(vWidth, 0, vDepth);
+						Vector v3(vWidth, 0, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 					if(getValue(i, j, k + 1) < threshold) {
 						Vector orig(i * vWidth, j * vHeight, (k + 1) * vDepth);
-						Triangle t1(&orig, vWidth, vHeight, 0);
+						Vector v1(0, vHeight, 0);
+						Vector v2(0, vHeight, 0);
+						Vector v3(vWidth, 0, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 					if(getValue(i, j, k - 1) < threshold) {
 						Vector orig(i * vWidth, j * vHeight, (k - 1) * vDepth);
-						Triangle t1(&orig, vWidth, vHeight, 0);
+						Vector v1(0, vHeight, 0);
+						Vector v2(vWidth, 0, 0);
+						Vector v3(vWidth, vHeight, 0);
+						Triangle t1(&orig, &v1, &v2, &v3);
 						std::cout << t1.toString() << std::endl;
 					}
 				}
