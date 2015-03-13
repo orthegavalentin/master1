@@ -20,7 +20,9 @@ public:
 	RawReader(std::string path, int sizeX, int sizeY, int sizeZ);
 	unsigned short getMinValue();
 	unsigned short getMaxValue();
-	void flatten(std::string path);
+	void aip(std::string path);
+	void mip(std::string path);
+	void minip(std::string path);
 };
 
 RawReader::RawReader(std::string path, int sizeX, int sizeY, int sizeZ) {
@@ -78,7 +80,7 @@ void RawReader::load(std::string path) {
 	}
 }
 
-void RawReader::flatten(std::string path) {
+void RawReader::aip(std::string path) {
 	std::ofstream f (path.c_str(), ios::out | ios::binary);
 	unsigned long long * out = new unsigned long long [sizeX * sizeY];
 
@@ -92,6 +94,57 @@ void RawReader::flatten(std::string path) {
 		out[i] = out[i] / sizeZ;
 		f.write ((char*)&out[i], sizeof (unsigned short));
 	}
-
+	delete(out);
 	f.close();
+}
+
+void RawReader::mip(std::string path) {
+	std::ofstream f (path.c_str(), ios::out | ios::binary);
+	unsigned short * out = new unsigned short [sizeX * sizeY];
+
+	for (int j = 0; j < sizeZ; ++j) {
+		for (int i = 0; i < sizeX * sizeY; ++i) {
+			out[i] = std::max(data[j][i], out[i]);
+		}
+	}
+
+	for (int i = 0; i < sizeX * sizeY; ++i) {
+		out[i] = out[i] / sizeZ;
+		f.write ((char*)&out[i], sizeof (unsigned short));
+	}
+	delete(out);
+	f.close();
+}
+
+void RawReader::minip(std::string path) {
+	std::ofstream f (path.c_str(), ios::out | ios::binary);
+	unsigned short * out = new unsigned short [sizeX * sizeY];
+	for (int i = 0; i < sizeX * sizeY; ++i) {
+		out[i] = 65000;
+	}
+
+	for (int j = 0; j < sizeZ; ++j) {
+		for (int i = 0; i < sizeX * sizeY; ++i) {
+			out[i] = std::min(data[j][i], out[i]);
+		}
+	}
+
+	for (int i = 0; i < sizeX * sizeY; ++i) {
+		out[i] = out[i] / sizeZ;
+		f.write ((char*)&out[i], sizeof (unsigned short));
+	}
+	delete(out);
+	f.close();
+}
+
+int main() {
+	RawReader *r = new RawReader("/home/noe/Téléchargements/WHATISIT/whatisit.301x324x56.1.1.1.4.img",
+		301, 324, 56);
+	std::cout << "min : " << r->getMinValue() << std::endl;
+	std::cout << "max : " << r->getMaxValue() << std::endl;
+
+	std::cout << "at 200 200 20 : " << r->getValue(200, 200, 20) << std::endl;
+	r->aip("aip.0.raw");
+	r->mip("mip.0.raw");
+	r->minip("minip.0.raw");
 }

@@ -339,7 +339,7 @@ Point*** cone(Point* origin, int radius, int height, int meridians) {
 	return p;
 }
 
-Point*** sphere(Point* origin, int radius, int meridians, int parallels) {
+Point***sphere(Point* origin, int radius, int meridians, int parallels) {
 	Point*** p = new Point**[meridians];
 	for (int i = 0; i < meridians; ++i) {
 		p[i] = new Point*[parallels];

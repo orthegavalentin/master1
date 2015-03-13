@@ -59,9 +59,9 @@
 
 (define (solve i max-iterations population problem )
   (let ([p (next-generation population problem)])
-    (if (= (length p) 1)
+    (if (= (length p) 1) ;; solution trouvée
         (car p)
-        (if (eq? max-iterations i)
+        (if (eq? max-iterations i) ;;nombre d'itérations atteint
             (car p)
             (solve (add1 i) max-iterations p problem)))))
 
