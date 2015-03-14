@@ -7,9 +7,10 @@
 class Voxel {
 public:
 	Voxel(Point* orig, double size);
+	~Voxel();
 	void draw();
-	Voxel** subdivise();
-	bool isInsideSphere(Point* orig, double rayon);
+	Voxel** subdivide();
+	int intersects(Point* orig, double rayon);
 	Point* orig;
 
 private:
@@ -18,6 +19,15 @@ private:
 };
 
 //orig = bas gauche front
+Voxel::~Voxel() {
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			delete(sommets[i][j]);
+		}	
+	}
+	delete orig;
+}
+
 Voxel::Voxel(Point* orig, double size) {
 	sommets = new Point**[2];
 	for (int i = 0; i < 2; ++i) {
@@ -40,6 +50,7 @@ Voxel::Voxel(Point* orig, double size) {
 }
 
 void Voxel::draw() {
+	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < 2; ++i) {
 		for (int j = 0; j < 5; ++j) {
@@ -55,9 +66,27 @@ void Voxel::draw() {
 		}	
 	}
 	glEnd();
+
+	/**
+	glColor3f(0.0, 1.0, 0.0);
+	glBegin(GL_POLYGON);
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 5; ++j) {
+			glVertex3f(sommets[i][j%4]->getX(), sommets[i][j%4]->getY(), sommets[i][j%4]->getZ());
+		}	
+	}
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	for (int j = 0; j < 10; j+=3) {
+		for (int i = 0; i < 2; ++i) {
+			glVertex3f(sommets[i][j%4]->getX(), sommets[i][j%4]->getY(), sommets[i][j%4]->getZ());
+		}	
+	}
+	glEnd();//*/
 }
 
-Voxel** Voxel::subdivise() {
+Voxel** Voxel::subdivide() {
 	Voxel **p = new Voxel*[8];
 	int cpt = 0;
 	for (int i = 0; i < 2; ++i) {
@@ -70,35 +99,42 @@ Voxel** Voxel::subdivise() {
 	return p;
 }
 
-bool Voxel::isInsideSphere(Point* orig, double rayon) {
+int Voxel::intersects(Point* orig, double rayon) {
+	int n = 0;
 	for (int i = 0; i < 2; ++i) {
 		for (int j = 0; j < 4; ++j) {
 			Vector v(this->sommets[i][j]->getX() - orig->getX(), this->sommets[i][j]->getY() - orig->getY(), this->sommets[i][j]->getZ() - orig->getZ());
 			if(v.getNorme() > rayon) {
-				return true;
+				n++;
 			}
 		}	
 	}
-	return false;
+	return n;
 }
 
 void step(Voxel *v, Point *orig, double rayon, double resolution, double iter) {
 	if(iter < resolution) {
 		iter++;
-		Voxel **voxels = v->subdivise();
+		Voxel **voxels = v->subdivide();
 		for (int i = 0; i < 8; ++i) {
-			if(voxels[i]->isInsideSphere(orig, rayon)) {
-				step(voxels[i], orig, rayon, resolution, iter);
-			} else {
+			int n = voxels[i]->intersects(orig, rayon);
+			if(n == 0) {
 				voxels[i]->draw();
+				delete(voxels[i]);
+			} else if (n == 8) {
+				delete(voxels[i]);
+			} else {
+				step(voxels[i], orig, rayon, resolution, iter);
 			}
 		}
 	}
+	delete v;
 }
 
 void displaySphereVolumic(Point* orig, double rayon, double resolution) {
-	Voxel v(orig, rayon * 2);
-	step(&v, orig, rayon, resolution, 0);
+	Voxel *v = new Voxel(orig, rayon * 2);
+	step(v, orig, rayon, resolution, 0);
 }
+
 
 #endif

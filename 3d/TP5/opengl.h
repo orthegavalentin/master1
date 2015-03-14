@@ -350,7 +350,7 @@ Point*** sphere(Point* origin, int radius, int meridians, int parallels) {
 			double x = radius * sin(phi) * cos(teta);
 			double y = radius * sin(phi) * sin(teta);
 			double z = radius * cos(phi);
-			p[i][j] = new Point(x, y, z);
+			p[i][j] = new Point(x + origin->getX(), y + origin->getY(), z + origin->getZ());
 		}
 	}
 	return p;

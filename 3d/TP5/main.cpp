@@ -1,34 +1,5 @@
-/*#include "point.h"
-#include "vector.h"
-#include <iostream>
-
-int main() {
-    Point* a = new Point(2, 1, 0);
-    Point* b = new Point(4, 1, 0);
-    Point* c = new Point(3.5, 3.5, 0);
-
-    std::cout << c->projectOnLine(a, b) << std::endl;
-
-    Point *a1 = new Point(0, 0, 0);
-    Vector *n = new Vector(0, 0, 1);
-    Point *m = new Point(1, 1, 1);
-
-    std::cout << m->projectOnPlan(a1, n) << std::endl;
-}
-*/
-///////////////////////////////////////////////////////////////////////////////
-// Imagina
-// ----------------------------------------------------------------------------
-// IN - Synthèse d'images - Modélisation géométrique
-// Auteur : Gilles Gesquière
-// ----------------------------------------------------------------------------
-// Base du TP 1
-// programme permettant de créer des formes de bases.
-// La forme représentée ici est un polygone blanc dessiné sur un fond rouge
-///////////////////////////////////////////////////////////////////////////////  
-
-#include <stdio.h>      
-#include <stdlib.h>     
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "opengl.h"
@@ -36,26 +7,16 @@ int main() {
 
 #include <iostream>
 
-
-/* Dans les salles de TP, vous avez généralement accès aux glut dans C:\Dev. Si ce n'est pas le cas, téléchargez les .h .lib ...
-Vous pouvez ensuite y faire référence en spécifiant le chemin dans visual. Vous utiliserez alors #include <glut.h>. 
-Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h" 
-*/
-
 #include <GL/glut.h> 
 
-// Définition de la taille de la fenêtre
 #define WIDTH  480
 #define HEIGHT 480
 
-// Définition de la couleur de la fenêtre
 #define RED   0
 #define GREEN 0
 #define BLUE  0
 #define ALPHA 1
 
-
-// Touche echap (Esc) permet de sortir du programme
 #define KEY_ESC 27
 #define LEFT 97
 #define UP 233
@@ -68,9 +29,10 @@ Si vous mettez glut dans le répertoire courant, on aura alors #include "glut.h"
 #define MINUS 45
 #define ENTER 13
 
-int selected;
 int curve;
+int selected;
 int par;
+int zIndex = 20;
 
 GLint winWidth=WIDTH, winHeight=HEIGHT;
 GLfloat eyeX=0.0, eyeY=0.0, eyeZ=2.0;
@@ -212,6 +174,7 @@ GLvoid window_display()
 }
 
 // fonction de call-back pour le redimensionnement de la fenêtre
+int size = 20;
 
 GLvoid window_reshape(GLsizei width, GLsizei height)
 {  
@@ -222,8 +185,7 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
   // ici, vous verrez pendant le cours sur les projections qu'en modifiant les valeurs, il est
   // possible de changer la taille de l'objet dans la fenêtre. Augmentez ces valeurs si l'objet est 
   // de trop grosse taille par rapport à la fenêtre.
-	int size = 20;
-	glOrtho(-size, size, -size, size, -20, 20);
+	glOrtho(-size, size, -size, size, -size, size);
 
   // toutes les transformations suivantes s´appliquent au modèle de vue 
 	glMatrixMode(GL_MODELVIEW);
@@ -309,7 +271,6 @@ void render_scene()
 	drawSurfaceQuads(c, meridians, parallels);
 	free(c);
 	glColor3f(1.0, 0.0, 0.0);
-	displaySphereVolumic(orig, 10, 5);
-
+	displaySphereVolumic(new Point(orig->getX(), orig->getY(), orig->getZ()), 10, 5);
 	glFlush();
 }
