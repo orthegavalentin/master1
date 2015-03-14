@@ -309,7 +309,7 @@ void render_scene()
 	drawSurfaceQuads(c, meridians, parallels);
 	free(c);
 	glColor3f(1.0, 0.0, 0.0);
-	displaySphereVolumic(orig, 10, 3, 0);
+	displaySphereVolumic(orig, 10, 5);
 
 	glFlush();
 }

@@ -2,16 +2,19 @@
 #define VOXEL_H
 
 #include "opengl.h"
+#include <vector>
 
 class Voxel {
 public:
 	Voxel(Point* orig, double size);
 	void draw();
+	Voxel** subdivise();
+	bool isInsideSphere(Point* orig, double rayon);
+	Point* orig;
 
 private:
 	Point*** sommets;
 	double size;
-	Point* orig;
 };
 
 //orig = bas gauche front
@@ -54,26 +57,48 @@ void Voxel::draw() {
 	glEnd();
 }
 
-void displaySphereVolumic(Point* orig, double rayon, double resolution, double step) {
-	double size = ((M_PI / 2) * sqrt(2) * rayon / 2.0);
-	Voxel v(orig, size);
-	v.draw();
-	if(step < resolution) {
-		step++;
-		displaySphereVolumic(new Point(orig->getX() + rayon - rayon / 4, orig->getY(), + orig->getZ()), rayon / 4, resolution, step);
+Voxel** Voxel::subdivise() {
+	Voxel **p = new Voxel*[8];
+	int cpt = 0;
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			Vector v(this->sommets[i][j]->getX() + orig->getX(), this->sommets[i][j]->getY() + orig->getY(), this->sommets[i][j]->getZ() + orig->getZ());
+			v.mul(0.5f);
+			p[cpt++] = new Voxel(new Point(v.getX(), v.getY(), v.getZ()), size * 0.5f);
+		}	
+	}
+	return p;
+}
 
-		for (int i = 1; i < 4; ++i)
-		{
-			double m = (i % 2) * rayon / 4; if(i == 1) m *= -1;
-			std::cout << m << std::endl;
+bool Voxel::isInsideSphere(Point* orig, double rayon) {
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			Vector v(this->sommets[i][j]->getX() - orig->getX(), this->sommets[i][j]->getY() - orig->getY(), this->sommets[i][j]->getZ() - orig->getZ());
+			if(v.getNorme() > rayon) {
+				return true;
+			}
+		}	
+	}
+	return false;
+}
 
-			for (int j = 1; j < 4; ++j)
-			{
-				double n = (i % 2) * rayon / 4; if(i == 1) n *= -1;
-				displaySphereVolumic(new Point(orig->getX() + rayon - rayon / 4, orig->getY() + m, + orig->getZ() + n), rayon / 4, resolution, step);
+void step(Voxel *v, Point *orig, double rayon, double resolution, double iter) {
+	if(iter < resolution) {
+		iter++;
+		Voxel **voxels = v->subdivise();
+		for (int i = 0; i < 8; ++i) {
+			if(voxels[i]->isInsideSphere(orig, rayon)) {
+				step(voxels[i], orig, rayon, resolution, iter);
+			} else {
+				voxels[i]->draw();
 			}
 		}
 	}
+}
+
+void displaySphereVolumic(Point* orig, double rayon, double resolution) {
+	Voxel v(orig, rayon * 2);
+	step(&v, orig, rayon, resolution, 0);
 }
 
 #endif
