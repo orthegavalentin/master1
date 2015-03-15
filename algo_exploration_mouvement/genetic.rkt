@@ -74,4 +74,4 @@
     (solve max-iterations problem size atom-number)))
 
 (time (main (current-command-line-arguments)))
-;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "120" "100")))
+;(time (main #("/home/noe/dev/fac/master1/fac/algo_exploration_mouvement/uf20-0912.cnf" "120" "100")))

@@ -8,7 +8,7 @@
 
 (define (generate-random-solution size problem)
  ; (build-vector size (lambda (i) (random 2))))
-  (cadr (solve 100 problem 100 size 0)))
+  (cadr (solve 100 problem 100 size)))
 
 
 (define (make-clauses-vector problem size)
@@ -71,5 +71,5 @@
          [problem (caddr p)])
     (solve-walksat problem atom-number max-tries proba)))
 
-;(time (main (current-command-line-arguments)))
-(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/test.cnf" "100" "5")))
+(time (main (current-command-line-arguments)))
+;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/test.cnf" "100" "5")))

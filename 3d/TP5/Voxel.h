@@ -10,7 +10,8 @@ public:
 	~Voxel();
 	void draw();
 	Voxel** subdivide();
-	int intersects(Point* orig, double rayon);
+	int intersectsSphere(Point* orig, double rayon);
+	int intersectsCylindre(Point* orig, Vector* direction, double rayon);
 	Point* orig;
 
 private:
@@ -99,7 +100,7 @@ Voxel** Voxel::subdivide() {
 	return p;
 }
 
-int Voxel::intersects(Point* orig, double rayon) {
+int Voxel::intersectsSphere(Point* orig, double rayon) {
 	int n = 0;
 	for (int i = 0; i < 2; ++i) {
 		for (int j = 0; j < 4; ++j) {
@@ -112,19 +113,19 @@ int Voxel::intersects(Point* orig, double rayon) {
 	return n;
 }
 
-void step(Voxel *v, Point *orig, double rayon, double resolution, double iter) {
+void stepSphere(Voxel *v, Point *orig, double rayon, double resolution, double iter) {
 	if(iter < resolution) {
 		iter++;
 		Voxel **voxels = v->subdivide();
-		for (int i = 0; i < 8; ++i) {
-			int n = voxels[i]->intersects(orig, rayon);
+		for (int i = 0; i < 4; ++i) {
+			int n = voxels[i]->intersectsSphere(orig, rayon);
 			if(n == 0) {
 				voxels[i]->draw();
 				delete(voxels[i]);
-			} else if (n == 8) {
+			} else if (n == 4) {
 				delete(voxels[i]);
 			} else {
-				step(voxels[i], orig, rayon, resolution, iter);
+				stepSphere(voxels[i], orig, rayon, resolution, iter);
 			}
 		}
 	}
@@ -133,7 +134,52 @@ void step(Voxel *v, Point *orig, double rayon, double resolution, double iter) {
 
 void displaySphereVolumic(Point* orig, double rayon, double resolution) {
 	Voxel *v = new Voxel(orig, rayon * 2);
-	step(v, orig, rayon, resolution, 0);
+	stepSphere(v, orig, rayon, resolution, 0);
+}
+
+int Voxel::intersectsCylindre(Point* orig, Vector* direction, double rayon) {
+	int n = 0;
+	for (int i = 0; i < 2; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			Vector v(orig->getX() + direction->getX(), orig->getY() + direction->getY(), orig->getZ() + direction->getZ());
+			Point* proj = sommets[i][j]->projectOnLine(&v, orig);
+			Vector vecProj(proj->getX(), proj->getY(), proj->getZ());
+			Vector dist(sommets[i][j], proj);
+			// std::cout << "norme : " << proj << std::endl;
+			delete proj;
+			if(vecProj.getNorme() > direction->getNorme()) {
+				n++;
+			} else 
+			if(dist.getNorme() > rayon) {
+				n++;
+			}
+		}	
+	}
+	return n;
+}
+
+void stepCylindre(Voxel *v, Vector* direction, Point *orig, double rayon, double resolution, double iter) {
+	if(iter < resolution) {
+		iter++;
+		Voxel **voxels = v->subdivide();
+		for (int i = 0; i < 8; ++i) {
+			int n = voxels[i]->intersectsCylindre(orig, direction, rayon);
+			if(n == 0) {
+				voxels[i]->draw();
+				delete(voxels[i]);
+			} else if (n == 8) {
+				delete(voxels[i]);
+			} else {
+				stepCylindre(voxels[i], direction, orig, rayon, resolution, iter);
+			}
+		}
+	}
+	// delete v;
+}
+
+void displayCylindreVolumic(Point* orig, Vector* direction, double rayon, double resolution) {
+	Voxel *v = new Voxel(orig, direction->getNorme() * 3);
+	stepCylindre(v, direction, orig, rayon, resolution, 0);
 }
 
 
