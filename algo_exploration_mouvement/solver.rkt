@@ -1,5 +1,6 @@
 #lang racket
 (require "parser.rkt")
+(require "walksat.rkt")
 
 (define cpt 0)
 
@@ -43,7 +44,7 @@
 (define (solve max-tries max-moves atom-number clause-number problem)
   (let ([best #()])
     (for ([i (in-range max-tries)])
-      (letrec ([solution (generate-random-solution atom-number)] [best-walk solution])
+      (letrec ([solution (cadr (solve-walksat problem atom-number 10 0))] [best-walk solution])
         (for ([j (in-range max-moves)])
           (let ([s (generic-move problem solution atom-number)])
             (when (>= (cost problem s) (cost problem best-walk))
@@ -52,7 +53,7 @@
           (set! best best-walk))))
     (display (list (cost problem best) '/ clause-number " in " cpt " steps"))
     (newline)
-    (list (cost problem best) best)))
+    (list (- clause-number (cost problem best)) best)))
 
 (define (main args)
   (letrec ([p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
@@ -63,5 +64,6 @@
            [problem (caddr p)])
     (solve max-tries max-moves atom-number clause-number problem)))
 
-;(time (main (current-command-line-arguments)))
-(time (main #("/home/noe/dev/fac/master1/fac/algo_exploration_mouvement/test.cnf" "120" "10" "1000")))
+
+(time (main (current-command-line-arguments)))
+;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "30" "5")))

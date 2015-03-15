@@ -1,9 +1,6 @@
 #lang racket
 (require "parser.rkt")
-
-(define population-size 100)
-(define mutate-factor 7)
-(define cpt 0)
+(provide solve)
 
 (define (not-atom i)
   (if (= i 1) 0 1))
@@ -22,7 +19,6 @@
   (ormap (lambda (i)
            (let* ([val (vector-ref solution (- (abs i) 1))]
                   [x (if (= val 1) 1 -1)])
-             (set! cpt (add1 cpt))
              (> 0 (* i x)))) clause))
 
 (define (cost problem solution)
@@ -46,7 +42,7 @@
         parents
         (f (append parents (list (list (car p) (cadr p)))) (cddr p)))))
 
-(define (next-generation population problem)
+(define (next-generation population problem population-size)
   (let ([population (sort population (lambda (i j)
                                        (< (car i) (car j))))])
     (if (zero? (caar population))
@@ -57,23 +53,25 @@
                   (map (lambda (i)
                          (crossover (cadr (cadr i)) (cadr (car i)) problem)) parents))))))
 
-(define (solve i max-iterations population problem )
-  (let ([p (next-generation population problem)])
-    (if (= (length p) 1) ;; solution trouvée
-        (car p)
-        (if (eq? max-iterations i) ;;nombre d'itérations atteint
-            (car p)
-            (solve (add1 i) max-iterations p problem)))))
+(define (solve max-iterations problem size atom-number)
+  (let* ([population-size (+ size (- 4 (modulo size 4)))]
+         [population (generate-random-population population-size atom-number problem)]
+         [i 0])
+    (let f ([i i] [p population])
+      (if (= (length p) 1) ;; solution trouvée
+          (car p)
+          (if (eq? max-iterations i) ;;nombre d'itérations atteint
+              (car p)
+              (f (add1 i) (next-generation p problem population-size)))))))
 
 (define (main args)
   (let* ([p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
          [atom-number (car p)]
          [clause-number (cadr p)]
          [size (string->number (vector-ref args 1))]
+         [max-iterations (string->number (vector-ref args 2))]
          [problem (caddr p)])
-    (set! population-size (+ size (- 4 (modulo size 4))))
-    (set! mutate-factor (string->number (vector-ref args 2)))
-    (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
+    (solve max-iterations problem size atom-number)))
 
-;(time (main (current-command-line-arguments)))
-(time (main #("/home/noe/dev/fac/master1/fac/algo_exploration_mouvement/uf20-0912.cnf" "120" "10" "1000")))
+(time (main (current-command-line-arguments)))
+;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "120" "100")))
