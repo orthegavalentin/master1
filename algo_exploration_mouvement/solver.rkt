@@ -54,9 +54,8 @@
     (newline)
     (list (cost problem best) best)))
 
-(define (main)
-  (letrec ([args (current-command-line-arguments)]
-           [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
+(define (main args)
+  (letrec ([p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
            [max-tries (string->number (vector-ref args 1))]
            [max-moves (string->number (vector-ref args 2))]
            [atom-number (car p)]
@@ -64,4 +63,5 @@
            [problem (caddr p)])
     (solve max-tries max-moves atom-number clause-number problem)))
 
-(time (main))
+;(time (main (current-command-line-arguments)))
+(time (main #("/home/noe/dev/fac/master1/fac/algo_exploration_mouvement/test.cnf" "120" "10" "1000")))
