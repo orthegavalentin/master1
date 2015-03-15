@@ -41,7 +41,7 @@
         (begin
           (flip-variable solution
                          (if (< (random 100) probability)
-                             (random (vector-length solution))
+                             (+ 1 (random (vector-length solution)))
                              (let ([c (list-ref unsats (random (length unsats)))])
                                (caar
                                 (sort
@@ -64,8 +64,9 @@
   (let* ([p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
          [atom-number (car p)]
          [proba (string->number (vector-ref args 2))]
-         [size (string->number (vector-ref args 1))]
+         [max-tries (string->number (vector-ref args 1))]
          [problem (caddr p)])
-    (solve-walksat problem atom-number 1000 proba)))
+    (solve-walksat problem atom-number max-tries proba)))
 
-;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf250-01.cnf" "120" "0" "100")))
+(time (main (current-command-line-arguments)))
+;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "100000" "5")))

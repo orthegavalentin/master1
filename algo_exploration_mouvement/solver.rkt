@@ -44,7 +44,7 @@
 (define (solve max-tries max-moves atom-number clause-number problem)
   (let ([best #()])
     (for ([i (in-range max-tries)])
-      (letrec ([solution (cadr (solve-walksat problem atom-number 1000 0))] [best-walk solution])
+      (letrec ([solution (cadr (solve-walksat problem atom-number 10 0))] [best-walk solution])
         (for ([j (in-range max-moves)])
           (let ([s (generic-move problem solution atom-number)])
             (when (>= (cost problem s) (cost problem best-walk))
