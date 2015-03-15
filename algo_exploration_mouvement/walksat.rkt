@@ -1,13 +1,15 @@
 #lang racket
 
 (require "parser.rkt")
-(provide solve-walksat)
+(require "genetic.rkt")
 
 (define (not-atom i)
   (if (= i 1) 0 1))
 
 (define (generate-random-solution size problem)
-  (build-vector size (lambda (i) (random 2))))
+ ; (build-vector size (lambda (i) (random 2))))
+  (cadr (solve 100 problem 100 size 0)))
+
 
 (define (make-clauses-vector problem size)
   (let* ([size (+ 1 size)] [v (make-vector size '())])
@@ -56,6 +58,7 @@
   (let* ([solution (generate-random-solution atom-number problem)]
          [clauses-vector '() #|(make-clauses-vector problem atom-number)|#])
     (let f ([cpt 0])
+      (displayln (cost problem solution))
       (if (and (< cpt iter) (flip problem solution clauses-vector proba))
           (f (+ cpt 1))
           `(,(cost problem solution) ,solution)))))
@@ -68,5 +71,5 @@
          [problem (caddr p)])
     (solve-walksat problem atom-number max-tries proba)))
 
-(time (main (current-command-line-arguments)))
-;(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "100000" "5")))
+;(time (main (current-command-line-arguments)))
+(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/test.cnf" "100" "5")))
