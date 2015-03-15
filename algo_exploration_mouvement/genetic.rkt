@@ -59,15 +59,15 @@
 
 (define (solve i max-iterations population problem )
   (let ([p (next-generation population problem)])
+    (displayln (caar p))
     (if (= (length p) 1) ;; solution trouvée
         (car p)
         (if (eq? max-iterations i) ;;nombre d'itérations atteint
             (car p)
             (solve (add1 i) max-iterations p problem)))))
 
-(define (main)
-  (let* ([args (current-command-line-arguments)]
-         [p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
+(define (main args)
+  (let* ([p (read-file (open-input-file (vector-ref args 0) #:mode 'binary))]
          [atom-number (car p)]
          [clause-number (cadr p)]
          [size (string->number (vector-ref args 1))]
@@ -76,5 +76,5 @@
     (set! mutate-factor (string->number (vector-ref args 2)))
     (solve 0 (string->number (vector-ref args 3)) (generate-random-population population-size atom-number problem) problem)))
 
-(time (main))
-(displayln cpt)
+;(time (main (current-command-line-arguments)))
+(time (main #("/home/noe/dev/fac/algo_exploration_mouvement/uf20-0912.cnf" "120" "0" "100")))
