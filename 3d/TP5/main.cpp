@@ -269,15 +269,30 @@ void render_scene()
 	/*Point*** c = cylindre(orig, 10,  20, meridians);
 	drawSurface(c, 2, meridians);*/
 
-	// glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
 	// Point*** c = sphere(orig, 10, meridians, parallels);
 	// drawSurfaceQuads(c, meridians, parallels);
 	// free(c);
-	// glColor3f(1.0, 0.0, 0.0);
-	// displaySphereVolumic(new Point(orig->getX(), orig->getY(), orig->getZ()), 10, 5);
+	glColor3f(1.0, 0.0, 0.0);
+	 // displaySphereVolumic(new Point(orig->getX(), orig->getY(), orig->getZ()), 10, 4);
 
-	Vector v(1, 10, 0);
-	// std::cout << "norme : " << v.getNorme() << std::endl;
-	displayCylindreVolumic(orig, &v, 5, 6);
+	/**cylindre*/
+	// Vector v(0, 5, 0);
+	// displayCylindreVolumic(new Point(0, 0, 0), &v, 4, 5);
+
+	/**intersectin*/
+	// Vector v(0, 5, 0);
+	// displayIntersectionSphereCylindre(new Point(0, -5, 0), &v, 10,
+	// 	new Point(orig->getX(), orig->getY(), orig->getZ()), 10, 5);
+
+	/**union*/
+	// Vector v(0, 5, 0);
+	// displayUnionSphereCylindre(new Point(0, 0, 0), &v, 2,
+	// 	new Point(0, 4, 0), 4, 5);
+
+	Vector v(0, 10, 0);
+	displaySoustractionSphereCylindre(new Point(0, 0, 0), &v, 2,
+		new Point(0, 4, 0), 4, 5);
+
 	glFlush();
 }
