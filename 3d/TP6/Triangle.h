@@ -2,6 +2,7 @@
 #define TRIANGLE_H
 
 #include "point.h"
+#include <cmath>
 
 class Triangle {
 public:
@@ -11,8 +12,41 @@ public:
 
 	Triangle(Point* p1, Point* p2, Point* p3);
 	void drawTriangle();
+	double minX();
+	double maxX();
+	double minY();
+	double maxY();
 
 };
+
+double Triangle::minX() {
+	double m = p1->getX();
+	m = fmin(m, p2->getX());
+	m = fmin(m, p3->getX());
+	return m;	
+}
+
+double Triangle::maxX() {
+	double m = p1->getX();
+	m = fmax(m, p2->getX());
+	m = fmax(m, p3->getX());
+	return m;	
+}
+
+double Triangle::minY() {
+	double m = p1->getY();
+	m = fmin(m, p2->getY());
+	m = fmin(m, p3->getY());
+	return m;	
+}
+
+double Triangle::maxY() {
+	double m = p1->getY();
+	m = fmax(m, p2->getY());
+	m = fmax(m, p3->getY());
+	return m;	
+}
+
 
 Triangle::Triangle(Point* p1, Point* p2, Point* p3) {
 	this->p1 = p1;

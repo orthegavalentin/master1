@@ -8,7 +8,7 @@
 #include <vector>
 #include "Triangle.h"
 
-void parseFile(std::string path) {
+std::vector<Triangle*> parseFile(std::string path) {
 	std::ifstream f(path.c_str());
 
 	std::string line;
@@ -34,7 +34,7 @@ void parseFile(std::string path) {
 			if (!(i >> x >> y >> z)) { 
 				break; 
 			}
-			coords.push_back(new Point(x * 100, y * 100, z * 100));
+			coords.push_back(new Point(x, y, z));
 			// std::cout << coords[coords.size() - 1] << std::endl;
 		} else {
 			int a, x, y, z;
@@ -51,6 +51,7 @@ void parseFile(std::string path) {
 	for(auto t : triangles) {
 		t->drawTriangle();
 	 }
+	 return triangles;
 }
 
 #endif
