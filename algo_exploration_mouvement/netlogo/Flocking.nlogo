@@ -31,8 +31,16 @@ to flock  ;; turtle procedure
       let va multiplyScalarvect alignement-coeff vectFromAngle (first general-direction) (first but-first general-direction)
       let po multiplyScalarvect centrage-coeff vectFromAngle (first general-position) (first but-first general-position)
     let v additionvect additionvect as va po
-    turn-towards (towardsxy (first v) (first but-first v)) max-align-turn
-   facexy first v first but-first v]
+    if first v + first but-first v != 0
+    [
+      turn-towards angleFromVect v 50
+     ; facexy first v first but-first v
+    ]]
+end
+
+to-report angleFromVect [vect]
+    let a atan item 0  vect item 1 vect
+    report a
 end
 
 to find-flockmates  ;; turtle procedure
@@ -55,14 +63,19 @@ to-report vectFromAngle [angle len]
 end
 
 to-report general-position
-  let x-component mean [dx] of flockmates
-  let y-component mean [dy] of flockmates
-  report list towardsxy x-component y-component 1
+  let x-component mean [sin (towards myself + 180)] of flockmates
+  let y-component mean [cos (towards myself + 180)] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report list heading 1]
+    [ report list towardsxy x-component y-component 1]
 end
 
 to-report general-direction
-  let d mean [heading] of flockmates
-  report (list d 1)
+  let x-component mean [dx] of flockmates
+  let y-component mean [dy] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report list heading 1]
+    [ report list towardsxy x-component y-component 1]
 end
 
 to-report avoidance-direction
@@ -206,7 +219,7 @@ population
 population
 1.0
 1000.0
-289
+280
 1.0
 1
 NIL
@@ -221,7 +234,7 @@ max-align-turn
 max-align-turn
 0.0
 20.0
-0
+20
 0.25
 1
 degrees
@@ -236,7 +249,7 @@ max-cohere-turn
 max-cohere-turn
 0.0
 20.0
-3
+20
 0.25
 1
 degrees
@@ -251,7 +264,7 @@ max-separate-turn
 max-separate-turn
 0.0
 20.0
-1.5
+20
 0.25
 1
 degrees
@@ -266,7 +279,7 @@ vision
 vision
 0.0
 10.0
-3.5
+2
 0.5
 1
 patches
@@ -281,7 +294,7 @@ minimum-separation
 minimum-separation
 0.0
 5.0
-0.75
+0
 0.25
 1
 patches
@@ -294,9 +307,9 @@ SLIDER
 384
 separate-coeff
 separate-coeff
-0
+1
 100
-0
+1
 1
 1
 NIL
@@ -309,9 +322,9 @@ SLIDER
 441
 alignement-coeff
 alignement-coeff
-0
+1
 100
-0
+3
 1
 1
 NIL
@@ -324,9 +337,9 @@ SLIDER
 492
 centrage-coeff
 centrage-coeff
-0
+1
 100
-62
+1
 1
 1
 NIL
