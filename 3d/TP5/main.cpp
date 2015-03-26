@@ -280,7 +280,7 @@ void render_scene()
 	// Vector v(0, 5, 0);
 	// displayCylindreVolumic(new Point(0, 0, 0), &v, 4, 5);
 
-	/**intersectin*/
+	/**intersection*/
 	// Vector v(0, 5, 0);
 	// displayIntersectionSphereCylindre(new Point(0, -5, 0), &v, 10,
 	// 	new Point(orig->getX(), orig->getY(), orig->getZ()), 10, 5);
@@ -291,7 +291,7 @@ void render_scene()
 	// 	new Point(0, 4, 0), 4, 5);
 
 	Vector v(0, 10, 0);
-	displaySoustractionSphereCylindre(new Point(0, 0, 0), &v, 2,
+	displaySoustractionSphereCylindre(new Point(2, 0, 0), &v, 2,
 		new Point(0, 4, 0), 4, 5);
 
 	glFlush();

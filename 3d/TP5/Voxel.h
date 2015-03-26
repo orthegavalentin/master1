@@ -51,7 +51,7 @@ Voxel::Voxel(Point* orig, double size) {
 }
 
 void Voxel::draw() {
-	 glColor3f(1.0, 0.0, 0.0);
+	 // glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_LINE_STRIP);
 	for (int i = 0; i < 2; ++i) {
 		for (int j = 0; j < 5; ++j) {
@@ -68,7 +68,7 @@ void Voxel::draw() {
 	}
 	glEnd();
 
-	//**
+	/**
 	glColor3f(0.0, 1.0, 0.0);
 	glBegin(GL_POLYGON);
 	for (int i = 0; i < 2; ++i) {
@@ -194,10 +194,10 @@ void stepIntersectionSphereCylindre(Voxel *v, Vector* direction, Point *origCyli
 				glColor3f(1.0, 0.0, 0.0);
 				voxels[i]->draw();
 				delete(voxels[i]);
-			} else if (n > 7 || n1 > 7) {
-				glColor3f(0.0, 1.0, 0.0);
-				voxels[i]->draw();
-				delete(voxels[i]);
+			} else if (n >= 7 || n1 >= 7) {
+				// glColor3f(0.0, 1.0, 0.0);
+				// voxels[i]->draw();
+				// delete(voxels[i]);
 			} else {
 				stepIntersectionSphereCylindre(voxels[i], direction, origCylindre, rayonCylindre, origSphere, rayonSphere, resolution, iter);
 			}
@@ -220,7 +220,7 @@ void stepUnionSphereCylindre(Voxel *v, Vector* direction, Point *origCylindre, d
 			} else if (n > 7 && n1 > 7) {
 				// glColor3f(0.0, 1.0, 0.0);
 				// voxels[i]->draw();
-				delete(voxels[i]);
+				// delete(voxels[i]);
 			} else {
 				stepUnionSphereCylindre(voxels[i], direction, origCylindre, rayonCylindre, origSphere, rayonSphere, resolution, iter);
 			}
@@ -236,14 +236,14 @@ void stepSoustractionSphereCylindre(Voxel *v, Vector* direction, Point *origCyli
 		for (int i = 0; i < 8; ++i) {
 			int n1 = voxels[i]->intersectsCylindre(origCylindre, direction, rayonCylindre);
 			int n = voxels[i]->intersectsSphere(origSphere, rayonSphere);
-			if(n == 0 && n1 > 7) {
+			if(n == 0 && n1 >= 7) {
 				glColor3f(1.0, 0.0, 0.0);
 				voxels[i]->draw();
 				delete(voxels[i]);
-			} else if (n > 7 && n1 == 0) {
+			} else if (n >= 7 && n1 == 0) {
 				// glColor3f(0.0, 1.0, 0.0);
 				// voxels[i]->draw();
-				delete(voxels[i]);
+				// delete(voxels[i]);
 			} else {
 				stepSoustractionSphereCylindre(voxels[i], direction, origCylindre, rayonCylindre, origSphere, rayonSphere, resolution, iter);
 			}
@@ -258,7 +258,7 @@ void displayCylindreVolumic(Point* orig, Vector* direction, double rayon, double
 }
 
 void displayIntersectionSphereCylindre(Point* origCylindre, Vector* direction, double rayonCylindre, Point* origSphere, double rayonSphere, double resolution) {
-	Voxel *v = new Voxel(origCylindre, direction->getNorme() * 3);
+	Voxel *v = new Voxel(origCylindre, direction->getNorme() * 5);
 	stepIntersectionSphereCylindre(v, direction, origCylindre, rayonCylindre, origSphere, rayonSphere, resolution, 0);
 }
 
