@@ -57,7 +57,7 @@ public:
 		s += "vertex " + v2->toString() + "\n";
 		s += "vertex " + v3->toString() + "\n";
 		s += "endloop\nendfacet";
-
+		
 		return s;
 	}
 };
