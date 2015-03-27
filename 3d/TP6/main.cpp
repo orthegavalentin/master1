@@ -30,6 +30,39 @@
 #define MINUS 45
 #define ENTER 13
 
+
+std::vector<double> getBounds(std::vector<Triangle*> triangles) {
+	std::vector<double> bounds;
+	bounds.push_back(triangles[0]->minX()); //min x
+	bounds.push_back(triangles[0]->maxX()); //max x
+	bounds.push_back(triangles[0]->minY()); //min y
+	bounds.push_back(triangles[0]->maxY()); //max y
+
+	for(auto t : triangles) {
+		bounds[0] = fmin(bounds[0], t->minX());
+		bounds[1] = fmax(bounds[1], t->maxX());
+		bounds[2] = fmin(bounds[2], t->minY());
+		bounds[3] = fmax(bounds[3], t->maxY());
+	}
+	double distX = bounds[1] - bounds[0];
+	double distY = bounds[3] - bounds[2];
+
+	if(distX > distY) {
+		distY = (distX - distY) / 2;
+		bounds[2] -= distY;
+		bounds[3] += distY;
+	} else if(distX < distY) {
+		distX = (distY - distX) / 2;
+		bounds[0] -= distX;
+		bounds[1] += distX;
+	}
+
+	return bounds;
+}
+
+std::vector<Triangle*> t = parseFile("/auto_home/nlephilippe/Téléchargements/buddha.off");
+std::vector<double> bounds = getBounds(t);
+
 int curve;
 int selected;
 int par;
@@ -92,29 +125,29 @@ GLvoid initGL()
 }
 
 void eyePosition( void ) {
-	// eyeX = r * sin(theta*0.0174532) * sin(phi*0.0174532);
-	// eyeY = r * cos(theta*0.0174532);
-	// eyeZ = r * sin(theta*0.0174532) * cos(phi*0.0174532);
-	// GLfloat dt=1.0;
-	// GLfloat eyeXtemp = r * sin(theta*0.0174532-dt) * sin(phi*0.0174532);
-	// GLfloat eyeYtemp = r * cos(theta*0.0174532-dt);
-	// GLfloat eyeZtemp = r * sin(theta*0.0174532-dt) * cos(phi*0.0174532); 
+	eyeX = r * sin(theta*0.0174532) * sin(phi*0.0174532);
+	eyeY = r * cos(theta*0.0174532);
+	eyeZ = r * sin(theta*0.0174532) * cos(phi*0.0174532);
+	GLfloat dt=1.0;
+	GLfloat eyeXtemp = r * sin(theta*0.0174532-dt) * sin(phi*0.0174532);
+	GLfloat eyeYtemp = r * cos(theta*0.0174532-dt);
+	GLfloat eyeZtemp = r * sin(theta*0.0174532-dt) * cos(phi*0.0174532); 
 
-	// upX=eyeXtemp-eyeX;
-	// upY=eyeYtemp-eyeY;
-	// upZ=eyeZtemp-eyeZ;
+	upX=eyeXtemp-eyeX;
+	upY=eyeYtemp-eyeY;
+	upZ=eyeZtemp-eyeZ;
 
-	// glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 void onMouseMove(int x, int y) { 
-// // Mouse point to angle conversion
-//    theta = (360.0/(double)winHeight)*(double)y*1.0; //3.0 rotations possible
-//    phi = (360.0/(double)winWidth)*(double)x*1.0; 
-// // Restrict the angles within 0~360 deg (optional)
-//    if(theta > 360)theta = fmod((double)theta,360.0);
-//    if(phi > 360)phi = fmod((double)phi,360.0);
-//    eyePosition();
+// Mouse point to angle conversion
+   theta = (360.0/(double)winHeight)*(double)y*1.0; //3.0 rotations possible
+   phi = (360.0/(double)winWidth)*(double)x*1.0; 
+// Restrict the angles within 0~360 deg (optional)
+   if(theta > 360)theta = fmod((double)theta,360.0);
+   if(phi > 360)phi = fmod((double)phi,360.0);
+   eyePosition();
 }
 
 
@@ -160,7 +193,10 @@ GLvoid window_display()
 
 	glMatrixMode(GL_MODELVIEW);        // set to Model View before drawing
 	glLoadIdentity();
-	// gluLookAt(eyeX,eyeY,eyeZ,0,0,0,upX, upY, upZ);
+
+	glOrtho(bounds[0] * 2, bounds[1] * 2, bounds[2] * 2, bounds[3] * 2, -10, 10);
+
+	gluLookAt(eyeX,eyeY,eyeZ,0,0,0,upX, upY, upZ);
 
 	// glRotatef(0.1f, upX, upY, upZ);/* orbit the Y axis */
 	render_scene();
@@ -255,37 +291,6 @@ GLvoid window_key(unsigned char key, int x, int y)
 	render_scene();
 }
 
-std::vector<double> getBounds(std::vector<Triangle*> triangles) {
-	std::vector<double> bounds;
-	bounds.push_back(triangles[0]->minX()); //min x
-	bounds.push_back(triangles[0]->maxX()); //max x
-	bounds.push_back(triangles[0]->minY()); //min y
-	bounds.push_back(triangles[0]->maxY()); //max y
-
-	for(auto t : triangles) {
-		bounds[0] = fmin(bounds[0], t->minX());
-		bounds[1] = fmax(bounds[1], t->maxX());
-		bounds[2] = fmin(bounds[2], t->minY());
-		bounds[3] = fmax(bounds[3], t->maxY());
-	}
-	double distX = bounds[1] - bounds[0];
-	double distY = bounds[3] - bounds[2];
-
-	if(distX > distY) {
-		distY = (distX - distY) / 2;
-		bounds[2] -= distY;
-		bounds[3] += distY;
-	} else if(distX < distY) {
-		distX = (distY - distX) / 2;
-		bounds[0] -= distX;
-		bounds[1] += distX;
-	}
-
-	return bounds;
-}
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Fonction que vous allez modifier afin de dessiner
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -294,14 +299,9 @@ void render_scene()
 //Définition de la couleur
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	std::vector<Triangle*> t = parseFile("/auto_home/nlephilippe/Téléchargements/buddha.off");
-	std::vector<double> bounds = getBounds(t);
-
-	for(auto i : bounds) {
-		std::cout << i << std::endl;
+	for(auto tr : t) {
+		tr->drawTriangle();
 	}
-
-	glOrtho(bounds[0], bounds[1], bounds[2], bounds[3], -1, 1);
 
 	std::cout << "eyeX : " << upX << std::endl;
 	std::cout << "eyeY : " << upY << std::endl;
