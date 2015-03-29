@@ -16,7 +16,8 @@ public:
 	double maxX();
 	double minY();
 	double maxY();
-
+	double minZ();
+	double maxZ();
 };
 
 double Triangle::minX() {
@@ -44,6 +45,20 @@ double Triangle::maxY() {
 	double m = p1->getY();
 	m = fmax(m, p2->getY());
 	m = fmax(m, p3->getY());
+	return m;	
+}
+
+double Triangle::minZ() {
+	double m = p1->getZ();
+	m = fmin(m, p2->getZ());
+	m = fmin(m, p3->getZ());
+	return m;	
+}
+
+double Triangle::maxZ() {
+	double m = p1->getZ();
+	m = fmax(m, p2->getZ());
+	m = fmax(m, p3->getZ());
 	return m;	
 }
 

@@ -30,38 +30,8 @@
 #define MINUS 45
 #define ENTER 13
 
-
-std::vector<double> getBounds(std::vector<Triangle*> triangles) {
-	std::vector<double> bounds;
-	bounds.push_back(triangles[0]->minX()); //min x
-	bounds.push_back(triangles[0]->maxX()); //max x
-	bounds.push_back(triangles[0]->minY()); //min y
-	bounds.push_back(triangles[0]->maxY()); //max y
-
-	for(auto t : triangles) {
-		bounds[0] = fmin(bounds[0], t->minX());
-		bounds[1] = fmax(bounds[1], t->maxX());
-		bounds[2] = fmin(bounds[2], t->minY());
-		bounds[3] = fmax(bounds[3], t->maxY());
-	}
-	double distX = bounds[1] - bounds[0];
-	double distY = bounds[3] - bounds[2];
-
-	if(distX > distY) {
-		distY = (distX - distY) / 2;
-		bounds[2] -= distY;
-		bounds[3] += distY;
-	} else if(distX < distY) {
-		distX = (distY - distX) / 2;
-		bounds[0] -= distX;
-		bounds[1] += distX;
-	}
-
-	return bounds;
-}
-
-std::vector<Triangle*> t = parseFile("/auto_home/nlephilippe/Téléchargements/buddha.off");
-std::vector<double> bounds = getBounds(t);
+std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/bunny.off");
+Repere rep(t);
 
 int curve;
 int selected;
@@ -72,7 +42,7 @@ GLint winWidth=WIDTH, winHeight=HEIGHT;
 GLfloat eyeX=0.0, eyeY=0.0, eyeZ=2.0;
 GLfloat theta=270.0, phi=180.0;
 GLfloat upX=10.0, upY=10.0, upZ=10.0;
-GLfloat r=2.0;
+GLfloat r=rep.size;
 
 // Entêtes de fonctions
 void init_scene();
@@ -125,28 +95,24 @@ GLvoid initGL()
 }
 
 void eyePosition( void ) {
-	eyeX = r * sin(theta*0.0174532) * sin(phi*0.0174532);
-	eyeY = r * cos(theta*0.0174532);
-	eyeZ = r * sin(theta*0.0174532) * cos(phi*0.0174532);
-	GLfloat dt=1.0;
-	GLfloat eyeXtemp = r * sin(theta*0.0174532-dt) * sin(phi*0.0174532);
-	GLfloat eyeYtemp = r * cos(theta*0.0174532-dt);
-	GLfloat eyeZtemp = r * sin(theta*0.0174532-dt) * cos(phi*0.0174532); 
 
-	upX=eyeXtemp-eyeX;
-	upY=eyeYtemp-eyeY;
-	upZ=eyeZtemp-eyeZ;
+	eyeX = rep.x + r * sin(theta) * sin(phi);
+	eyeY = rep.y + r * cos(theta);
+	eyeZ = rep.z + r * sin(theta) * cos(phi);
+	GLfloat dt=rep.size * 1.0f;
+
+	upX=0;
+	upZ=0;
 
 	glutPostRedisplay();
 }
 
 void onMouseMove(int x, int y) { 
-// Mouse point to angle conversion
-   theta = (360.0/(double)winHeight)*(double)y*1.0; //3.0 rotations possible
-   phi = (360.0/(double)winWidth)*(double)x*1.0; 
-// Restrict the angles within 0~360 deg (optional)
-   if(theta > 360)theta = fmod((double)theta,360.0);
-   if(phi > 360)phi = fmod((double)phi,360.0);
+   theta = ((2 * M_PI) /(double)winHeight)*(double)y*1.0; //3.0 rotations possible
+   phi = ((2 * M_PI)/(double)winWidth)*(double)x*1.0 ; 
+
+   upY=(theta > M_PI)?1:-1;
+
    eyePosition();
 }
 
@@ -189,26 +155,21 @@ void init_scene()
 GLvoid window_display()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glMatrixMode(GL_MODELVIEW);        // set to Model View before drawing
-	glLoadIdentity();
+	glOrtho(
+		-rep.size, rep.size,
+		-rep.size, rep.size,
+		-rep.size * 2, rep.size * 2);
 
-	glOrtho(bounds[0] * 2, bounds[1] * 2, bounds[2] * 2, bounds[3] * 2, -10, 10);
-
-	gluLookAt(eyeX,eyeY,eyeZ,0,0,0,upX, upY, upZ);
-
-	// glRotatef(0.1f, upX, upY, upZ);/* orbit the Y axis */
+	gluLookAt(
+		eyeX, eyeY, eyeZ,
+		rep.x, rep.y, rep.z,
+		upX, upY, upZ);
+	
 	render_scene();
 	glutSwapBuffers();
-	glFlush();
-
-  // C'est l'endroit où l'on peut dessiner. On peut aussi faire appel
-  // à une fonction (render_scene() ici) qui contient les informations 
-  // que l'on veut dessiner
-	render_scene();
-
-  // trace la scène grapnique qui vient juste d'être définie
 	glFlush();
 }
 
@@ -302,15 +263,6 @@ void render_scene()
 	for(auto tr : t) {
 		tr->drawTriangle();
 	}
-
-	std::cout << "eyeX : " << upX << std::endl;
-	std::cout << "eyeY : " << upY << std::endl;
-	std::cout << "eyeZ : " << upZ << std::endl;
-
-	// gluLookAt(
-	// 	0.5f, 0.0f, 0.5f,
-	// 	(bounds[1] - bounds[0]) * 0.5f ,(bounds[3] - bounds[2]) * 0.5f,0,
-	// 	0, 1.0f, );
 
 	glFlush();
 }
