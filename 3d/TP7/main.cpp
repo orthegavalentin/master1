@@ -30,8 +30,12 @@
 #define MINUS 45
 #define ENTER 13
 
-std::vector<Triangle*> t = parseFile("/auto_home/nlephilippe/Téléchargements/bunny.off");
-// std::vector<Triangle*> t = parseFile("/auto_home/nlephilippe/Téléchargements/buddha.off");
+int meridians = 38;
+int parallels = 40;
+
+// std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
+std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
+
 Repere rep(t);
 
 int curve;
@@ -125,8 +129,7 @@ int nbr = 5;
 Point** pts3;
 Point** pts0;
 Point* orig;
-int meridians;
-int parallels;
+
 void init_scene()
 {
 	selected = 0;
@@ -147,8 +150,8 @@ void init_scene()
 	pts0[3] = new Point(1,4,0);
 	pts0[4] = new Point(2,1,0);
 	orig = new Point(0, 0, 0);
-	parallels = 10;
-	meridians = 10;
+	parallels = 14;
+	meridians = 14;
 }
 
 // fonction de call-back pour l´affichage dans la fenêtre
@@ -239,11 +242,11 @@ GLvoid window_key(unsigned char key, int x, int y)
 		break;
 
 		case PLUS:
-		(*sel)++;
+		(*sel)+=4;
 		break;
 
 		case MINUS:
-		if((*sel) > 1) (*sel)--;
+		if((*sel) > 2) (*sel)-=4;
 		break;
 
 		default:

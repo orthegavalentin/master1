@@ -105,4 +105,35 @@ std::vector<Triangle*> parseFile(std::string path) {
 }
 
 
+std::vector<Triangle*> maillageCylindre(Point* orig, int radius, int height, int meridians) {
+	Point*** c = cylindre(orig, radius, height, meridians);
+	Point* o = new Point(orig->getX(), orig->getZ(), orig->getZ() + height);
+	std::vector<Triangle*> triangles;
+
+	for (int i = 0; i < meridians; ++i) {
+		triangles.push_back(new Triangle(c[0][i], c[0][(i+1)%meridians], c[1][(i+1)%meridians]));
+	}
+
+	for (int i = 0; i < meridians; ++i) {
+		triangles.push_back(new Triangle(c[0][i], c[0][(i+1)%meridians], orig));
+		triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], o));
+	}
+
+	return triangles;
+}
+
+std::vector<Triangle*> maillageSphere(Point* orig, int radius, int meridians, int parallels) {
+	Point*** c = sphere(orig, radius, meridians, parallels);
+	std::vector<Triangle*> triangles;
+
+	for (int j = 0; j < parallels; j++) {
+		for (int i = 0; i < meridians; i+=2) {
+			triangles.push_back(new Triangle(c[i][j], c[i][(j+1)%parallels], c[(i+1)%meridians][j]));
+			triangles.push_back(new Triangle(c[i][(j+1)%parallels], c[(i+1)%meridians][(j+1)%parallels], c[(i+1)%meridians][j]));
+		}
+	}
+
+	return triangles;
+}
+
 #endif
