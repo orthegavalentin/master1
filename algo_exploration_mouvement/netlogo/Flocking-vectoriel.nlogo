@@ -8,17 +8,27 @@ turtles-own [
 
 to setup
   clear-all
-;  ask patches with [pxcor > -3 and pxcor < 3 and pycor > -3 and pycor < 3] [set pcolor red]
+  ask patches with [pxcor > -1 and pxcor < 1 and pycor = 6] [set pcolor blue]
+  ask patches with [pxcor > -1 and pxcor < 1 and pycor = -6] [set pcolor green]
   ;ask patches [if random 1000 < 2 [set pcolor red]]
   crt population
     [ ;;set color green - 2 + random 7  ;; random shades look nice
       set size 1.5  ;; easier to see
       set randcolor random 2
       ifelse randcolor = 0 
-      [set color green]
-      [set color blue]
+      [
+        set color green
+        setxy 0 100
+        set heading 180
+        ]
+       [
+        set color blue
+        setxy 0 -100
+        set heading 0
+        ]
       
-      setxy random-xcor random-ycor ]
+      setxy random-xcor random-ycor
+      ]
   reset-ticks
 end
 
@@ -44,10 +54,24 @@ to flock  ;; turtle procedure
       let a angleFromVect computeVector
       turn-towards a max-align-turn]
     [
-      if is-patch? obstacle
+      ifelse is-patch? obstacle
       [
         let a angleFromVect vectEvite
         turn-towards a max-align-turn
+      ]
+      [
+        ifelse any? notmates
+        [
+          let vg vectGoal
+          let vna multiplyScalarvect factor-evitement  vectNotAlign
+          let a angleFromVect additionvect vg vna
+          turn-towards a max-align-turn
+        ]
+        [
+          let vg vectGoal
+          let a angleFromVect vg
+          turn-towards a max-align-turn
+        ]
       ]
     ]
         
@@ -65,16 +89,18 @@ to-report computeVector
   let vna multiplyScalarvect factor-evitement vectNotAlign
   let vc multiplyScalarvect factor-cohere vectCohere
   let ve vectEvite
+  let vg vectGoal
   
   let vr additionvect va vs
   set vr additionvect vr vc
   set vr additionvect vr vna
   set vr additionvect vr ve
+  set vr additionvect vr vg
   report vr
 end
 
 to find-flockmates  ;; turtle procedure
-  set flockmates other turtles with  [color = [color] of myself] in-radius vision 
+  set flockmates other turtles with  [color = [color] of myself and xcor != [xcor] of myself] in-radius vision 
 end
 
 to find-notmates  ;; turtle procedure
@@ -96,9 +122,9 @@ end
 to-report vectSeparate
   let vs 0
   find-nearest-neighbor
-  ifelse (nearest-neighbor = nobody)
-  [set vs VectFromAngle random 180 0]  
+  ifelse (is-agent? nearest-neighbor)
   [set vs VectFromAngle (towards nearest-neighbor + 180 ) (1 / distance nearest-neighbor)]
+  [set vs VectFromAngle random 180 0]  
   report vs
 end
 
@@ -128,6 +154,19 @@ to-report vectEvite
     ]
     [
       report (list 0 0)
+    ]
+end
+
+to-report vectGoal
+ let goal min-one-of patches with [pcolor = [color] of myself] [distance myself]
+  
+  ifelse is-patch? goal and [pxcor] of self != [pxcor] of goal
+    [
+      let l (list (sin (towards goal)) (cos (towards goal)))
+      report multiplyScalarvect (factor-goal) l
+    ]
+    [
+      report (list 1 0)
     ]
 end
 
@@ -259,7 +298,7 @@ population
 population
 1.0
 1000.0
-294
+54
 1.0
 1
 NIL
@@ -274,7 +313,7 @@ max-align-turn
 max-align-turn
 0.0
 360
-66.75
+62
 0.25
 1
 degrees
@@ -416,6 +455,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+160
+537
+332
+570
+factor-goal
+factor-goal
+1
+1000
+1
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
