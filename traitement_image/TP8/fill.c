@@ -3,7 +3,7 @@
 #include "math.h"
 #include "../lib_c/utils.h"
 
-int seuil = 20;
+int seuil = 10;
 
 void fill(OCTET *in, OCTET *blacks, int lignes, int colonnes) {
 // 
@@ -32,8 +32,62 @@ void fill(OCTET *in, OCTET *blacks, int lignes, int colonnes) {
 	}
 }
 
+void dilater(OCTET *in, OCTET *out, int lignes, int colonnes) {
+
+	int index;
+	int bool = 1;
+
+	for (index=0; index < lignes * colonnes; index++) {
+		int val = in[index];
+		int m = val;
+
+		if(val < seuil) {
+			int n = in[indexN(index, lignes, colonnes)];
+			int s = in[indexS(index, lignes, colonnes)];
+			int e = in[indexE(index, lignes, colonnes)];
+			int w = in[indexW(index, lignes, colonnes)];
+			int sum = 0;
+
+			int t = 0;
+			if(n > seuil) {t++;sum += n;}
+			if(s > seuil) {t++;sum += s;}
+			if(e > seuil) {t++;sum += e;}
+			if(w > seuil) {t++;sum += w;}
+
+			if(t) {
+				m = sum / t;
+			}
+		}
+		in[index] = m;				
+	}
+}
+
+void eroder(OCTET *in, OCTET *out, int lignes, int colonnes) {
+
+	int index;
+	int bool = 1;
+
+	for (index=0; index < lignes * colonnes; index++) {
+		int val = in[index];
+		int m = val;
+
+		if(val < seuil) {
+			out[indexN(index, lignes, colonnes)] = 0;
+			out[indexS(index, lignes, colonnes)] = 0;
+			out[indexE(index, lignes, colonnes)] = 0;
+			out[indexW(index, lignes, colonnes)] = 0;
+		} else {
+			out[index] = in[index];
+		}
+
+	}
+}
+
 
 void fill2(OCTET *in, OCTET *out, int lignes, int colonnes) {
+	eroder(in, out, lignes, colonnes);
+	eroder(out, in, lignes, colonnes);
+	dilater(in, out, lignes, colonnes);
 	int index;
 	int bool = 1;
 
@@ -46,16 +100,22 @@ void fill2(OCTET *in, OCTET *out, int lignes, int colonnes) {
 
 			if(val < seuil) {
 				bool = 1;
-				int n = in[indexN(index, colonnes)];
+				int n = in[indexN(index, lignes, colonnes)];
 				int s = in[indexS(index, lignes, colonnes)];
 				int e = in[indexE(index, lignes, colonnes)];
-				int w = in[indexW(index)];
+				int w = in[indexW(index, lignes, colonnes)];
 
-				// if(in[indexE(e, lignes, colonnes)] > seuil) {
-				// 	in[index] = in[indexE(e, lignes, colonnes)];
-				// }
-				if(in[indexN(n, colonnes)] > seuil) {
-					in[index] = in[indexN(n, colonnes)];
+				if(in[indexN(n, lignes, colonnes)] > seuil) {
+					in[index] = in[indexN(index, lignes, colonnes)];
+				}
+				if(in[indexS(s, lignes, colonnes)] > seuil) {
+					in[index] = in[indexS(index, lignes, colonnes)];
+				}
+				if(in[indexE(e, lignes, colonnes)] > seuil) {
+					in[index] = in[indexE(index, lignes, colonnes)];
+				}
+				if(in[indexW(w, lignes, colonnes)] > seuil) {
+					in[index] = in[indexW(index, lignes, colonnes)];
 				}
 
 			}
@@ -63,38 +123,6 @@ void fill2(OCTET *in, OCTET *out, int lignes, int colonnes) {
 	}
 }
 
-void dilater(OCTET *in, OCTET *out, int lignes, int colonnes) {
-
-	int index;
-	int bool = 1;
-
-	while (bool) {
-		bool = 0;
-
-		for (index=0; index < lignes * colonnes; index++) {
-			int val = in[index];
-			int m = val;
-
-			if(val < seuil) {
-				bool = 1;
-				int n = in[indexN(index, colonnes)];
-				int s = in[indexS(index, lignes, colonnes)];
-				int e = in[indexE(index, lignes, colonnes)];
-				int w = in[indexW(index)];
-				int sum = 0;
-
-				int t = 0;
-				if(n > seuil) {t++;sum += n;}
-				if(s > seuil) {t++;sum += s;}
-				if(e > seuil) {t++;sum += e;}
-				if(w > seuil) {t++;sum += w;}
-
-				m = sum / t;
-			}
-			in[index] = m;				
-		}
-	}
-}
 
 int main(int argc, char* argv[])
 {
