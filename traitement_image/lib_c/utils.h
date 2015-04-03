@@ -1,5 +1,5 @@
 
-int indexN(int index, int colonnes) {
+int indexN(int index, int lignes, int colonnes) {
 	int n = index - colonnes;
 	if(n < 0) {
 		return 0;
@@ -23,7 +23,7 @@ int indexE(int index, int lignes, int colonnes) {
 	return n;
 }
 
-int indexW(int index) {
+int indexW(int index, int lignes, int colonnes) {
 	int n = index - 1;
 	if(n < 0) {
 		return 0;
