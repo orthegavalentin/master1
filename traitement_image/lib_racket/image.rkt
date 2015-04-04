@@ -7,6 +7,8 @@
 (provide read-image)
 (provide write-image)
 (provide at)
+(provide init-matrix)
+(provide set-matrix!)
 
 (struct image (width height data) #:transparent)
 
@@ -26,6 +28,14 @@
 
 (define (at matrix x y)
   (vector-ref (vector-ref matrix x) y))
+
+(define (set-matrix! matrix x y v)
+  (vector-set! (vector-ref matrix x) y v))
+
+(define (init-matrix width height)
+  (let ([v (make-vector width 0)])
+    (vector-map (λ (i)
+                  (make-vector height 0)) v)))
 
 (define (read-image path)
   (let ([in (open-input-file path #:mode 'binary)])
