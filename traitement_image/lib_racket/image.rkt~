@@ -1,13 +1,5 @@
 #lang racket/gui
 
-(provide image)
-(provide image-width)
-(provide image-height)
-(provide image-data)
-(provide read-image)
-(provide write-image)
-(provide at)
-
 (struct image (width height data) #:transparent)
 
 (define (read-size in)
@@ -25,7 +17,7 @@
           (f (cons x data))))))
 
 (define (at matrix x y)
-  (vector-ref (vector-ref matrix x) y))
+  (vector-ref (vector-ref matrix y) x))
 
 (define (read-image path)
   (let ([in (open-input-file path #:mode 'binary)])
@@ -40,11 +32,4 @@
                                                           (cons `(,i) l)
                                                           (cons (cons i (car l)) (cdr l)))) '(()) (read-data in))))))))
 
-(define (write-image path image)
-  (let ([out (open-output-file path #:mode 'binary #:exists 'replace)])
-    (write-string "P5\n" out)
-    (write-string (~a (image-width image) " " (image-height image) "\n") out)
-    (write-string "255\n" out)
-    (for* ([i (image-width image)]
-           [j (image-height image)])
-      (write-byte (at (image-data image) i j) out))))
+(read-image "./lena.pgm")
