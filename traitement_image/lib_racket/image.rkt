@@ -15,7 +15,7 @@
 (define (read-size in)
   (let f ()
     (let ([x (read-line in)])
-      (if (equal? (string-ref x 0) #\#)
+      (if (or (< (string-length x) 2) (equal? (string-ref x 0) #\#))
           (f)
           (map string->number (string-split x " "))))))
 
@@ -43,12 +43,20 @@
       (error "incorrect file type"))
     (let* ([size (read-size in)])
       (read-line in)
-      (image (car size)
-             (cadr size)
-             (list->vector (map list->vector (foldl (λ (i l)
-                                                      (if (= (length (car l)) (car size))
-                                                          (cons `(,i) l)
-                                                          (cons (cons i (car l)) (cdr l)))) '(()) (read-data in))))))))
+      (let ([img (image
+                  (car size)
+                  (cadr size)
+                  (init-matrix (car size) (cadr size)))]
+            [i 0]
+            [j 0])
+        (for-each (λ (b)
+                    (set-matrix! (image-data img) i j b)
+                    (set! j (+ 1 j))
+                    (when (= j (cadr size))
+                      (set! j 0)
+                      (set! i (+ 1 i)))) (read-data in))
+        (close-input-port in)
+        img))))
 
 (define (write-image path image)
   (let ([out (open-output-file path #:mode 'binary #:exists 'replace)])
@@ -57,4 +65,5 @@
     (write-string "255\n" out)
     (for* ([i (image-width image)]
            [j (image-height image)])
-      (write-byte (at (image-data image) i j) out))))
+      (write-byte (at (image-data image) i j) out))
+    (close-output-port out)))

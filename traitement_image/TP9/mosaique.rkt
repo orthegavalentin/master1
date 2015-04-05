@@ -27,4 +27,35 @@
             (set-matrix! (image-data out) (+ x i) (+ y j) avg))))
       out)))
 
-(write-image "out.pgm" (to-pixel-size (read-image "lena.pgm") 16))
+(define (make-avg-list in)
+  (let f ([data '()])
+    (let ([x (read-line in)])
+      (if (eof-object? x)
+          data
+          (let ([x (string-split x " ")])
+          (f (cons (cons (string->number (car x)) (cadr x)) data)))))))
+
+(define (to-mosaique img dictionnary size)
+  (define (find-closest-avg avg dictionnary)
+    (let ([val (car dictionnary)])
+      (andmap (λ (i)
+                (cond [(> (car i) avg) (set! val i) #f]
+                      [else #t])) (cdr dictionnary))
+      val))
+  
+  (let ([dictionnary (sort dictionnary (λ (i j)
+                                         (< (car i) (car j))))]
+        [w (image-width img)]
+        [h (image-height img)])
+    (let ([out (image w h (init-matrix w h))])
+      (for* ([i (build-list (/ (image-width out) size) (λ (i) (* i size)))]
+             [j (build-list (/ (image-height out) size) (λ (i) (* i size)))])
+        (let* ([avg (at (image-data img) i j)]
+               [closest (find-closest-avg avg dictionnary)]
+               [small-img (to-smaller-size (read-image (cdr closest)) 64)])
+          (for* ([x (in-range size)]
+                 [y (in-range size)])
+            (set-matrix! (image-data img) (+ x i) (+ y j) (at (image-data small-img) x y)))))))
+  img)
+
+(write-image "out.pgm" (to-mosaique (to-pixel-size (read-image "test.pgm") 8) (make-avg-list (open-input-file "out.txt")) 8))

@@ -1,5 +1,6 @@
 #!/bin/bash
-for file in /media/nlephilippe/USB/BOWS2OrigEp3/*.pgm
+
+for file in /home/noe/Téléchargements/BOWS2OrigEp3/*.pgm
 do
-    echo $(./avg $file) >> out.txt
+    echo $(./avg $file) $file >> out.txt
 done
