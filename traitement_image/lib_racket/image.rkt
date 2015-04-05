@@ -50,7 +50,7 @@
             [i 0]
             [j 0])
         (for-each (λ (b)
-                    (set-matrix! (image-data img) i j b)
+                    (set-matrix! (image-data img) (- (car size) i 1) (- (cadr size) j 1) b)
                     (set! j (+ 1 j))
                     (when (= j (cadr size))
                       (set! j 0)
