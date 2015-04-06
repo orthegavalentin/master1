@@ -19,13 +19,6 @@
           (f)
           (map string->number (string-split x " "))))))
 
-(define (read-data in)
-  (let f ([data '()])
-    (let ([x (read-byte in)])
-      (if (eof-object? x)
-          data
-          (f (cons x data))))))
-
 (define (at matrix x y)
   (vector-ref (vector-ref matrix x) y))
 
@@ -46,24 +39,23 @@
       (let ([img (image
                   (car size)
                   (cadr size)
-                  (init-matrix (car size) (cadr size)))]
-            [i 0]
-            [j 0])
-        (for-each (λ (b)
-                    (set-matrix! (image-data img) (- (car size) i 1) (- (cadr size) j 1) b)
-                    (set! j (+ 1 j))
-                    (when (= j (cadr size))
-                      (set! j 0)
-                      (set! i (+ 1 i)))) (read-data in))
-        (close-input-port in)
-        img))))
-
-(define (write-image path image)
-  (let ([out (open-output-file path #:mode 'binary #:exists 'replace)])
-    (write-string "P5\n" out)
-    (write-string (~a (image-width image) " " (image-height image) "\n") out)
-    (write-string "255\n" out)
-    (for* ([i (image-width image)]
-           [j (image-height image)])
-      (write-byte (at (image-data image) i j) out))
-    (close-output-port out)))
+                  (init-matrix (car size) (cadr size)))])
+        (let f ([i 0] [j 0])
+          (let ([x (read-byte in)])
+            (cond [(eof-object? x)
+                   (close-input-port in)
+                   img]
+                  [else (set-matrix! (image-data img) i j x)
+                        (if (= j (- (cadr size) 1))
+                            (f (+ 1 i) 0)
+                            (f i (+ 1 j)))])))))))
+  
+  (define (write-image path image)
+    (let ([out (open-output-file path #:mode 'binary #:exists 'replace)])
+      (write-string "P5\n" out)
+      (write-string (~a (image-width image) " " (image-height image) "\n") out)
+      (write-string "255\n" out)
+      (for* ([i (image-width image)]
+             [j (image-height image)])
+        (write-byte (at (image-data image) i j) out))
+      (close-output-port out)))
