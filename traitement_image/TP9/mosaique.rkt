@@ -38,9 +38,9 @@
 (define (to-mosaique img dictionnary size)
   (define (find-closest-avg avg dictionnary)
     (let ([val (car dictionnary)])
-      (andmap (λ (i)
+      (when (andmap (λ (i)
                 (cond [(> (car i) avg) (set! val i) #f]
-                      [else #t])) (cdr dictionnary))
+                      [else #t])) (cdr dictionnary)) (set! val (car (reverse dictionnary))))
       val))
   
   (let ([dictionnary (sort dictionnary (λ (i j)
