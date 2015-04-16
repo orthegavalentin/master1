@@ -13,6 +13,7 @@ public:
     Point *projectOnLine(Point *b, Point *c);
     Point *projectOnLine(Vector *u, Point *b);
     Point *projectOnPlan(Point *a, Vector *n);
+    Vector* getNormale(Coord* p1, Coord* p2);
 
 };
 

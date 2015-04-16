@@ -30,11 +30,12 @@
 #define MINUS 45
 #define ENTER 13
 
-int meridians = 38;
-int parallels = 40;
+int meridians = 42;
+int parallels = 21;
 
-// std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
-std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
+std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
+// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/buddha.off");
+// std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
 Repere rep(t);
 
@@ -267,6 +268,32 @@ void render_scene()
 	for(auto tr : t) {
 		tr->drawTriangle();
 	}
+	// t[0]->drawTriangle();
+
+        // Point v1(0, 0, 1);
+        // Point v2(4, 2, 3);
+	// Point o(-3, 1, 1);
+	
+	// Vector a(&v1, &v2);
+	// Vector b(&v1, &o);
+	// // Vector* v3 = a.vectoriel(&b);
+	// Vector* v3 = o.getNormale(&v1, &v2);
+	// std::cout << v3 << std::endl;
+
+	// glBegin(GL_LINES);
+	// glColor3f(1, 0, 0);
+	// glVertex3f(o.getX(), o.getY(), o.getZ());
+	// glVertex3f(v1.getX(), v1.getY(), v1.getZ());
+	// glColor3f(0, 1, 0);
+	// glVertex3f(o.getX(), o.getY(), o.getZ());
+	// glVertex3f(v2.getX(), v2.getY(), v2.getZ());
+	// glColor3f(0, 0, 1);
+	// glVertex3f(o.getX(), o.getY(), o.getZ());
+	// glVertex3f(v3->getX(), v3->getY(), v3->getZ());
+	// glEnd();
+
+	// Triangle tri(new Point(10, 20, 23), new Point(20, 4, 10) , new Point(2, 24, 0));
+	// tri.drawTriangle();
 
 	glFlush();
 }

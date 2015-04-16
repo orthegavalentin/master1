@@ -42,3 +42,13 @@ Point *Point::projectOnPlan(Point *a, Vector *n)
                      m->getY() - n->getY() * norme,
                      m->getZ() - n->getZ() * norme);
 }
+
+
+Vector *Point::getNormale(Coord* p1, Coord* p2) {
+  Vector a1(this, p1);
+  Vector a2(this, p2);
+  double norme = fmin(a1.getNorme(), a2.getNorme());
+  Vector* v = a1.vectoriel(&a2);
+  v->mul(norme / v->getNorme());
+  return v;
+}

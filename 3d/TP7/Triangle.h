@@ -5,14 +5,22 @@
 #include <cmath>
 
 class Triangle {
-public:
+private:
 	Point* p1;
 	Point* p2;
 	Point* p3;
 
+	Vector* v1;
+	Vector* v2;
+	Vector* v3;
+
+	void computeNormals();
+	;
+public:
 	Triangle(Point* p1, Point* p2, Point* p3);
 	void drawTriangle();
 	void drawFace();
+	void drawNormales();
 	double minX();
 	double maxX();
 	double minY();
@@ -20,6 +28,13 @@ public:
 	double minZ();
 	double maxZ();
 };
+
+void Triangle::computeNormals() {
+  Vector* n = p1->getNormale(p2, p3);
+  v1 = new Vector(n->getX() + p1->getX(), n->getY() + p1->getY(), n->getZ() + p1->getZ());
+  v2 = new Vector(n->getX() + p2->getX(), n->getY() + p2->getY(), n->getZ() + p2->getZ());
+  v3 = new Vector(n->getX() + p3->getX(), n->getY() + p3->getY(), n->getZ() + p3->getZ());
+}
 
 double Triangle::minX() {
 	double m = p1->getX();
@@ -68,20 +83,25 @@ Triangle::Triangle(Point* p1, Point* p2, Point* p3) {
 	this->p1 = p1;
 	this->p2 = p2;
 	this->p3 = p3;
+	computeNormals();
 }
 
 void Triangle::drawTriangle() {
-	glBegin(GL_LINES);
+  glBegin(GL_LINES);
 
-	glVertex3f(p1->getX(), p1->getY(), p1->getZ());
-	glVertex3f(p2->getX(), p2->getY(), p2->getZ());
-	glVertex3f(p2->getX(), p2->getY(), p2->getZ());
-	glVertex3f(p3->getX(), p3->getY(), p3->getZ());
-	glVertex3f(p3->getX(), p3->getY(), p3->getZ());
-	glVertex3f(p1->getX(), p1->getY(), p1->getZ());
+  glColor3f(1, 0, 0);
+  glVertex3f(p1->getX(), p1->getY(), p1->getZ());
+  glVertex3f(p2->getX(), p2->getY(), p2->getZ());
+  glColor3f(0, 1, 0);
+  glVertex3f(p2->getX(), p2->getY(), p2->getZ());
+  glVertex3f(p3->getX(), p3->getY(), p3->getZ());
+  glColor3f(0, 0, 1);
+  glVertex3f(p3->getX(), p3->getY(), p3->getZ());
+  glVertex3f(p1->getX(), p1->getY(), p1->getZ());
 
-	
-	glEnd();
+  glEnd();
+  glColor3f(1, 1, 1);
+  drawNormales();
 }
 
 void Triangle::drawFace() {
@@ -92,6 +112,21 @@ void Triangle::drawFace() {
 	glVertex3f(p3->getX(), p3->getY(), p3->getZ());
 	
 	glEnd();
+	// drawNormales();
+}
+
+void Triangle::drawNormales() {
+  // std::cout << "v1 : " << v1 << std::endl;
+  // std::cout << "v2 : " << v2 << std::endl;
+  // std::cout << "v3 : " << v3 << std::endl;
+  glBegin(GL_LINES);
+  glVertex3f(p1->getX(), p1->getY(), p1->getZ());
+  glVertex3f(v1->getX(), v1->getY(), v1->getZ());
+  glVertex3f(p2->getX(), p2->getY(), p2->getZ());
+  glVertex3f(v2->getX(), v2->getY(), v2->getZ());
+  glVertex3f(p3->getX(), p3->getY(), p3->getZ());
+  glVertex3f(v3->getX(), v3->getY(), v3->getZ());
+  glEnd();
 }
 
 #endif
