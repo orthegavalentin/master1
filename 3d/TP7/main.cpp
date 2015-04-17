@@ -34,7 +34,7 @@ int meridians = 42;
 int parallels = 21;
 
 std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
-// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/buddha.off");
+// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/bunny.off");
 // std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
 Repere rep(t);
@@ -266,8 +266,9 @@ void render_scene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for(auto tr : t) {
-		tr->drawTriangle();
+	  tr->drawTriangle();
 	}
+	// rep.gaussienne(t);
 	// t[0]->drawTriangle();
 
         // Point v1(0, 0, 1);

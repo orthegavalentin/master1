@@ -6,34 +6,52 @@
 
 class Triangle {
 private:
-	Point* p1;
-	Point* p2;
-	Point* p3;
+  Point* p1;
+  Point* p2;
+  Point* p3;
 
-	Vector* v1;
-	Vector* v2;
-	Vector* v3;
+  Point* v1;
+  Point* v2;
+  Point* v3;
 
-	void computeNormals();
-	;
+  void computeNormals();
+  ;
 public:
-	Triangle(Point* p1, Point* p2, Point* p3);
-	void drawTriangle();
-	void drawFace();
-	void drawNormales();
-	double minX();
-	double maxX();
-	double minY();
-	double maxY();
-	double minZ();
-	double maxZ();
+  Triangle(Point* p1, Point* p2, Point* p3);
+  void drawTriangle();
+  void drawFace();
+  void drawNormales();
+  double minX();
+  double maxX();
+  double minY();
+  double maxY();
+  double minZ();
+  double maxZ();
+  std::vector<Point*> getNormales();
+  std::vector<Point*> getPoints();
 };
+
+std::vector<Point*> Triangle::getNormales() {
+  std::vector<Point*> v;
+  v.push_back(v1);
+  v.push_back(v2);
+  v.push_back(v3);
+  return v;
+}
+
+std::vector<Point*> Triangle::getPoints() {
+  std::vector<Point*> v;
+  v.push_back(p1);
+  v.push_back(p2);
+  v.push_back(p3);
+  return v;
+}
 
 void Triangle::computeNormals() {
   Vector* n = p1->getNormale(p2, p3);
-  v1 = new Vector(n->getX() + p1->getX(), n->getY() + p1->getY(), n->getZ() + p1->getZ());
-  v2 = new Vector(n->getX() + p2->getX(), n->getY() + p2->getY(), n->getZ() + p2->getZ());
-  v3 = new Vector(n->getX() + p3->getX(), n->getY() + p3->getY(), n->getZ() + p3->getZ());
+  v1 = new Point(n->getX() + p1->getX(), n->getY() + p1->getY(), n->getZ() + p1->getZ());
+  v2 = new Point(n->getX() + p2->getX(), n->getY() + p2->getY(), n->getZ() + p2->getZ());
+  v3 = new Point(n->getX() + p3->getX(), n->getY() + p3->getY(), n->getZ() + p3->getZ());
 }
 
 double Triangle::minX() {

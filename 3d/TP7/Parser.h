@@ -14,10 +14,28 @@ class Repere {
   double x, y, z;
 
   Repere(std::vector<Triangle*> triangles);
+  void gaussienne(std::vector<Triangle*> t);
 
  private:
   std::vector<double> getBounds(std::vector<Triangle*> triangles);
 };
+
+void Repere::gaussienne(std::vector<Triangle*> t) {
+  glBegin(GL_LINES);
+  Point p(x, y, z);
+  for (auto triangle : t) {
+    for (int i = 0; i < 3; i++) {
+      std::vector<Point*> normales = triangle->getNormales();
+      std::vector<Point*> points = triangle->getPoints();
+      Vector v(normales[i], points[i]);
+      v.mul(size / v.getNorme());
+      glVertex3f(p.getX(), p.getY(), p.getZ());
+      glVertex3f(v.getX() + p.getX(), v.getY() + p.getY(), v.getZ() + p.getZ());
+    }
+  }
+  glEnd();
+
+}
 
 Repere::Repere(std::vector<Triangle*> triangles) {
   std::vector<double> bounds;
