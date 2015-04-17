@@ -33,9 +33,11 @@
 int meridians = 42;
 int parallels = 21;
 
-std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
+// std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
+// std::vector<Triangle*> t = getDiedres(matriceAdjacence(maillageCylindre(new Point(0, 0, 0), 10, 30, 15)), 90);
 // std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/bunny.off");
-// std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
+std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
+std::vector<std::vector<Triangle*>> matrix = matriceAdjacence(t);
 
 Repere rep(t);
 
@@ -61,6 +63,14 @@ void onMouseMove(int x, int y) ;
 
 int main(int argc, char **argv) 
 {  
+  t = getDiedres(matrix, 0.7f);
+  for (auto j : t) {
+    for (auto k : j->getPoints()) {
+      std::cout << k << " ";
+    }
+    std::cout << std::endl;
+  }
+
   // initialisation  des paramètres de GLUT en fonction
   // des arguments sur la ligne de commande
 	glutInit(&argc, argv);

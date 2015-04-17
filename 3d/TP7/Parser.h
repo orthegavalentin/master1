@@ -131,9 +131,13 @@ std::vector<Triangle*> maillageCylindre(Point* orig, int radius, int height, int
     triangles.push_back(new Triangle(c[0][i], c[0][(i+1)%meridians], c[1][(i+1)%meridians]));
   }
 
+  for (int i = 0; i < meridians; ++i) {
+    triangles.push_back(new Triangle(c[0][(i)%meridians], c[1][(i+1)%meridians], c[1][i]));
+  }
+
   for (int i = 1; i < meridians; ++i) {
-    triangles.push_back(new Triangle(c[0][i], c[0][0], c[0][(i+1)%meridians]));
-    triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], c[1][0]));
+    // triangles.push_back(new Triangle(c[0][i], c[0][0], c[0][(i+1)%meridians]));
+    // triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], c[1][0]));
   }
 
   return triangles;
@@ -153,4 +157,65 @@ std::vector<Triangle*> maillageSphere(Point* orig, int radius, int meridians, in
   return triangles;
 }
 
+bool neighbours (Triangle* t1, Triangle* t2) {
+  int n = 0;
+  for (auto i : t1->getPoints()) {
+    for (auto j : t2->getPoints()) {
+      n += i->equals(j);
+    }
+  }
+  return n == 2;
+}
+
+bool diedre (Triangle* t1, Triangle* t2, double a) {
+  double angle = 1 - a;
+  Point* n1 = t1->getNormales()[0];
+  Point* n2 = t2->getNormales()[0];
+  // if(neighbours(t1, t2)) {
+    Vector v1(n1->getX(), n1->getY(), n1->getZ());
+    Vector v2(n2->getX(), n2->getY(), n2->getZ());
+    std::cout << v1.getAngle(&v2) << std::endl;
+    return (v1.getAngle(&v2) < angle);
+  // }
+  return false;
+}
+
+std::vector<std::vector<Triangle*>> matriceAdjacence(std::vector<Triangle*> triangles) {
+  std::vector<std::vector<Triangle*>> matrix;
+  for (int i = 0; i < triangles.size(); i++) {
+    std::vector<Triangle*> t;
+    matrix.push_back(t);
+    for (int j = i; j < triangles.size(); j++) {
+      if(neighbours(triangles[i], triangles[j])) {
+	matrix[i].push_back(triangles[j]);
+      }
+    }
+  }
+  return matrix;
+}
+
+std::vector<Triangle*> getDiedres(std::vector<std::vector<Triangle*>> matrix, double angle) {
+  std::vector<Triangle*> triangles;
+  for (auto i : matrix) {
+    if(i.size() > 0) {
+      for (int j = 0; j < i.size(); j++) {
+	for (int k = j; k < i.size(); k++) {
+	  if(diedre(i[j], i[k], angle)) {
+	    triangles.push_back(i[j]);
+	    triangles.push_back(i[k]);	    
+	  }
+	}
+      }
+    }
+  }
+	      return triangles;
+}
+
 #endif
+
+
+
+
+
+
+

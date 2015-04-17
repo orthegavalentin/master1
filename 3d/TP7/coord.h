@@ -15,6 +15,7 @@ public:
     void setX(double x);
     void setY(double y);
     void setZ(double z);
+    bool equals(Coord* c);
 
 private:
     double x, y, z;

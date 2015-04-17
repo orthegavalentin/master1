@@ -48,6 +48,7 @@ std::vector<Point*> Triangle::getPoints() {
 }
 
 void Triangle::computeNormals() {
+  // std::cout << p1 << " " << p2 << " " << p3 << std::endl;
   Vector* n = p1->getNormale(p2, p3);
   v1 = new Point(n->getX() + p1->getX(), n->getY() + p1->getY(), n->getZ() + p1->getZ());
   v2 = new Point(n->getX() + p2->getX(), n->getY() + p2->getY(), n->getZ() + p2->getZ());
@@ -119,7 +120,7 @@ void Triangle::drawTriangle() {
 
   glEnd();
   glColor3f(1, 1, 1);
-  drawNormales();
+  // drawNormales();
 }
 
 void Triangle::drawFace() {

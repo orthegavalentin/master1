@@ -41,6 +41,10 @@ void Coord::setZ(double z)
     this->z = z;
 }
 
+bool Coord::equals(Coord* c) {
+  return (this->getX() == c->getX() && this->getY() == c->getY() && this->getZ() == c->getZ());
+}
+
 std::ostream& operator<<(std::ostream& stream, Coord& c) {
     stream << "[" << c.getX() << ", " << c.getY() << ", " << c.getZ() << "]";
     return stream;
