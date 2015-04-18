@@ -167,48 +167,61 @@ bool neighbours (Triangle* t1, Triangle* t2) {
   return n == 2;
 }
 
-bool diedre (Triangle* t1, Triangle* t2, double a) {
-  double angle = 1 - a;
+bool diedre (Triangle* t1, Triangle* t2, double angle) {
+  // double angle = a * M_PI / 180;
+  // std::cout << "angle : " << angle << std::endl;
+
   Point* n1 = t1->getNormales()[0];
   Point* n2 = t2->getNormales()[0];
-  // if(neighbours(t1, t2)) {
+  // t1->display();
+  // t2->display();
+  if(neighbours(t1, t2)) {
+    // std::cout << "neighbours" << std::endl;
     Vector v1(n1->getX(), n1->getY(), n1->getZ());
     Vector v2(n2->getX(), n2->getY(), n2->getZ());
-    std::cout << v1.getAngle(&v2) << std::endl;
-    return (v1.getAngle(&v2) < angle);
-  // }
+    // std::cout << v1.getAngle(&v2) * 180 / M_PI << std::endl;
+    return (v1.getAngle(&v2) > angle);
+  }
   return false;
 }
 
-std::vector<std::vector<Triangle*>> matriceAdjacence(std::vector<Triangle*> triangles) {
-  std::vector<std::vector<Triangle*>> matrix;
+std::vector<std::vector<int>> matriceAdjacence(std::vector<Triangle*> triangles) {
+  std::vector<std::vector<int>> matrix;
   for (int i = 0; i < triangles.size(); i++) {
-    std::vector<Triangle*> t;
-    matrix.push_back(t);
-    for (int j = i; j < triangles.size(); j++) {
+    std::vector<int> t;
+    for (int j = 0; j < triangles.size(); j++) {
       if(neighbours(triangles[i], triangles[j])) {
-	matrix[i].push_back(triangles[j]);
+	t.push_back(j);
       }
     }
+    matrix.push_back(t);
   }
+  // int a = 0;
+  // for (auto i : matrix) {
+  //   std::cout << a++ << " : ";
+
+  //   for (auto j : i) {
+  //     std::cout << j << " ";
+  //   }
+  //   std::cout << std::endl;
+
+  // }
   return matrix;
 }
 
-std::vector<Triangle*> getDiedres(std::vector<std::vector<Triangle*>> matrix, double angle) {
+std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double angle) {
   std::vector<Triangle*> triangles;
-  for (auto i : matrix) {
-    if(i.size() > 0) {
-      for (int j = 0; j < i.size(); j++) {
-	for (int k = j; k < i.size(); k++) {
-	  if(diedre(i[j], i[k], angle)) {
-	    triangles.push_back(i[j]);
-	    triangles.push_back(i[k]);	    
-	  }
-	}
+  for (int i = 0; i < matrix.size(); i++) {
+    Triangle *t1 = t[i];
+    for (int j = 0; j < matrix[i].size(); j++) {
+      Triangle *t2 = t[matrix[i][j]];
+      if(diedre(t1, t2, angle)) {
+	triangles.push_back(t1);
+	triangles.push_back(t2);	    
       }
     }
   }
-	      return triangles;
+  return triangles;
 }
 
 #endif

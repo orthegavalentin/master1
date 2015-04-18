@@ -33,13 +33,24 @@
 int meridians = 42;
 int parallels = 21;
 
+// std::vector<Triangle*> t;
+Point p1(0, 0, 0);
+Point p2(0, 20, 0);
+Point p3(30, 20, 0);
+Point p4(-15, 20, 20);
+
+Triangle *t1 = new Triangle(&p1, &p2, &p3);
+Triangle *t2 = new Triangle(&p1, &p2, &p4);
+
 // std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
 // std::vector<Triangle*> t = getDiedres(matriceAdjacence(maillageCylindre(new Point(0, 0, 0), 10, 30, 15)), 90);
-// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/bunny.off");
-std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
-std::vector<std::vector<Triangle*>> matrix = matriceAdjacence(t);
+std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/test.off");
+// std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
 Repere rep(t);
+std::vector<Triangle*> fig;
+std::vector<std::vector<int>> matrix;
+double angle = 90;
 
 int curve;
 int selected;
@@ -63,13 +74,14 @@ void onMouseMove(int x, int y) ;
 
 int main(int argc, char **argv) 
 {  
-  t = getDiedres(matrix, 0.7f);
-  for (auto j : t) {
-    for (auto k : j->getPoints()) {
-      std::cout << k << " ";
-    }
-    std::cout << std::endl;
-  }
+  // t.clear();
+  // t.push_back(t1);
+  // t.push_back(t2);
+  
+  // std::cout << t.size() << std::endl;
+
+  matrix = matriceAdjacence(t);
+  fig = t;
 
   // initialisation  des paramètres de GLUT en fonction
   // des arguments sur la ligne de commande
@@ -225,11 +237,12 @@ GLvoid window_key(unsigned char key, int x, int y)
 		break;
 
 		case UP:
-		p[selected]->setY(p[selected]->getY() + 1);
+		// p[selected]->setY(p[selected]->getY() + 1);
 		break;
 
 		case DOWN:
-		p[selected]->setY(p[selected]->getY() - 1);
+
+		// p[selected]->setY(p[selected]->getY() - 1);
 		break;
 
 		case LEFT:
@@ -253,11 +266,15 @@ GLvoid window_key(unsigned char key, int x, int y)
 		break;
 
 		case PLUS:
-		(*sel)+=4;
+		  std::cout << angle << std::endl;
+		  angle++;
+		  t = getDiedres(fig, matrix, angle * M_PI / 180);
 		break;
 
 		case MINUS:
-		if((*sel) > 2) (*sel)-=4;
+		  std::cout << angle << std::endl;
+		  angle--;
+		  t = getDiedres(fig, matrix, angle * M_PI / 180);
 		break;
 
 		default:
@@ -305,6 +322,20 @@ void render_scene()
 
 	// Triangle tri(new Point(10, 20, 23), new Point(20, 4, 10) , new Point(2, 24, 0));
 	// tri.drawTriangle();
+	// Point p1(0, 0, 0);
+	// Point p2(0, 20, 0);
+	// Point p3(30, 20, 0);
+	// Point p4(-15, 20, 20);
+
+	// Triangle t1(&p1, &p2, &p3);
+	// Triangle t2(&p1, &p2, &p4);
+
+	// t1.drawTriangle();
+	// t2.drawTriangle();
+
+	// // std::cout << neighbours(&t1, &t2) << std::endl;
+	// std::cout << diedre(&t1, &t2, 120) << std::endl;
+
 
 	glFlush();
 }

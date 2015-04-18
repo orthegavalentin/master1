@@ -29,7 +29,15 @@ public:
   double maxZ();
   std::vector<Point*> getNormales();
   std::vector<Point*> getPoints();
+  void display();
 };
+
+void Triangle::display() {
+  for (auto i : getPoints()) {
+    std::cout << i;
+  }
+  std::cout << std::endl;
+}
 
 std::vector<Point*> Triangle::getNormales() {
   std::vector<Point*> v;
