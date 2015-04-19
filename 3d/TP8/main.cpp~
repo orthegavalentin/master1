@@ -44,12 +44,14 @@ Triangle *t2 = new Triangle(&p1, &p2, &p4);
 
 // std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
 // std::vector<Triangle*> t = getDiedres(matriceAdjacence(maillageCylindre(new Point(0, 0, 0), 10, 30, 15)), 90);
-std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/offs/socket.off");
+std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/test.off");
+// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/offs/socket.off");
 // std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
 Repere rep(t);
 std::vector<Triangle*> fig;
 std::vector<std::vector<int>> matrix;
+std::vector<int> areas;
 double angle = M_PI / 2;
 
 int curve;
@@ -79,9 +81,12 @@ int main(int argc, char **argv)
   // t.push_back(t2);
   
   // std::cout << t.size() << std::endl;
-
+  std::cout << "avant adjacent" << std::endl;
   matrix = matriceAdjacence(t);
   fig = t;
+  std::cout << "après adjacent" << std::endl;
+  areas = segmentation(t, matrix, M_PI);
+  std::cout << "segmenté" << std::endl;
 
   // initialisation  des paramètres de GLUT en fonction
   // des arguments sur la ligne de commande
@@ -267,18 +272,14 @@ GLvoid window_key(unsigned char key, int x, int y)
 
 		case PLUS:
 		  std::cout << angle << std::endl;
-		  // angle++;
-		  angle += 0.05f;
-		  // t = getDiedres(fig, matrix, angle * M_PI / 180);
-		  t = getDiedres(fig, matrix, angle);
+		  angle += 0.1f;
+		  areas = segmentation(t, matrix, angle);
 		break;
 
 		case MINUS:
 		  std::cout << angle << std::endl;
-		  // angle--;
-		  angle -= 0.05f;
-		  // t = getDiedres(fig, matrix, angle * M_PI / 180);
-		  t = getDiedres(fig, matrix, angle);
+		  angle -= 0.1f;
+		  areas = segmentation(t, matrix, angle);
 		break;
 
 		default:
@@ -295,10 +296,21 @@ void render_scene()
 {
 //Définition de la couleur
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	for(auto tr : t) {
-	  tr->drawTriangle();
+	
+	for (int i = 0; i < t.size(); i++) {
+	  if(areas[i] == 1) {
+	    glColor3f(1, 0, 0);
+	  } else {
+	    glColor3f(0, 1, 0);
+	  }
+	  // t[i]->drawFace();
+	  t[i]->drawTriangle();
 	}
+
+
+	// for(auto tr : t) {
+	//   tr->drawTriangle();
+	// }
 	// rep.gaussienne(t);
 	// t[0]->drawTriangle();
 

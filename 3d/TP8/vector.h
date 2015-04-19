@@ -18,6 +18,8 @@ public:
     Vector *vectoriel (Vector *vector2);
     double getAngle(Vector* vector2);
     void add(Vector*);
+    Vector* getNormale(Coord* p1, Coord* p2);
+
 };
 
 #endif // VECTOR_H

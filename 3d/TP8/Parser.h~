@@ -6,6 +6,7 @@
 #include <math.h>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include "Triangle.h"
 
 class Repere {
@@ -199,16 +200,6 @@ std::vector<std::vector<int>> matriceAdjacence(std::vector<Triangle*> triangles)
     }
     matrix.push_back(t);
   }
-  // int a = 0;
-  // for (auto i : matrix) {
-  //   std::cout << a++ << " : ";
-
-  //   for (auto j : i) {
-  //     std::cout << j << " ";
-  //   }
-  //   std::cout << std::endl;
-
-  // }
   return matrix;
 }
 
@@ -227,6 +218,67 @@ std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vec
     }
   }
   return triangles;
+}
+
+bool isAngleTooBig(std::vector<Triangle*> t, int i, int j, double angle) {
+  Triangle* t1 = t[i];
+  Point* n1 = t1->getNormales()[0];
+  Vector v1(n1->getX(), n1->getY(), n1->getZ());
+  Triangle* t2 = t[j];
+  Point* n2 = t2->getNormales()[0];
+  Vector v2(n2->getX(), n2->getY(), n2->getZ());
+  
+  return fmod(v1.getAngle(&v2), M_PI) > angle;
+}
+
+void step(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, int *areas, double delta, int current) {
+  for (auto i : matrix[current]) {
+    if(areas[i] == -1) {
+      if(i != -1) {
+	if(isAngleTooBig(t, current, i, delta)) {
+	  int color = -1;
+	  // std::vector<int> forbidden;
+	  // for (auto j : matrix[i]) {
+	  //   if(isAngleTooBig(t, i, j, delta)) {
+	  //     forbidden.push_back(areas[j]);
+	  //   } else {
+	  //     color = areas[j];
+	  //     break;
+	  //   }
+	  // }
+	  // if(color == -1) {
+	  //   while(std::find(forbidden.begin(), forbidden.end(), ++color)!=forbidden.end());
+	  // }
+	  areas[i] = color;
+	} else {
+	  areas[i] = areas[current];
+	}
+	step(t, matrix, areas, delta, i);
+      }
+    }
+  }
+}
+
+std::vector<int> segmentation(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double delta) {
+  std::cout << "en cours" << std::endl;
+  int* areas = new int[t.size()];
+
+  for (int i = 0; i < t.size(); i++) {
+    areas[i] = -1;
+  }
+
+  // for (auto i : t) {
+  //   areas.push_back(-1);
+  // }
+  areas[0] = 1;
+  std::cout << "before step" << std::endl;
+  step(t, matrix, areas, delta, 0);
+  std::vector<int> a;
+  for (int i = 0; i < t.size(); i++) {
+    a.push_back(areas[i]);
+  }
+
+  return a;
 }
 
 #endif
