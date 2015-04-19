@@ -34,19 +34,21 @@ int meridians = 42;
 int parallels = 21;
 
 // std::vector<Triangle*> t;
-Point p1(10, 0, 0);
-Point p2(10, 20, 0);
-Point p3(30, 20, 0);
-Point p4(0, 20, 10);
+Point p1(-10, 0, 0);
+Point p2(10, 0, 0);
+Point p3(0, 20, 0);
+Point p4(0, 10, -20);
 
 
 
 Triangle *t1 = new Triangle(&p1, &p2, &p3);
 Triangle *t2 = new Triangle(&p4, &p2, &p1);
+Triangle *t3 = new Triangle(&p4, &p3, &p1);
+Triangle *t4 = new Triangle(&p4, &p2, &p3);
 
 // std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
-// std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/test.off");
-std::vector<Triangle*> t = parseFile("./cube.off");
+std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/test.off");
+// std::vector<Triangle*> t = parseFile("./cube.off");
 // std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/offs/socket.off");
 // std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
@@ -78,14 +80,16 @@ double angle = M_PI * 0.2f;
 
  int main(int argc, char **argv) 
  {  
-   // t.clear();
-   // t.push_back(t1);
-   // t.push_back(t2);
-
+   t.clear();
+   t.push_back(t1);
+   t.push_back(t2);
+   t.push_back(t3);
+   t.push_back(t4);
    // std::cout << t.size() << std::endl;
    // std::cout << "avant adjacent" << std::endl;
    matrix = matriceAdjacence(t);
    fig = t;
+   // t = butterfly(t, matrix);
    // std::cout << "après adjacent" << std::endl;
    // areas = segmentation(t, matrix, angle);
    // std::cout << "segmenté" << std::endl;
@@ -322,6 +326,7 @@ void render_scene()
 	for(auto tr : t) {
 	  glColor3f(1, 0, 0);
 	  tr->drawTriangle();
+	  // tr->drawFace();
 	}
 
 	// rep.gaussienne(t);

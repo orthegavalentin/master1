@@ -137,8 +137,8 @@ std::vector<Triangle*> maillageCylindre(Point* orig, int radius, int height, int
   }
 
   for (int i = 1; i < meridians; ++i) {
-    // triangles.push_back(new Triangle(c[0][i], c[0][0], c[0][(i+1)%meridians]));
-    // triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], c[1][0]));
+    triangles.push_back(new Triangle(c[0][i], c[0][0], c[0][(i+1)%meridians]));
+    triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], c[1][0]));
   }
 
   return triangles;
@@ -295,42 +295,49 @@ Point* getLastPoint(std::vector<int> n, std::vector<Triangle*> triangles, Point*
   return 0;
 }
 
+Point* createPoint(Point* p1, Point* p2, Point* p3, Point* t1, Point* t2) {
+  // Point* m1((p1->getX() + p2->getX()) * 0.5f, (p1->getY() + p2->getY()) * 0.5f, (p1->getZ() + p2->getZ()) * 0.5f);
+  // Point* m2((p2->getX() + p3->getX()) * 0.5f, (p2->getY() + p3->getY()) * 0.5f, (p2->getZ() + p3->getZ()) * 0.5f);
+  // Point* m3((p1->getX() + p3->getX()) * 0.5f, (p1->getY() + p3->getY()) * 0.5f, (p1->getZ() + p3->getZ()) * 0.5f);
+
+  // return 
+  return new Point(p1->getX() * 0.5f + p2->getX() * 0.5f + p3->getX() * 0.25f - t1->getX() * 0.125f - t2->getX() * 0.125f,
+  		   p1->getY() * 0.5f + p2->getY() * 0.5f + p3->getY() * 0.25f - t1->getY() * 0.125f - t2->getY() * 0.125f,
+  		   p1->getZ() * 0.5f + p2->getZ() * 0.5f + p3->getZ() * 0.25f - t1->getZ() * 0.125f - t2->getZ() * 0.125f);
+}
+
 std::vector<Triangle*> refine(std::vector<Triangle*> triangles, int index, std::vector<std::vector<int>> matrix) {
   Triangle* t = triangles[index];
   std::vector<Triangle*> v;
   std::vector<Point*> pts = t->getPoints();
   
-  Point* t1 = getLastPoint(matrix[index], triangles, pts[0], pts[1]);
-  if (t1 == 0) t1 = pts[0];
-  Point* p1 = new Point((pts[0]->getX() + pts[1]->getX()) * (3.0f / 8.0f) + (t1->getX() + pts[2]->getX()) * (1.0f / 8.0f),
-			(pts[0]->getY() + pts[1]->getY()) * (3.0f / 8.0f) + (t1->getY() + pts[2]->getY()) * (1.0f / 8.0f),
-			(pts[0]->getZ() + pts[1]->getZ()) * (3.0f / 8.0f) + (t1->getZ() + pts[2]->getZ()) * (1.0f / 8.0f));
+  Point* t0 = getLastPoint(matrix[index], triangles, pts[0], pts[1]);
+  Point* t1 = getLastPoint(matrix[index], triangles, pts[0], pts[2]);
+  Point* t2 = getLastPoint(matrix[index], triangles, pts[1], pts[2]);
   
-  Point* t2 = getLastPoint(matrix[index], triangles, pts[0], pts[2]);
-  if (t2 == 0) t2 = pts[0];
-  Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * (3.0f / 8.0f) + (t2->getX() + pts[1]->getX()) * (1.0f / 8.0f),
-			(pts[0]->getY() + pts[2]->getY()) * (3.0f / 8.0f) + (t2->getY() + pts[1]->getY()) * (1.0f / 8.0f),
-			(pts[0]->getZ() + pts[2]->getZ()) * (3.0f / 8.0f) + (t2->getZ() + pts[1]->getZ()) * (1.0f / 8.0f));
+  Point* m1 = new Point((pts[1]->getX() + pts[2]->getX()) * 0.5f, (pts[1]->getY() + pts[2]->getY()) * 0.5f, (pts[1]->getZ() + pts[2]->getZ()) * 0.5f);
+  Point* m2 = new Point((pts[2]->getX() + pts[0]->getX()) * 0.5f, (pts[2]->getY() + pts[0]->getY()) * 0.5f, (pts[2]->getZ() + pts[0]->getZ()) * 0.5f);
+  Point* m3 = new Point((pts[1]->getX() + pts[0]->getX()) * 0.5f, (pts[1]->getY() + pts[0]->getY()) * 0.5f, (pts[1]->getZ() + pts[0]->getZ()) * 0.5f);
 
-  Point* t3 = getLastPoint(matrix[index], triangles, pts[1], pts[2]);
-  if (t3 == 0) t3 = pts[0];
-  Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * (3.0f / 8.0f) + (t3->getX() + pts[0]->getX()) * (1.0f / 8.0f),
-			(pts[1]->getY() + pts[2]->getY()) * (3.0f / 8.0f) + (t3->getY() + pts[0]->getY()) * (1.0f / 8.0f),
-			(pts[1]->getZ() + pts[2]->getZ()) * (3.0f / 8.0f) + (t3->getZ() + pts[0]->getZ()) * (1.0f / 8.0f));
-  // Point* t2 = getLastPoint(matrix[index], triangles, pts[0], pts[2]);
-  // Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * 0.55f - p2->getX() * 0.0f,
-  // 			(pts[0]->getY() + pts[2]->getY()) * 0.55f - p2->getY() * 0.0f,
-  // 			(pts[0]->getZ() + pts[2]->getZ()) * 0.55f - p2->getZ() * 0.0f);
+  if (t1 == 0) t1 = pts[1];
+  if (t2 == 0) t2 = pts[2];
+  if (t0 == 0) t0 = pts[0];
+  
+  Point *p1 = createPoint(pts[0], pts[1], pts[2], t1, t2);
+  Point *p2 = createPoint(pts[1], pts[2], pts[0], t0, t1);
+  Point *p3 = createPoint(pts[0], pts[2], pts[1], t2, t0);
 
-  // Point* t3 = getLastPoint(matrix[index], triangles, pts[0], pts[1]);
-  // Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * 0.55f - p3->getX() * 0.0f,
-  // 			(pts[1]->getY() + pts[2]->getY()) * 0.55f - p3->getY() * 0.0f,
-  // 			(pts[1]->getZ() + pts[2]->getZ()) * 0.55f - p3->getZ() * 0.0f);
-
-  v.push_back(new Triangle(pts[0], p1, p2));
+  // v.push_back(new Triangle(pts[0], p1, p3));
   v.push_back(new Triangle(p1, p3, p2));
-  v.push_back(new Triangle(p1, pts[1], p3));
-  v.push_back(new Triangle(p2, p3, pts[2]));
+  v.push_back(new Triangle(pts[1], p1, pts[0]));
+  v.push_back(new Triangle(pts[1], p1, p2));
+  // v.push_back(new Triangle(pts[1], pts[0], pts[2]));
+  v.push_back(new Triangle(pts[1], p2, pts[2]));
+  v.push_back(new Triangle(pts[2], p2, p3));
+  v.push_back(new Triangle(pts[2], p3, pts[0]));
+  v.push_back(new Triangle(pts[0], p3, p1));
+  // v.push_back(new Triangle(p1, pts[1], p2));
+  // v.push_back(new Triangle(p2, p3, pts[2]));
 
   return v;
 }
