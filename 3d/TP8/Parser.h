@@ -169,20 +169,19 @@ bool neighbours (Triangle* t1, Triangle* t2) {
 }
 
 bool diedre (Triangle* t1, Triangle* t2, double angle) {
-  // double angle = a * M_PI / 180;
-  // std::cout << "angle : " << angle << std::endl;
-
   Point* n1 = t1->getNormales()[0];
+  Point* p1 = t1->getPoints()[0];
+  Vector v1(n1->getX() - p1->getX(), n1->getY() - p1->getY(), n1->getZ() - p1->getZ());
   Point* n2 = t2->getNormales()[0];
-  // t1->display();
-  // t2->display();
-  // if(neighbours(t1, t2)) {
-    // std::cout << "neighbours" << std::endl;
-    Vector v1(n1->getX(), n1->getY(), n1->getZ());
-    Vector v2(n2->getX(), n2->getY(), n2->getZ());
-    // std::cout << v2.getAngle(&v1)<< std::endl;
+  Point* p2 = t2->getPoints()[0];
+  Vector v2(n2->getX() - p2->getX(), n2->getY() - p2->getY(), n2->getZ() - p2->getZ());
+
+  if(neighbours(t1, t2)) {
+    // Vector v1(n1->getX(), n1->getY(), n1->getZ());
+    // Vector v2(n2->getX(), n2->getY(), n2->getZ());
     return (v2.getAngle(&v1) > angle);
-  // }
+  }
+
   return false;
 }
 
@@ -233,56 +232,16 @@ double getAngle(std::vector<Triangle*> t, int i, int j, double angle) {
 }
 
 void step(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, int *areas, double delta, int current) {
-
-  // std::vector<double> angles;
-  // for (auto i : matrix[current]) {
-  //   if(areas[i] == -1) {
-  //     if(i != -1) {
-  // 	angles.push_back(getAngle(t, current, i, delta));
-  //     }
-  //   }
-  // }
-  // if(angles.size() > 0) {
-  //   double avg = 0;
-  //   for (auto i : angles) {
-  //     avg += i;
-  //   }
-  //   avg /= angles.size();
-
-  //   // double variance = 0;
-  //   // int cpt = 0;
-
-  //   // for (auto i : matrix[current]) {
-  //   //   if(areas[i] == -1) {
-  //   // 	if(i != -1) {
-  //   // 	  // std::cout << "angle : " << angles[cpt] << std::endl;
-  //   // 	  variance += pow(angles[cpt] - avg, 2);
-  //   // 	  cpt++;
-  //   // 	}
-  //   //   }
-  //   // }
-
-  //   // variance = sqrt(variance / cpt);
-
-  //   // std::cout << "variance : " << variance << std::endl;
-    
-  //   int j = 0;
-    for (auto i : matrix[current]) {
-      if(areas[i] == -1) {
-	if(i != -1) {
-	  // if(fabs(angles[j] - avg) > delta) {
-	  // std::cout << "Angle : " <<  fabs(angles[j] - avg) << std::endl;
-	  // if(angles[j] < delta) {
-	  if(getAngle(t, current, i, delta) > delta) {
-	    std::cout << getAngle(t, current, i, delta) << std::endl;
-	    // areas[i] = -2;
- 	  } else {
-	    areas[i] = areas[current];
-	    step(t, matrix, areas, delta, i);
-	  }
-	  // j++;
+  for (auto i : matrix[current]) {
+    if(areas[i] == -1) {
+      if(i != -1) {
+	if(getAngle(t, current, i, delta) > delta) {
+	  // std::cout << getAngle(t, current, i, delta) << std::endl;
+	} else {
+	  areas[i] = areas[current];
+	  step(t, matrix, areas, delta, i);
 	}
-      // }
+      }
     }
   }
 }
@@ -308,9 +267,6 @@ std::vector<int> segmentation(std::vector<Triangle*> t, std::vector<std::vector<
     areas[i] = -1;
   }
 
-  // for (auto i : t) {
-  //   areas.push_back(-1);
-  // }
   int color = 0;
   int index = 0;
   while((index = findFreeTriangle(areas, t.size())) != -1) {
@@ -319,7 +275,6 @@ std::vector<int> segmentation(std::vector<Triangle*> t, std::vector<std::vector<
     areas[index] = color++;
     step(t, matrix, areas, delta, index); // 
   }
-  // areas[0] = color;
 
   std::vector<int> a;
   for (int i = 0; i < t.size(); i++) {

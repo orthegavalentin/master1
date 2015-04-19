@@ -168,20 +168,22 @@ bool neighbours (Triangle* t1, Triangle* t2) {
 }
 
 bool diedre (Triangle* t1, Triangle* t2, double angle) {
-  // double angle = a * M_PI / 180;
-  // std::cout << "angle : " << angle << std::endl;
-
   Point* n1 = t1->getNormales()[0];
+  Point* p1 = t1->getPoints()[0];
+  Vector v1(n1->getX() - p1->getX(), n1->getY() - p1->getY(), n1->getZ() - p1->getZ());
   Point* n2 = t2->getNormales()[0];
-  // t1->display();
-  // t2->display();
-  // if(neighbours(t1, t2)) {
-    // std::cout << "neighbours" << std::endl;
-    Vector v1(n1->getX(), n1->getY(), n1->getZ());
-    Vector v2(n2->getX(), n2->getY(), n2->getZ());
-    // std::cout << v2.getAngle(&v1)<< std::endl;
-    return (v2.getAngle(&v1) > angle);
-  // }
+  Point* p2 = t2->getPoints()[0];
+  Vector v2(n2->getX() - p2->getX(), n2->getY() - p2->getY(), n2->getZ() - p2->getZ());
+
+  /* Point* n1 = t1->getNormales()[0]; */
+  /* Point* n2 = t2->getNormales()[0]; */
+
+  if(neighbours(t1, t2)) {
+    // Vector v1(n1->getX(), n1->getY(), n1->getZ());
+    // Vector v2(n2->getX(), n2->getY(), n2->getZ());
+    return (v1.getAngle(&v2) > angle);
+  }
+  
   return false;
 }
 
@@ -199,29 +201,21 @@ std::vector<std::vector<int>> matriceAdjacence(std::vector<Triangle*> triangles)
     }
     matrix.push_back(t);
   }
-  // int a = 0;
-  // for (auto i : matrix) {
-  //   std::cout << a++ << " : ";
-
-  //   for (auto j : i) {
-  //     std::cout << j << " ";
-  //   }
-  //   std::cout << std::endl;
-
-  // }
   return matrix;
 }
 
 std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double angle) {
   std::vector<Triangle*> triangles;
   for (int i = 0; i < matrix.size(); i++) {
+    // std::cout << i << std::endl;
     Triangle *t1 = t[i];
     for (int j = 0; j < matrix[i].size(); j++) {
-      if(matrix[i][j] != 0) {
+      if(matrix[i][j] != -1) {
 	Triangle *t2 = t[matrix[i][j]];
 	if(diedre(t1, t2, angle)) {
 	  triangles.push_back(t1);
-	  triangles.push_back(t2);
+	  break;
+	  // triangles.push_back(t2);
 	}
       }
     }

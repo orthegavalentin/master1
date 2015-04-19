@@ -44,7 +44,7 @@ Triangle *t2 = new Triangle(&p1, &p2, &p4);
 
 // std::vector<Triangle*> t = maillageCylindre(new Point(0, 0, 0), 10, 30, 15);
 // std::vector<Triangle*> t = getDiedres(matriceAdjacence(maillageCylindre(new Point(0, 0, 0), 10, 30, 15)), 90);
-std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/offs/socket.off");
+std::vector<Triangle*> t = parseFile("/home/noe/Téléchargements/test.off");
 // std::vector<Triangle*> t = maillageSphere(new Point(0, 0, 0), 30, meridians, parallels);
 
 Repere rep(t);
