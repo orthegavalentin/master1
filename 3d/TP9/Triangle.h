@@ -127,8 +127,8 @@ void Triangle::drawTriangle() {
   glVertex3f(p1->getX(), p1->getY(), p1->getZ());
 
   glEnd();
-  glColor3f(1, 1, 1);
-  drawNormales();
+  /* glColor3f(1, 1, 1); */
+  /* drawNormales(); */
 }
 
 void Triangle::drawFace() {

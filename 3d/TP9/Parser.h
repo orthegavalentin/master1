@@ -284,21 +284,48 @@ std::vector<int> segmentation(std::vector<Triangle*> t, std::vector<std::vector<
   return a;
 }
 
-std::vector<Triangle*> refine(Triangle* t) {
+Point* getLastPoint(std::vector<int> n, std::vector<Triangle*> triangles, Point* p1, Point* p2) {
+  for (auto i : n) {
+    std::vector<Point*> pts;
+    for (auto j : triangles[i]->getPoints()) {
+      if(!(j->equals(p1) || j->equals(p2))) pts.push_back(j);
+    }
+    if(pts.size() == 1) return pts[0];
+  }
+  return 0;
+}
+
+std::vector<Triangle*> refine(std::vector<Triangle*> triangles, int index, std::vector<std::vector<int>> matrix) {
+  Triangle* t = triangles[index];
   std::vector<Triangle*> v;
   std::vector<Point*> pts = t->getPoints();
   
-  Point* p1 = new Point((pts[0]->getX() + pts[1]->getX()) * 0.5f,
-			(pts[0]->getY() + pts[1]->getY()) * 0.5f,
-			(pts[0]->getZ() + pts[1]->getZ()) * 0.5f);
+  Point* t1 = getLastPoint(matrix[index], triangles, pts[0], pts[1]);
+  if (t1 == 0) t1 = pts[0];
+  Point* p1 = new Point((pts[0]->getX() + pts[1]->getX()) * (3.0f / 8.0f) + (t1->getX() + pts[2]->getX()) * (1.0f / 8.0f),
+			(pts[0]->getY() + pts[1]->getY()) * (3.0f / 8.0f) + (t1->getY() + pts[2]->getY()) * (1.0f / 8.0f),
+			(pts[0]->getZ() + pts[1]->getZ()) * (3.0f / 8.0f) + (t1->getZ() + pts[2]->getZ()) * (1.0f / 8.0f));
+  
+  Point* t2 = getLastPoint(matrix[index], triangles, pts[0], pts[2]);
+  if (t2 == 0) t2 = pts[0];
+  Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * (3.0f / 8.0f) + (t2->getX() + pts[1]->getX()) * (1.0f / 8.0f),
+			(pts[0]->getY() + pts[2]->getY()) * (3.0f / 8.0f) + (t2->getY() + pts[1]->getY()) * (1.0f / 8.0f),
+			(pts[0]->getZ() + pts[2]->getZ()) * (3.0f / 8.0f) + (t2->getZ() + pts[1]->getZ()) * (1.0f / 8.0f));
 
-  Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * 0.5f,
-			(pts[0]->getY() + pts[2]->getY()) * 0.5f,
-			(pts[0]->getZ() + pts[2]->getZ()) * 0.5f);
+  Point* t3 = getLastPoint(matrix[index], triangles, pts[1], pts[2]);
+  if (t3 == 0) t3 = pts[0];
+  Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * (3.0f / 8.0f) + (t3->getX() + pts[0]->getX()) * (1.0f / 8.0f),
+			(pts[1]->getY() + pts[2]->getY()) * (3.0f / 8.0f) + (t3->getY() + pts[0]->getY()) * (1.0f / 8.0f),
+			(pts[1]->getZ() + pts[2]->getZ()) * (3.0f / 8.0f) + (t3->getZ() + pts[0]->getZ()) * (1.0f / 8.0f));
+  // Point* t2 = getLastPoint(matrix[index], triangles, pts[0], pts[2]);
+  // Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * 0.55f - p2->getX() * 0.0f,
+  // 			(pts[0]->getY() + pts[2]->getY()) * 0.55f - p2->getY() * 0.0f,
+  // 			(pts[0]->getZ() + pts[2]->getZ()) * 0.55f - p2->getZ() * 0.0f);
 
-  Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * 0.5f,
-			(pts[1]->getY() + pts[2]->getY()) * 0.5f,
-			(pts[1]->getZ() + pts[2]->getZ()) * 0.5f);
+  // Point* t3 = getLastPoint(matrix[index], triangles, pts[0], pts[1]);
+  // Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * 0.55f - p3->getX() * 0.0f,
+  // 			(pts[1]->getY() + pts[2]->getY()) * 0.55f - p3->getY() * 0.0f,
+  // 			(pts[1]->getZ() + pts[2]->getZ()) * 0.55f - p3->getZ() * 0.0f);
 
   v.push_back(new Triangle(pts[0], p1, p2));
   v.push_back(new Triangle(p1, p3, p2));
@@ -308,10 +335,20 @@ std::vector<Triangle*> refine(Triangle* t) {
   return v;
 }
 
-std::vector<Triangle*> refineAll(std::vector<Triangle*> triangles) {
+// std::vector<Triangle*> refineAll(std::vector<Triangle*> triangles) {
+//   std::vector<Triangle*> t;
+//   for (auto i : triangles) {
+//     for (auto j : refine(i)) {
+//       t.push_back(j);
+//     }
+//   }
+//   return t;
+// }
+
+std::vector<Triangle*> butterfly(std::vector<Triangle*> triangles, std::vector<std::vector<int>> matrix) {
   std::vector<Triangle*> t;
-  for (auto i : triangles) {
-    for (auto j : refine(i)) {
+  for (int i = 0; i < triangles.size(); i++) {
+    for (auto j : refine(triangles, i, matrix)) {
       t.push_back(j);
     }
   }

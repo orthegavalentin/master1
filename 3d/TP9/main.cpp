@@ -84,8 +84,8 @@ double angle = M_PI * 0.2f;
 
    // std::cout << t.size() << std::endl;
    // std::cout << "avant adjacent" << std::endl;
-   // matrix = matriceAdjacence(t);
-   // fig = t;
+   matrix = matriceAdjacence(t);
+   fig = t;
    // std::cout << "après adjacent" << std::endl;
    // areas = segmentation(t, matrix, angle);
    // std::cout << "segmenté" << std::endl;
@@ -273,7 +273,8 @@ double angle = M_PI * 0.2f;
 		 break;
 
 		 case PLUS:
-		   t = refineAll(t);
+		   t = butterfly(t, matrix);
+		   matrix = matriceAdjacence(t);
 		   // std::cout << angle << std::endl;
 		   // angle += 0.1f;
 		   // areas = segmentation(t, matrix, angle);
