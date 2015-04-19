@@ -1,0 +1,328 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+#include <string>
+#include <fstream>
+#include <math.h>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include "Triangle.h"
+
+class Repere {
+ public:
+  double size;
+  double x, y, z;
+
+  Repere(std::vector<Triangle*> triangles);
+  void gaussienne(std::vector<Triangle*> t);
+
+ private:
+  std::vector<double> getBounds(std::vector<Triangle*> triangles);
+};
+
+void Repere::gaussienne(std::vector<Triangle*> t) {
+  glBegin(GL_LINES);
+  Point p(x, y, z);
+  for (auto triangle : t) {
+    for (int i = 0; i < 3; i++) {
+      std::vector<Point*> normales = triangle->getNormales();
+      std::vector<Point*> points = triangle->getPoints();
+      Vector v(normales[i], points[i]);
+      v.mul(size / v.getNorme());
+      glVertex3f(p.getX(), p.getY(), p.getZ());
+      glVertex3f(v.getX() + p.getX(), v.getY() + p.getY(), v.getZ() + p.getZ());
+    }
+  }
+  glEnd();
+
+}
+
+Repere::Repere(std::vector<Triangle*> triangles) {
+  std::vector<double> bounds;
+  bounds.push_back(triangles[0]->minX()); //min x
+  bounds.push_back(triangles[0]->maxX()); //max x
+  bounds.push_back(triangles[0]->minY()); //min y
+  bounds.push_back(triangles[0]->maxY()); //max y
+  bounds.push_back(triangles[0]->minZ());
+  bounds.push_back(triangles[0]->maxZ());
+
+  for(auto t : triangles) {
+    bounds[0] = fmin(bounds[0], t->minX());
+    bounds[1] = fmax(bounds[1], t->maxX());
+    bounds[2] = fmin(bounds[2], t->minY());
+    bounds[3] = fmax(bounds[3], t->maxY());
+    bounds[4] = fmin(bounds[4], t->minZ());
+    bounds[5] = fmax(bounds[5], t->maxZ());
+  }
+
+  double distX = bounds[1] - bounds[0];
+  double distY = bounds[3] - bounds[2];
+  double distZ = bounds[5] - bounds[4];
+
+  this->size = fmax(distX, fmax(distY, distZ));
+
+  distX = (this->size - distX) * 0.5f;
+  bounds[0] -= distX;
+  bounds[1] += distX;
+
+  distY = (this->size - distY) * 0.5f;
+  bounds[2] -= distY;
+  bounds[3] += distY;
+
+  distZ = (this->size - distZ) * 0.5f;
+  bounds[4] -= distZ;
+  bounds[5] += distZ;
+
+  x = (bounds[1] + bounds[0]) * 0.5f;
+  y = (bounds[3] + bounds[2]) * 0.5f;
+  z = (bounds[5] + bounds[4]) * 0.5f;
+}
+
+std::vector<Triangle*> parseFile(std::string path) {
+  std::ifstream f(path.c_str());
+
+  std::string line;
+  std::getline(f, line);
+  std::getline(f, line);
+
+  std::istringstream iss(line);
+
+  int nbCoords;
+  int nbTriangles;
+  std::vector<Point*> coords;
+  std::vector<Triangle*> triangles;
+
+  iss >> nbCoords >> nbTriangles;
+
+  long cpt = 0;
+
+  while (std::getline(f, line)) {
+    std::istringstream i(line);
+
+    if(cpt++ < nbCoords) {
+      double x, y, z;
+      if (!(i >> x >> y >> z)) { 
+	break; 
+      }
+      coords.push_back(new Point(x, y, z));
+    } else {
+      int a, x, y, z;
+      if (!(i >> a >> x >> y >> z)) { 
+	break; 
+      }
+      triangles.push_back(new Triangle(coords[x], coords[y], coords[z]));
+    }
+  }
+
+  glColor3f(1.0, 1.0, 1.0);
+
+  for(auto t : triangles) {
+    t->drawTriangle();
+  }
+  return triangles;
+}
+
+
+std::vector<Triangle*> maillageCylindre(Point* orig, int radius, int height, int meridians) {
+  Point*** c = cylindre(orig, radius, height, meridians);
+  std::vector<Triangle*> triangles;
+
+  for (int i = 0; i < meridians; ++i) {
+    triangles.push_back(new Triangle(c[0][i], c[0][(i+1)%meridians], c[1][(i+1)%meridians]));
+  }
+
+  for (int i = 0; i < meridians; ++i) {
+    triangles.push_back(new Triangle(c[0][(i)%meridians], c[1][(i+1)%meridians], c[1][i]));
+  }
+
+  for (int i = 1; i < meridians; ++i) {
+    // triangles.push_back(new Triangle(c[0][i], c[0][0], c[0][(i+1)%meridians]));
+    // triangles.push_back(new Triangle(c[1][i], c[1][(i+1)%meridians], c[1][0]));
+  }
+
+  return triangles;
+}
+
+std::vector<Triangle*> maillageSphere(Point* orig, int radius, int meridians, int parallels) {
+  Point*** c = sphere(orig, radius, meridians, parallels);
+  std::vector<Triangle*> triangles;
+
+  for (int j = 0; j < parallels; j++) {
+    for (int i = 0; i < meridians; i+=2) {
+      triangles.push_back(new Triangle(c[i][j], c[i][(j+1)%parallels], c[(i+1)%meridians][j]));
+      triangles.push_back(new Triangle(c[i][(j+1)%parallels], c[(i+1)%meridians][(j+1)%parallels], c[(i+1)%meridians][j]));
+    }
+  }
+
+  return triangles;
+}
+
+bool neighbours (Triangle* t1, Triangle* t2) {
+  int n = 0;
+  for (auto i : t1->getPoints()) {
+    for (auto j : t2->getPoints()) {
+      n += i->equals(j);
+    }
+  }
+  return n == 2;
+}
+
+bool diedre (Triangle* t1, Triangle* t2, double angle) {
+  Point* n1 = t1->getNormales()[0];
+  Point* p1 = t1->getPoints()[0];
+  Vector v1(n1->getX() - p1->getX(), n1->getY() - p1->getY(), n1->getZ() - p1->getZ());
+  Point* n2 = t2->getNormales()[0];
+  Point* p2 = t2->getPoints()[0];
+  Vector v2(n2->getX() - p2->getX(), n2->getY() - p2->getY(), n2->getZ() - p2->getZ());
+
+  if(neighbours(t1, t2)) {
+    // Vector v1(n1->getX(), n1->getY(), n1->getZ());
+    // Vector v2(n2->getX(), n2->getY(), n2->getZ());
+    return (v2.getAngle(&v1) > angle);
+  }
+
+  return false;
+}
+
+std::vector<std::vector<int>> matriceAdjacence(std::vector<Triangle*> triangles) {
+  std::vector<std::vector<int>> matrix;
+  for (int i = 0; i < triangles.size(); i++) {
+    std::vector<int> t;
+    for (int j = 0; j < triangles.size(); j++) {
+      if(neighbours(triangles[i], triangles[j])) {
+	t.push_back(j);
+      }
+    }
+    for (int j = 0; j < 3 - t.size(); j++) {
+      t.push_back(-1);
+    }
+    matrix.push_back(t);
+  }
+  return matrix;
+}
+
+std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double angle) {
+  std::vector<Triangle*> triangles;
+  for (int i = 0; i < matrix.size(); i++) {
+    Triangle *t1 = t[i];
+    for (int j = 0; j < matrix[i].size(); j++) {
+      if(matrix[i][j] != 0) {
+	Triangle *t2 = t[matrix[i][j]];
+	if(diedre(t1, t2, angle)) {
+	  triangles.push_back(t1);
+	  triangles.push_back(t2);
+	}
+      }
+    }
+  }
+  return triangles;
+}
+
+double getAngle(std::vector<Triangle*> t, int i, int j, double angle) {
+  Triangle* t1 = t[i];
+  Point* n1 = t1->getNormales()[0];
+  Point* p1 = t1->getPoints()[0];
+  Vector v1(n1->getX() - p1->getX(), n1->getY() - p1->getY(), n1->getZ() - p1->getZ());
+  Triangle* t2 = t[j];
+  Point* n2 = t2->getNormales()[0];
+  Point* p2 = t2->getPoints()[0];
+  Vector v2(n2->getX() - p2->getX(), n2->getY() - p2->getY(), n2->getZ() - p2->getZ());
+  return v1.getAngle(&v2);
+}
+
+void step(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, int *areas, double delta, int current) {
+  for (auto i : matrix[current]) {
+    if(areas[i] == -1) {
+      if(i != -1) {
+	if(getAngle(t, current, i, delta) > delta) {
+	  // std::cout << getAngle(t, current, i, delta) << std::endl;
+	} else {
+	  areas[i] = areas[current];
+	  step(t, matrix, areas, delta, i);
+	}
+      }
+    }
+  }
+}
+
+int findFreeTriangle(int* areas, int length) {
+  for (int i = 0; i < length; i++) {
+    if(areas[i] < 0) return i;
+  }
+  return -1;
+}
+
+void resetFreeAreas(int* areas, int length) {
+  for (int i = 0; i < length; i++) {
+    if(areas[i] == -2) areas[i] = -1;
+  }
+}
+
+std::vector<int> segmentation(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double delta) {
+  std::cout << "en cours" << std::endl;
+  int* areas = new int[t.size()];
+
+  for (int i = 0; i < t.size(); i++) {
+    areas[i] = -1;
+  }
+
+  int color = 0;
+  int index = 0;
+  while((index = findFreeTriangle(areas, t.size())) != -1) {
+    std::cout << "index : " << index << std::endl;
+    resetFreeAreas(areas, t.size()); 
+    areas[index] = color++;
+    step(t, matrix, areas, delta, index); // 
+  }
+
+  std::vector<int> a;
+  for (int i = 0; i < t.size(); i++) {
+    a.push_back(areas[i]);
+  }
+
+  return a;
+}
+
+std::vector<Triangle*> refine(Triangle* t) {
+  std::vector<Triangle*> v;
+  std::vector<Point*> pts = t->getPoints();
+  
+  Point* p1 = new Point((pts[0]->getX() + pts[1]->getX()) * 0.5f,
+			(pts[0]->getY() + pts[1]->getY()) * 0.5f,
+			(pts[0]->getZ() + pts[1]->getZ()) * 0.5f);
+
+  Point* p2 = new Point((pts[0]->getX() + pts[2]->getX()) * 0.5f,
+			(pts[0]->getY() + pts[2]->getY()) * 0.5f,
+			(pts[0]->getZ() + pts[2]->getZ()) * 0.5f);
+
+  Point* p3 = new Point((pts[1]->getX() + pts[2]->getX()) * 0.5f,
+			(pts[1]->getY() + pts[2]->getY()) * 0.5f,
+			(pts[1]->getZ() + pts[2]->getZ()) * 0.5f);
+
+  v.push_back(new Triangle(pts[0], p1, p2));
+  v.push_back(new Triangle(p1, p3, p2));
+  v.push_back(new Triangle(p1, pts[1], p3));
+  v.push_back(new Triangle(p2, p3, pts[2]));
+
+  return v;
+}
+
+std::vector<Triangle*> refineAll(std::vector<Triangle*> triangles) {
+  std::vector<Triangle*> t;
+  for (auto i : triangles) {
+    for (auto j : refine(i)) {
+      t.push_back(j);
+    }
+  }
+  return t;
+}
+
+#endif
+
+
+
+
+
+
+
