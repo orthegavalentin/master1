@@ -204,6 +204,18 @@ std::vector<std::vector<int>> matriceAdjacence(std::vector<Triangle*> triangles)
   return matrix;
 }
 
+Triangle* getGoodVertex(Triangle *t1, Triangle *t2) {
+  std::vector<Point*> t;
+  for (auto i : t1->getPoints()) {
+    for (auto j : t2->getPoints()) {
+      if(i->equals(j)) {
+	t.push_back(j);
+      }
+    }
+  }
+  return new Triangle(t[0], t[0], t[1]);
+}
+
 std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vector<int>> matrix, double angle) {
   std::vector<Triangle*> triangles;
   for (int i = 0; i < matrix.size(); i++) {
@@ -213,8 +225,11 @@ std::vector<Triangle*> getDiedres(std::vector<Triangle*> t, std::vector<std::vec
       if(matrix[i][j] != -1) {
 	Triangle *t2 = t[matrix[i][j]];
 	if(diedre(t1, t2, angle)) {
-	  triangles.push_back(t1);
-	  break;
+	  triangles.push_back(getGoodVertex(t1, t2));
+	  // triangles.push_back(new Triangle(
+	  // triangles.push_back(t1);
+ 	  
+	  // break;
 	  // triangles.push_back(t2);
 	}
       }
